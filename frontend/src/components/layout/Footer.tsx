@@ -59,7 +59,7 @@ export default function Footer() {
             <h3 className="font-display font-semibold text-white text-sm uppercase tracking-wider mb-4">Organization</h3>
             <ul className="space-y-2">
               {LINKS.organization.map(l => (
-                <li key={l.to}><Link to={l.to} className="text-sm transition-colors hover:text-white" style={{ color: '#9ca3af' }}>{l.label}</Link></li>
+                <li key={l.label}><Link to={l.to} className="text-sm transition-colors hover:text-white" style={{ color: '#9ca3af' }}>{l.label}</Link></li>
               ))}
             </ul>
           </div>

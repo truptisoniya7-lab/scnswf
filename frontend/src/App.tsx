@@ -1,5 +1,6 @@
-﻿import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import PublicLayout from './layouts/PublicLayout'
+import ScrollToTop from './components/ScrollToTop'
 
 // Pages — lazy loaded
 import { lazy, Suspense } from 'react'
@@ -39,6 +40,7 @@ function PageLoader() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route element={<PublicLayout />}>
