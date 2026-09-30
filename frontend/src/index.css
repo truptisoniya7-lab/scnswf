@@ -1,32 +1,73 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  /* Brand colors */
-  --color-teal-950: #0a1f1e;
-  --color-teal-900: #0d2e2c;
-  --color-teal-800: #134a48;
-  --color-teal-700: #1b6b68;
-  --color-teal-600: #1f7a76;
-  --color-teal-500: #279490;
-  --color-teal-400: #34b7b2;
-  --color-teal-300: #5ecece;
-  --color-teal-200: #9de4e3;
-  --color-teal-100: #cff3f3;
-  --color-teal-50: #edfafa;
+  /* Primary: Medical Green palette */
+  --color-medical-950: #051b14;
+  --color-medical-900: #082e23;
+  --color-medical-800: #0c4737;
+  --color-medical-700: #105e49;
+  --color-medical-600: #14785d;
+  --color-medical-500: #199675;
+  --color-medical-400: #22b791;
+  --color-medical-300: #55d5b3;
+  --color-medical-200: #99e8d3;
+  --color-medical-100: #d1f4eb;
+  --color-medical-50:  #f0fbf7;
 
-  --color-coral-600: #c94a2e;
-  --color-coral-500: #e05a37;
-  --color-coral-400: #f0704e;
-  --color-coral-300: #f79274;
-  --color-coral-200: #fbbfac;
-  --color-coral-100: #fde8e0;
+  /* Backward compatibility for existing teal tokens -> mapped to refined medical green */
+  --color-teal-950: #051b14;
+  --color-teal-900: #082e23;
+  --color-teal-800: #0c4737;
+  --color-teal-700: #105e49;
+  --color-teal-600: #14785d;
+  --color-teal-500: #199675;
+  --color-teal-400: #22b791;
+  --color-teal-300: #55d5b3;
+  --color-teal-200: #99e8d3;
+  --color-teal-100: #d1f4eb;
+  --color-teal-50:  #f0fbf7;
 
-  --color-amber-500: #d97706;
-  --color-amber-400: #f59e0b;
+  /* Accent: Controlled secondary warm terracotta / amber for high-trust CTAs */
+  --color-accent-950: #451505;
+  --color-accent-900: #70270a;
+  --color-accent-800: #94350d;
+  --color-accent-700: #b44512;
+  --color-accent-600: #c8541c;
+  --color-accent-500: #db6424;
+  --color-accent-400: #e68147;
+  --color-accent-300: #f1a67a;
+  --color-accent-200: #fad0ba;
+  --color-accent-100: #fdebe2;
+  --color-accent-50:  #fff7f3;
+
+  /* Backward compatibility for existing coral tokens -> mapped to controlled accent */
+  --color-coral-700: #b44512;
+  --color-coral-600: #c8541c;
+  --color-coral-500: #db6424;
+  --color-coral-400: #e68147;
+  --color-coral-300: #f1a67a;
+  --color-coral-200: #fad0ba;
+  --color-coral-100: #fdebe2;
+  --color-coral-50:  #fff7f3;
+
+  /* Warm Neutral Surfaces */
+  --color-warm-bg: #fbfbf9;
+  --color-warm-card: #ffffff;
+  --color-warm-muted: #f4f6f3;
+  --color-warm-border: #e3eae4;
+  --color-warm-border-strong: #c8d5c9;
+
+  /* Text colors */
+  --color-charcoal-900: #0f172a;
+  --color-charcoal-800: #1e293b;
+  --color-charcoal-700: #334155;
+  --color-charcoal-600: #475569;
+  --color-charcoal-500: #64748b;
+  --color-charcoal-400: #94a3b8;
 
   /* Typography scale */
   --text-xs: 0.75rem;
@@ -40,18 +81,58 @@
   --text-5xl: 3rem;
   --text-6xl: 3.75rem;
 
-  /* Spacing */
-  --spacing-section: 5rem;
-  --spacing-container: 1.5rem;
+  /* Spacing Scale (8px, 12px, 16px, 24px, 32px, 48px, 64px, 80px, 120px) */
+  --spacing-sp-8:   8px;
+  --spacing-sp-12:  12px;
+  --spacing-sp-16:  16px;
+  --spacing-sp-24:  24px;
+  --spacing-sp-32:  32px;
+  --spacing-sp-48:  48px;
+  --spacing-sp-64:  64px;
+  --spacing-sp-80:  80px;
+  --spacing-sp-120: 120px;
 
   /* Border radius */
+  --radius-badge: 9999px;
+  --radius-btn: 0.625rem;
   --radius-card: 1rem;
-  --radius-btn: 0.5rem;
+  --radius-modal: 1.25rem;
 
-  /* Shadows */
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
-  --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.14);
-  --shadow-glow: 0 0 40px rgba(39, 148, 144, 0.25);
+  /* Elevation Shadows */
+  --shadow-subtle: 0 1px 3px rgba(12, 38, 30, 0.05), 0 1px 2px rgba(12, 38, 30, 0.03);
+  --shadow-card: 0 4px 20px -2px rgba(12, 38, 30, 0.06), 0 2px 6px -1px rgba(12, 38, 30, 0.03);
+  --shadow-card-hover: 0 12px 30px -4px rgba(12, 38, 30, 0.12), 0 4px 10px -2px rgba(12, 38, 30, 0.05);
+  --shadow-modal: 0 25px 50px -12px rgba(12, 38, 30, 0.25);
+  --shadow-glow: 0 0 32px rgba(16, 94, 73, 0.2);
+}
+
+:root {
+  /* CSS Variables for custom components and inline styles */
+  --medical-primary: #105e49;
+  --medical-dark: #082e23;
+  --medical-surface: #f0fbf7;
+  --medical-border: #d1f4eb;
+  
+  --accent-cta: #db6424;
+  --accent-hover: #c8541c;
+  --accent-surface: #fff7f3;
+
+  --bg-warm-neutral: #fbfbf9;
+  --bg-subtle-neutral: #f4f6f3;
+  --text-headline: #0f172a;
+  --text-body: #334155;
+  --text-muted: #64748b;
+
+  /* Explicit standard spacing tokens */
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-120: 120px;
 }
 
 *, *::before, *::after {
@@ -60,171 +141,242 @@
 
 html {
   scroll-behavior: smooth;
+  text-size-adjust: 100%;
 }
 
-body {
-  font-family: var(--font-sans);
-  background-color: #ffffff;
-  color: #111827;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-warm-bg);
+    color: var(--color-charcoal-800);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Headings use Plus Jakarta Sans and inherit color */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: inherit;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
 }
 
-/* Skip to main content link (accessibility) */
-.skip-link {
-  position: absolute;
-  top: -100%;
-  left: 1rem;
-  background: var(--color-teal-700);
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 0 0 0.5rem 0.5rem;
-  font-weight: 600;
-  z-index: 9999;
-  transition: top 0.2s;
-}
-.skip-link:focus {
-  top: 0;
-}
-
-/* Focus ring */
-:focus-visible {
-  outline: 2px solid var(--color-teal-500);
-  outline-offset: 2px;
-}
-
-/* Headings use display font */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  line-height: 1.2;
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: var(--color-teal-400); border-radius: 3px; }
-
-/* Gradient utilities */
-.gradient-brand {
-  background: linear-gradient(135deg, var(--color-teal-700) 0%, var(--color-teal-500) 100%);
-}
-.gradient-hero {
-  background: linear-gradient(160deg, #0d2e2c 0%, #1b6b68 50%, #0a1f1e 100%);
-}
-.text-gradient {
-  background: linear-gradient(135deg, var(--color-teal-400), var(--color-coral-400));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Section spacing */
-.section-padding {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
-}
-.container-custom {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-/* Card base */
-.card {
-  background: #fff;
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-.card:hover {
-  box-shadow: var(--shadow-card-hover);
-  transform: translateY(-2px);
-}
-
-/* Button base */
+/* Button utility classes */
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   font-family: var(--font-sans);
   font-weight: 600;
   border-radius: var(--radius-btn);
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
-  border: none;
+  border: 1px solid transparent;
   text-decoration: none;
   white-space: nowrap;
 }
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  pointer-events: none;
 }
-.btn-primary {
-  background: var(--color-coral-500);
-  color: #fff;
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
+.btn-primary, .btn-accent {
+  background-color: var(--color-accent-500);
+  color: #ffffff !important;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9375rem;
+  box-shadow: 0 1px 3px rgba(219, 100, 36, 0.25);
 }
-.btn-primary:hover:not(:disabled) {
-  background: var(--color-coral-600);
+.btn-primary:hover, .btn-accent:hover {
+  background-color: var(--color-accent-600);
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(224, 90, 55, 0.35);
+  box-shadow: 0 4px 14px rgba(219, 100, 36, 0.35);
+}
+.btn-medical {
+  background-color: var(--color-medical-700);
+  color: #ffffff !important;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9375rem;
+  box-shadow: 0 1px 3px rgba(16, 94, 73, 0.25);
+}
+.btn-medical:hover {
+  background-color: var(--color-medical-800);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(16, 94, 73, 0.35);
 }
 .btn-secondary {
-  background: transparent;
-  color: var(--color-teal-700);
-  border: 2px solid var(--color-teal-700);
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
+  background-color: transparent;
+  color: var(--color-medical-700);
+  border: 2px solid var(--color-medical-700);
+  padding: 0.5625rem 1.4rem;
+  font-size: 0.9375rem;
 }
-.btn-secondary:hover:not(:disabled) {
-  background: var(--color-teal-700);
-  color: #fff;
+.btn-secondary:hover {
+  background-color: var(--color-medical-50);
 }
 .btn-white {
-  background: #fff;
-  color: var(--color-teal-700);
-  padding: 0.75rem 1.75rem;
-  font-size: 1rem;
+  background-color: #ffffff;
+  color: var(--color-medical-800) !important;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9375rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
-.btn-white:hover:not(:disabled) {
-  background: var(--color-teal-50);
+.btn-white:hover {
+  background-color: var(--color-medical-50);
 }
 .btn-sm {
-  padding: 0.5rem 1.25rem;
-  font-size: 0.875rem;
+  padding: 0.375rem 1rem;
+  font-size: 0.8125rem;
 }
 .btn-lg {
-  padding: 1rem 2.5rem;
-  font-size: 1.125rem;
+  padding: 0.875rem 2.25rem;
+  font-size: 1.0625rem;
 }
 
-/* Skeleton loading */
+/* Skip to main content link (Accessibility) */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  background: var(--color-medical-700);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  z-index: 9999;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus ring for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-medical-500);
+  outline-offset: 2px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { 
+  width: 7px; 
+}
+::-webkit-scrollbar-track { 
+  background: #f1f4f1; 
+}
+::-webkit-scrollbar-thumb { 
+  background: #cbd8cf; 
+  border-radius: 4px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: #14785d; 
+}
+
+/* Standard Layout Utilities */
+.container-custom {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .container-custom {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .container-custom {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Spacing Standards */
+.section-spacing {
+  padding-top: var(--space-64);
+  padding-bottom: var(--space-64);
+}
+@media (min-width: 768px) {
+  .section-spacing {
+    padding-top: var(--space-80);
+    padding-bottom: var(--space-80);
+  }
+}
+@media (min-width: 1024px) {
+  .section-spacing {
+    padding-top: var(--space-120);
+    padding-bottom: var(--space-120);
+  }
+}
+
+.section-spacing-sm {
+  padding-top: var(--space-48);
+  padding-bottom: var(--space-48);
+}
+@media (min-width: 768px) {
+  .section-spacing-sm {
+    padding-top: var(--space-64);
+    padding-bottom: var(--space-64);
+  }
+}
+
+/* Brand Gradients - Deep medical trust with subtle depth */
+.gradient-brand {
+  background: linear-gradient(135deg, #0c4737 0%, #105e49 60%, #14785d 100%);
+}
+.gradient-hero {
+  background: linear-gradient(160deg, #051b14 0%, #082e23 35%, #0c4737 75%, #105e49 100%);
+}
+.gradient-subtle-warm {
+  background: linear-gradient(180deg, #fbfbf9 0%, #f4f6f3 100%);
+}
+
+/* Text Gradients */
+.text-gradient-medical {
+  background: linear-gradient(135deg, #105e49 0%, #199675 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Legacy Card & Button fallback utility classes (also available as React components) */
+.card-base {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid var(--color-warm-border);
+  box-shadow: var(--shadow-card);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-base:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: #cbd8cf;
+  transform: translateY(-2px);
+}
+
+/* Skeleton Loading */
 @keyframes shimmer {
   0% { background-position: -468px 0; }
   100% { background-position: 468px 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #edf0ed 25%, #e1e7e2 50%, #edf0ed 75%);
   background-size: 468px 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 0.5rem;
 }
 
-/* Fade in animation */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease both;
-}
-
-/* Reduced motion */
+/* Respect user accessibility preferences */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

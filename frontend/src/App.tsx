@@ -23,6 +23,7 @@ const PrivacyPolicy  = lazy(() => import('./pages/legal/PrivacyPolicy'))
 const Terms          = lazy(() => import('./pages/legal/Terms'))
 const RefundPolicy   = lazy(() => import('./pages/legal/RefundPolicy'))
 const Disclaimer     = lazy(() => import('./pages/legal/Disclaimer'))
+const DesignSystem   = lazy(() => import('./pages/DesignSystem'))
 const NotFound       = lazy(() => import('./pages/NotFound'))
 
 function PageLoader() {
@@ -62,6 +63,7 @@ export default function App() {
             <Route path="/terms"                  element={<Terms />} />
             <Route path="/refund-policy"          element={<RefundPolicy />} />
             <Route path="/disclaimer"             element={<Disclaimer />} />
+            <Route path="/design-system"          element={<DesignSystem />} />
             <Route path="*"                       element={<NotFound />} />
           </Route>
         </Routes>
