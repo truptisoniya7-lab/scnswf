@@ -1,12 +1,11 @@
 import { motion, type Variants } from "framer-motion"
 import { Link } from "react-router-dom"
 import {
-  Heart, Users, ArrowRight, CheckCircle2, ChevronRight,
-  Activity, Baby, GraduationCap, Droplets,
-  MapPin, Stethoscope, ShieldCheck, HeartHandshake,
+  Heart, Users, ArrowRight, CheckCircle2,
+  Baby, MapPin, Stethoscope, ShieldCheck,
   Eye
 } from "lucide-react"
-import { Button, Badge, Container } from "../components"
+import { Button, Badge, Container, SectionHeading } from "../components"
 import { ImagePlaceholder } from "../components/ui/ImagePlaceholder"
 
 const fadeUp: Variants = {
@@ -18,65 +17,65 @@ const fadeUp: Variants = {
   }),
 }
 
-const FEATURED_PROGRAMS = [
+const PROBLEMS = [
   {
-    slug: "mobile-health-units",
-    icon: Activity,
-    tag: "Healthcare Access",
-    title: "Mobile Health Units",
-    desc: "Delivering doctor consultations, basic diagnostics, and essential medications to remote villages lacking permanent healthcare facilities.",
-    color: "#1b6b68",
-    bg: "#edfafa",
+    num: "01",
+    icon: Stethoscope,
+    title: "Limited Healthcare Access",
+    desc: "Over 70% of rural families must travel over 25 km to the nearest facility, causing treatable illnesses to escalate into life-threatening emergencies.",
+    link: "/about",
   },
   {
-    slug: "maternal-child-health",
+    num: "02",
+    icon: MapPin,
+    title: "Rural & Tribal Communities",
+    desc: "Remote settlements in Kalahandi, Mayurbhanj, and Koraput face seasonal monsoon cut-offs and severe shortages of resident medical practitioners.",
+    link: "/about",
+  },
+  {
+    num: "03",
+    icon: Users,
+    title: "Urban Underserved Communities",
+    desc: "Informal settlements in urban centers suffer from poor sanitation, high infectious disease burdens, and prohibitive private healthcare costs.",
+    link: "/about",
+  },
+  {
+    num: "04",
     icon: Baby,
-    tag: "Maternal Wellness",
-    title: "Maternal & Child Health",
-    desc: "Prenatal monitoring, nutrition counselling, safe institutional delivery facilitation, and postnatal follow-up care for mothers and newborns.",
-    color: "#c94a2e",
-    bg: "#fde8e0",
-  },
-  {
-    slug: "skill-development",
-    icon: GraduationCap,
-    tag: "Livelihood",
-    title: "Skill Development",
-    desc: "Vocational training, digital skills, and sustainable livelihood support for rural youth, women, and self-help groups.",
-    color: "#d97706",
-    bg: "#fffbeb",
-  },
-  {
-    slug: "clean-water-sanitation",
-    icon: Droplets,
-    tag: "WASH",
-    title: "Clean Water & Sanitation",
-    desc: "Safe drinking water purification assistance and community hygiene education in vulnerable and flood-prone settlements.",
-    color: "#279490",
-    bg: "#edfafa",
+    title: "Women & Child Health",
+    desc: "High rates of maternal anemia, infant undernutrition, and limited menstrual hygiene education create compounding health crises across generations.",
+    link: "/about",
   },
 ]
 
-const PILLARS = [
+const CORE_PROGRAMS = [
   {
-    icon: ShieldCheck,
-    title: "Section 8 Non-Profit",
-    desc: "Incorporated under Section 8 of the Companies Act, 2013 (MCA, Govt. of India), dedicated to charitable healthcare and social welfare.",
+    title: "MOBILE HEALTHCARE",
+    desc: "Bringing physician consultations, essential medicines, and basic diagnostics directly to remote villages lacking permanent facilities.",
+    image: "/images/about/project-care-health-hygiene-team.jpg",
+    alt: "SCNSWF Mobile healthcare unit team in Odisha",
+    to: "/programs/mobile-health-units",
   },
   {
-    icon: HeartHandshake,
-    title: "Community-Led Delivery",
-    desc: "We work directly alongside panchayats, ASHA workers, and village elders to ensure health interventions address real local needs.",
+    title: "HEALTH CAMPS",
+    desc: "Periodic multi-specialty screening camps offering free physician consultations, skin and chronic care checks, and medicine distribution.",
+    image: "/images/events/free-skin-health-camp-balashram.jpg",
+    alt: "Free specialist health camp in Balashram Odisha",
+    to: "/programs",
   },
   {
-    icon: Stethoscope,
-    title: "Primary Healthcare Focus",
-    desc: "Prioritizing preventative screening, early detection, and timely referral linkages before treatable illnesses become crises.",
+    title: "MATERNAL & CHILD HEALTHCARE",
+    desc: "Prenatal monitoring, safe institutional delivery counseling, and hygienic wellness support for mothers and newborns.",
+    image: "/images/hero/together-rising-womens-health.jpg",
+    alt: "Maternal health and hygiene initiative in Odisha",
+    to: "/programs/maternal-child-health",
   },
   {
-    icon: Users,
-    title: "Transparent Governance",
-    desc: "Committed to open accountability, verifiable program reporting, and responsible stewardship of every rupee donated.",
+    title: "URBAN SLUM CLINICS",
+    desc: "Doorstep community health checkups, chronic disease screenings, and palliative home care for seniors in informal settlements.",
+    image: "/images/about/geriatric-care-parents.jpg",
+    alt: "Healthcare support in urban informal settlements",
+    to: "/programs",
   },
 ]
 
@@ -367,115 +366,115 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* ── Operational Focus & Impact Scope (Honest & Grounded) ── */}
-      <section className="py-14 md:py-20 bg-slate-50">
-        <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <span className="text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full text-teal-800 bg-teal-100/70 inline-block mb-3">
-              Grassroots Foundation
-            </span>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Committed to High-Need Rural Communities
-            </h2>
-            <p className="text-base md:text-lg text-slate-600 leading-relaxed">
-              Rather than abstract figures, our focus is grounded in regular, verifiable field activities that provide direct access to medical advice, diagnosis, and preventative interventions.
-            </p>
-          </div>
+      {/* ── PHASE 4: The Problem We Solve ── */}
+      <section className="py-16 md:py-24 bg-[#f8faf7] border-t border-[#e3eae4]" aria-label="The Problem We Solve">
+        <Container size="xl">
+          <SectionHeading
+            align="center"
+            badge="Why SCNSWF Exists"
+            badgeVariant="medical"
+            title="The Problem We Solve"
+            description="Systemic geographic isolation, economic distress, and strained public infrastructure leave vulnerable populations without timely medical care. Here is where we step in."
+          />
 
-          {/* 4 Core Principles / Operational Commitments */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {PILLARS.map(({ icon: Icon, title, desc }, idx) => (
-              <motion.div
-                key={title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.45, delay: idx * 0.08 }}
-                className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
-              >
-                <div>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-teal-50 text-teal-700 mb-5">
-                    <Icon size={24} />
+            {PROBLEMS.map((item) => {
+              const Icon = item.icon
+              return (
+                <div
+                  key={item.num}
+                  className="group rounded-2xl border border-[#e3eae4] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-[#cbd8cf] flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-[#f0fbf7] text-[#105e49] border border-[#d1f4eb]">
+                        {item.num}
+                      </span>
+                      <div className="w-10 h-10 rounded-xl bg-[#f4f6f3] text-[#105e49] flex items-center justify-center group-hover:bg-[#f0fbf7] transition-colors">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                    </div>
+
+                    <h3 className="font-heading font-bold text-base sm:text-lg text-slate-900 group-hover:text-[#105e49] transition-colors mb-2.5">
+                      {item.title}
+                    </h3>
+
+                    <p className="text-sm text-slate-600 leading-relaxed mb-6 font-sans">
+                      {item.desc}
+                    </p>
                   </div>
-                  <h3 className="font-display font-bold text-lg text-slate-900 mb-2">
-                    {title}
-                  </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    {desc}
-                  </p>
+
+                  <Link
+                    to={item.link}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#105e49] hover:text-[#082e23] transition-colors mt-auto"
+                  >
+                    <span>Learn more</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+                  </Link>
                 </div>
-              </motion.div>
-            ))}
+              )
+            })}
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* ── Key Programs Section ── */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container-custom">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div>
-              <span className="text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full text-teal-800 bg-teal-100/70 inline-block mb-3">
-                What We Do
-              </span>
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-slate-900">
-                Our Primary Program Areas
-              </h2>
-            </div>
-            <Link
-              to="/programs"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-teal-700 hover:text-teal-800 transition-colors"
-            >
-              View all programs & coverage <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURED_PROGRAMS.map(({ slug, icon: Icon, tag, title, desc, color, bg }, idx) => (
-              <motion.div
-                key={slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.45, delay: idx * 0.08 }}
-                className="rounded-2xl border p-6 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md"
-                style={{ backgroundColor: bg, borderColor: `${color}25` }}
+      {/* ── PHASE 5: Our Work / Programs ── */}
+      <section className="py-16 md:py-24 bg-white border-t border-[#e3eae4]" aria-label="Our Work and Core Programs">
+        <Container size="xl">
+          <SectionHeading
+            align="left"
+            badge="Our Work"
+            badgeVariant="medical"
+            title="Core Healthcare Programs"
+            description="Direct medical interventions delivering doctors, diagnostics, and maternal wellness to communities that need it most."
+            action={
+              <Link
+                to="/programs"
+                className="inline-flex items-center gap-2 text-sm font-bold text-[#105e49] hover:text-[#082e23] transition-colors"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center"
-                      style={{ background: `${color}18`, color }}
-                    >
-                      <Icon size={24} />
-                    </div>
-                    <span
-                      className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                      style={{ background: "#ffffff", color }}
-                    >
-                      {tag}
-                    </span>
-                  </div>
+                <span>Explore all programs</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            }
+          />
 
-                  <h3 className="font-display font-bold text-xl text-slate-900 mb-2">
-                    {title}
-                  </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed mb-6">
-                    {desc}
-                  </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {CORE_PROGRAMS.map((prog) => (
+              <Link
+                key={prog.title}
+                to={prog.to}
+                className="group rounded-2xl overflow-hidden border border-[#e3eae4] bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-[#cbd8cf] flex flex-col no-underline text-inherit cursor-pointer"
+              >
+                {/* Real Photo with subtle zoom */}
+                <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
+                  <img
+                    src={prog.image}
+                    alt={prog.alt}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
                 </div>
 
-                <Link
-                  to={`/programs/${slug}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold transition-colors"
-                  style={{ color }}
-                >
-                  Learn more <ChevronRight size={14} />
-                </Link>
-              </motion.div>
+                {/* Card Content */}
+                <div className="p-5 sm:p-6 flex flex-col flex-1 justify-between">
+                  <div>
+                    <h3 className="font-heading font-bold text-sm tracking-wider text-slate-900 uppercase group-hover:text-[#105e49] transition-colors mb-2">
+                      {prog.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed mb-4 font-sans">
+                      {prog.desc}
+                    </p>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#105e49] group-hover:text-[#082e23] transition-colors">
+                    <span>Explore program</span>
+                    <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1.5" />
+                  </span>
+                </div>
+              </Link>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* ── Visual Photo Showcase / Real Work in Action ── */}
