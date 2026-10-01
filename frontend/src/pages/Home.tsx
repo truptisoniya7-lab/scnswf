@@ -6,6 +6,7 @@ import {
   MapPin, Stethoscope, ShieldCheck, HeartHandshake,
   Eye
 } from "lucide-react"
+import { Button, Badge, Container } from "../components"
 import { ImagePlaceholder } from "../components/ui/ImagePlaceholder"
 
 const fadeUp: Variants = {
@@ -84,69 +85,53 @@ export default function Home() {
     <>
       {/* ── Hero Section ── */}
       <section
-        className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden"
-        style={{
-          background: "linear-gradient(155deg, #0a1f1e 0%, #134a48 45%, #1b6b68 85%, #165653 100%)",
-        }}
+        className="relative pt-10 pb-20 md:pt-14 md:pb-28 overflow-hidden bg-gradient-to-br from-[#051b14] via-[#082e23] to-[#0c4737] text-white"
+        aria-label="SCNSWF Healthcare & Social Welfare"
       >
-        {/* Subtle background glow & texture */}
+        {/* Subtle organic ambient glow */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div
-            style={{
-              position: "absolute",
-              top: "-15%",
-              right: "-10%",
-              width: 600,
-              height: 600,
-              borderRadius: "50%",
-              background: "rgba(39, 148, 144, 0.16)",
-              filter: "blur(90px)",
-            }}
+            className="absolute -top-32 -right-32 w-[550px] h-[550px] rounded-full opacity-20 blur-[100px]"
+            style={{ background: "#22b791" }}
           />
           <div
-            style={{
-              position: "absolute",
-              bottom: "-20%",
-              left: "-10%",
-              width: 500,
-              height: 500,
-              borderRadius: "50%",
-              background: "rgba(224, 90, 55, 0.08)",
-              filter: "blur(80px)",
-            }}
+            className="absolute -bottom-32 -left-32 w-[450px] h-[450px] rounded-full opacity-15 blur-[90px]"
+            style={{ background: "#db6424" }}
           />
         </div>
 
-        <div className="container-custom relative z-10">
+        <Container size="xl" className="relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left Column: Hero Content */}
-            <div className="lg:col-span-7 text-left">
+            {/* Left Column: Answers 1. Who are you? 2. What do you do? 3. What can I do? */}
+            <div className="lg:col-span-7 text-left flex flex-col items-start">
+              
+              {/* Question 1: Who are you? */}
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
                 custom={0}
-                className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold mb-5 px-3.5 py-1.5 rounded-full border"
-                style={{
-                  background: "rgba(255, 255, 255, 0.08)",
-                  borderColor: "rgba(255, 255, 255, 0.18)",
-                  color: "#9de4e3",
-                  backdropFilter: "blur(8px)",
-                }}
+                className="mb-4"
               >
-                <Heart size={14} className="text-amber-300" fill="currentColor" />
-                <span>Grassroots Healthcare & Welfare · Bhubaneswar, Odisha</span>
+                <Badge
+                  variant="dark"
+                  size="md"
+                  pulse
+                  icon={<ShieldCheck className="w-3.5 h-3.5 text-[#55d5b3]" />}
+                >
+                  SCNSWF · Suresh Chandra Nayak Social Welfare Foundation
+                </Badge>
               </motion.div>
 
+              {/* Question 2: What do you do? */}
               <motion.h1
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
                 custom={1}
-                className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.12] mb-6 tracking-tight"
+                className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.12] mb-5 tracking-tight"
               >
-                Dignity and Accessible Healthcare for{" "}
-                <span className="text-gradient">Every Community</span>
+                Healthcare That Reaches Everyone
               </motion.h1>
 
               <motion.p
@@ -154,145 +139,232 @@ export default function Home() {
                 initial="hidden"
                 animate="visible"
                 custom={2}
-                className="text-base sm:text-lg md:text-xl leading-relaxed mb-8 max-w-2xl font-normal"
-                style={{ color: "rgba(255, 255, 255, 0.82)" }}
+                className="text-base sm:text-lg md:text-xl text-slate-200 leading-relaxed mb-8 max-w-2xl font-sans"
               >
-                Suresh Chandra Nayak Social Welfare Foundation (SCNSWF) brings dedicated mobile medical units, maternal and child wellness initiatives, and community empowerment to underserved regions across Odisha.
+                Bringing accessible healthcare, awareness and community support to underserved communities across Odisha.
               </motion.p>
 
-              {/* Action Buttons */}
+              {/* Question 3: What can I do? — Donate / Volunteer / Partner */}
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
                 custom={3}
-                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-10"
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-6 w-full sm:w-auto"
               >
-                <Link
+                <Button
+                  variant="primary"
+                  size="lg"
                   to="/donate"
-                  className="btn btn-accent text-center shadow-lg hover:shadow-xl justify-center"
+                  leftIcon={<Heart className="w-4 h-4 fill-white" />}
                 >
-                  <Heart size={18} fill="currentColor" />
-                  Support Our Mission
-                </Link>
-                <Link
+                  Donate Now
+                </Button>
+                <Button
+                  variant="outline-white"
+                  size="lg"
                   to="/programs"
-                  className="btn btn-secondary text-center justify-center"
-                  style={{
-                    borderColor: "rgba(255, 255, 255, 0.35)",
-                    color: "#ffffff",
-                    background: "rgba(255, 255, 255, 0.06)",
-                  }}
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
                 >
-                  Explore Our Programs
-                  <ArrowRight size={18} />
-                </Link>
+                  Explore Our Work
+                </Button>
               </motion.div>
 
-              {/* Trust Signals */}
+              {/* Direct tertiary touchpoint for Volunteer & Partner */}
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
                 custom={4}
-                className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t"
-                style={{ borderColor: "rgba(255, 255, 255, 0.12)" }}
+                className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs sm:text-sm text-slate-300 pt-3 border-t border-white/10 w-full"
               >
-                <div className="flex items-center gap-2.5 text-xs text-teal-100/90 font-medium">
-                  <CheckCircle2 size={16} className="text-teal-300 shrink-0" />
-                  <span>Section 8 Registered Non-Profit</span>
+                <span className="text-slate-400">Want to get involved?</span>
+                <div className="flex items-center gap-2.5">
+                  <Link
+                    to="/get-involved/volunteer"
+                    className="text-[#55d5b3] hover:text-white font-medium underline underline-offset-4 transition-colors"
+                  >
+                    Volunteer with us
+                  </Link>
+                  <span className="text-slate-500">•</span>
+                  <Link
+                    to="/get-involved/partner"
+                    className="text-[#55d5b3] hover:text-white font-medium underline underline-offset-4 transition-colors"
+                  >
+                    Corporate / CSR Partner
+                  </Link>
                 </div>
-                <div className="flex items-center gap-2.5 text-xs text-teal-100/90 font-medium">
-                  <CheckCircle2 size={16} className="text-teal-300 shrink-0" />
-                  <span>Direct Field Operations</span>
+              </motion.div>
+
+              {/* Trust highlights */}
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+                custom={5}
+                className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-6 pt-4 border-t border-white/10 text-xs text-slate-300 font-medium"
+              >
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#55d5b3]" />
+                  <span>Section 8 Non-Profit (Govt. of India)</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-xs text-teal-100/90 font-medium">
-                  <CheckCircle2 size={16} className="text-teal-300 shrink-0" />
-                  <span>Primary Care & Education</span>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#55d5b3]" />
+                  <span>100% Tax Deductible (80G &amp; 12A)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#55d5b3]" />
+                  <span>Direct Field Operations in Odisha</span>
                 </div>
               </motion.div>
             </div>
 
-            {/* Right Column: Hero Visual Container */}
+            {/* Right Column: Large Authentic Healthcare/Community Photograph */}
             <div className="lg:col-span-5 relative mt-6 lg:mt-0">
               <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.15 }}
-                className="relative rounded-3xl p-3 bg-white/10 backdrop-blur-md border border-white/15 shadow-2xl"
+                initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="relative rounded-3xl p-3 bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl"
               >
-                {/* Main Hero Visual Area */}
-                <div className="relative rounded-2xl overflow-hidden bg-slate-900 aspect-[4/3]">
-                  <ImagePlaceholder
-                    src="/images/hero/together-rising-womens-health.jpg"
-                    alt="SCNSWF Together Rising initiative promoting women's health, youth volunteerism, and sustainable hygiene"
-                    label="Together Rising · Community Health"
-                    aspect="4/3"
-                    className="w-full h-full"
-                    objectFit="cover"
+                {/* Authentic Field Photography */}
+                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-900 shadow-inner">
+                  <img
+                    src="/images/about/project-care-health-hygiene-team.jpg"
+                    alt="SCNSWF Project Care health and hygiene medical team providing direct consultations and medications in Odisha"
+                    className="w-full h-full object-cover"
+                    loading="eager"
                   />
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: "linear-gradient(to top, rgba(10,31,30,0.92) 0%, rgba(10,31,30,0.25) 50%, transparent 80%)",
-                    }}
-                  />
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded bg-teal-800/90 text-teal-200">
-                      Together Rising Initiative
+                  
+                  {/* Subtle lower gradient to ensure caption readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#051b14]/90 via-[#051b14]/30 to-transparent pointer-events-none" />
+
+                  {/* Top Location Chip */}
+                  <div className="absolute top-3.5 left-3.5 z-10">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-[#051b14]/80 text-[#55d5b3] backdrop-blur-sm border border-white/15 shadow-sm">
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>Odisha Field Camp · Project Care</span>
                     </span>
-                    <p className="text-sm font-medium mt-1 text-slate-100">
-                      Community healthcare, student volunteerism & sustainable women's health in Odisha · SCNSWF
+                  </div>
+
+                  {/* Caption on image */}
+                  <div className="absolute bottom-3.5 left-3.5 right-3.5 z-10 text-white">
+                    <p className="text-xs sm:text-sm font-semibold text-white leading-snug">
+                      On-Ground Medical &amp; Hygiene Outreach
+                    </p>
+                    <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5">
+                      Doctors and health workers conducting health camps and distributing essential medicines in rural Odisha.
                     </p>
                   </div>
                 </div>
 
-                {/* Floating highlight card 1 */}
-                <div
-                  className="absolute -bottom-5 -left-5 p-4 rounded-xl shadow-xl border hidden sm:flex items-center gap-3"
-                  style={{
-                    background: "#ffffff",
-                    borderColor: "#e2e8f0",
-                    maxWidth: "240px",
-                  }}
-                >
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-teal-50 text-teal-700 shrink-0">
-                    <Stethoscope size={20} />
+                {/* Floating highlight card 1: Free doctor consultations */}
+                <div className="absolute -bottom-4 -left-4 p-3.5 rounded-xl shadow-xl border border-slate-200/80 bg-white text-slate-900 hidden sm:flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-[#f0fbf7] text-[#105e49] shrink-0">
+                    <Stethoscope className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-900">Doctor Consultations</div>
-                    <div className="text-[11px] text-slate-500">Clinical guidance & primary care</div>
+                    <div className="text-xs font-bold text-slate-900 leading-tight">Doctor Consultations</div>
+                    <div className="text-[11px] text-slate-500">Free clinical primary care</div>
                   </div>
                 </div>
 
-                {/* Floating highlight card 2 */}
-                <div
-                  className="absolute -top-4 -right-4 p-3.5 rounded-xl shadow-xl border hidden sm:flex items-center gap-3"
-                  style={{
-                    background: "#ffffff",
-                    borderColor: "#e2e8f0",
-                    maxWidth: "230px",
-                  }}
-                >
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-teal-50 text-teal-700 shrink-0">
-                    <Activity size={18} />
+                {/* Floating highlight card 2: Direct Village Delivery */}
+                <div className="absolute -top-3.5 -right-3.5 p-3 rounded-xl shadow-xl border border-slate-200/80 bg-white text-slate-900 hidden sm:flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#fff7f3] text-[#db6424] shrink-0">
+                    <Heart className="w-4 h-4 fill-[#db6424]" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-900">Geriatric Care</div>
-                    <div className="text-[11px] text-slate-500">HOMSO home medical support</div>
+                    <div className="text-xs font-bold text-slate-900 leading-tight">Odisha Communities</div>
+                    <div className="text-[11px] text-slate-500">Boots on the ground</div>
                   </div>
                 </div>
               </motion.div>
             </div>
           </div>
-        </div>
+        </Container>
+      </section>
 
-        {/* Crisp Wave Divider */}
-        <div className="absolute bottom-0 left-0 right-0 leading-none">
-          <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full h-10 md:h-12">
-            <path d="M0 48L1440 48L1440 12C1180 44 760 0 460 24C230 42 0 12 0 12L0 48Z" fill="#f8fafc" />
-          </svg>
-        </div>
+      {/* ── Under Hero: Compact Impact Strip with Data Verification Path ── */}
+      <section className="relative z-20 -mt-10 sm:-mt-12 mb-10 sm:mb-14" aria-label="SCNSWF Impact Metrics">
+        <Container size="xl">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#e3eae4] shadow-[0_8px_30px_rgba(5,27,20,0.08)] p-6 sm:p-8">
+            {/* The 4 Impact Metrics: 10K+ Lives, 100+ Villages, 50+ Camps, 500+ Mothers */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pb-6 border-b border-slate-100">
+              
+              {/* Stat 1 */}
+              <div className="flex flex-col">
+                <span className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#105e49] tracking-tight">
+                  10K+
+                </span>
+                <span className="font-heading font-bold text-slate-900 text-sm sm:text-base mt-1">
+                  Lives Reached
+                </span>
+                <span className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                  Doctor consultations &amp; preventive health screenings
+                </span>
+              </div>
+
+              {/* Stat 2 */}
+              <div className="flex flex-col">
+                <span className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#105e49] tracking-tight">
+                  100+
+                </span>
+                <span className="font-heading font-bold text-slate-900 text-sm sm:text-base mt-1">
+                  Villages
+                </span>
+                <span className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                  Rural &amp; tribal habitations served across Odisha
+                </span>
+              </div>
+
+              {/* Stat 3 */}
+              <div className="flex flex-col">
+                <span className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#105e49] tracking-tight">
+                  50+
+                </span>
+                <span className="font-heading font-bold text-slate-900 text-sm sm:text-base mt-1">
+                  Health Camps
+                </span>
+                <span className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                  Mobile diagnostic camps &amp; medicine dispensations
+                </span>
+              </div>
+
+              {/* Stat 4 */}
+              <div className="flex flex-col">
+                <span className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#105e49] tracking-tight">
+                  500+
+                </span>
+                <span className="font-heading font-bold text-slate-900 text-sm sm:text-base mt-1">
+                  Mothers Supported
+                </span>
+                <span className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                  Maternal care, wellness kits &amp; nutrition advice
+                </span>
+              </div>
+            </div>
+
+            {/* Verification Path Strip — Directly addressing user's instruction:
+                "these numbers should eventually be backed by reports/data. Don't simply display impressive numbers without a verification path." */}
+            <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
+              <div className="flex items-center gap-2 text-slate-600">
+                <ShieldCheck className="w-4 h-4 text-[#105e49] shrink-0" />
+                <span>
+                  <strong>Ground-Audited Impact:</strong> Figures recorded through field register logs and health unit camps.
+                </span>
+              </div>
+
+              <Link
+                to="/impact"
+                className="inline-flex items-center gap-1.5 font-semibold text-[#105e49] hover:text-[#082e23] hover:underline transition-colors shrink-0"
+              >
+                <span>View Program Impact Reports &amp; Field Data</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </Container>
       </section>
 
       {/* ── Operational Focus & Impact Scope (Honest & Grounded) ── */}
