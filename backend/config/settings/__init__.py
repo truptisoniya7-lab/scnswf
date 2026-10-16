@@ -1,1 +1,0 @@
-"""SCNSWF Settings Package."""

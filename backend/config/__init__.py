@@ -1,1 +1,0 @@
-"""SCNSWF Backend Configuration Package."""
