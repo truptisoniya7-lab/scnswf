@@ -1,4 +1,4 @@
-﻿# SCNSWF Website Rebuild
+# SCNSWF Website Rebuild
 
 **Suresh Chandra Nayak Social Welfare Foundation** - production-grade website rebuild.
 
@@ -29,21 +29,26 @@
 - [ ] Phase 9 - Testing
 - [ ] Phase 10 - Deployment
 
-## Backend Quickstart
+## Backend Quickstart (TypeScript & Express)
 
-1. **Activate Virtual Environment**:
+1. **Navigate to Backend Directory**:
    ```powershell
-   .\venv\Scripts\Activate.ps1
+   cd backend
    ```
-2. **Run Migrations**:
+2. **Install Dependencies**:
    ```powershell
-   python backend\manage.py migrate
+   npm install
    ```
 3. **Run Dev Server**:
    ```powershell
-   python backend\manage.py runserver 8000
+   npm run dev
    ```
-4. **Health Check & API Docs**:
+4. **Build & Test**:
+   ```powershell
+   npm run build
+   npm test
+   ```
+5. **Health Check & API Docs**:
    - Health Check: `http://localhost:8000/api/v1/health/`
    - Interactive Swagger Docs: `http://localhost:8000/api/v1/schema/swagger-ui/`
-   - ReDoc: `http://localhost:8000/api/v1/schema/redoc/`
+   - OpenAPI Schema: `http://localhost:8000/api/v1/schema/`
