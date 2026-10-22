@@ -16,10 +16,15 @@ dist/
 build/
 .npm/
 
-# Environment variables
+# Environment variables & Credentials
 .env
 .env.local
 .env.*.local
+serviceAccountKey.json
+*serviceAccount*.json
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
 
 # IDE
 .vscode/

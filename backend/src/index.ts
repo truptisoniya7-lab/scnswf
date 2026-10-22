@@ -1,10 +1,12 @@
 import { createApp } from './app';
 import { env } from './config/env';
 import { initFirebase } from './db/firebase';
+import { dbStore } from './db/store';
 
 const startServer = async () => {
-  // Initialize optional Firebase service if configured
+  // Initialize Firebase service & Cloud Firestore synchronization
   initFirebase();
+  await dbStore.initFirestore();
 
   const app = createApp();
 

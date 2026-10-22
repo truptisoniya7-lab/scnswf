@@ -89,6 +89,7 @@ export const programsRepo = {
     dbStore.update((state) => {
       state.programs.push(newItem);
     });
+    dbStore.syncDocument('programs', newItem.id, newItem);
     return newItem;
   },
 
@@ -105,6 +106,9 @@ export const programsRepo = {
         updated = state.programs[idx];
       }
     });
+    if (updated) {
+      dbStore.syncDocument('programs', (updated as Program).id, updated);
+    }
     return updated;
   },
 
@@ -119,6 +123,9 @@ export const programsRepo = {
         deleted = true;
       }
     });
+    if (deleted) {
+      dbStore.deleteDocument('programs', id);
+    }
     return deleted;
   },
 
@@ -139,6 +146,7 @@ export const programsRepo = {
     dbStore.update((state) => {
       state.programServices.push(newItem);
     });
+    dbStore.syncDocument('programServices', newItem.id, newItem);
     return newItem;
   },
 };
@@ -186,6 +194,7 @@ export const impactRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.impactMetrics.push(newItem));
+    dbStore.syncDocument('impactMetrics', newItem.id, newItem);
     return newItem;
   },
 
@@ -197,6 +206,7 @@ export const impactRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.impactStories.push(newItem));
+    dbStore.syncDocument('impactStories', newItem.id, newItem);
     return newItem;
   },
 };
@@ -230,6 +240,7 @@ export const galleryRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.galleryAlbums.push(newItem));
+    dbStore.syncDocument('galleryAlbums', newItem.id, newItem);
     return newItem;
   },
 
@@ -241,6 +252,7 @@ export const galleryRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.galleryImages.push(newItem));
+    dbStore.syncDocument('galleryImages', newItem.id, newItem);
     return newItem;
   },
 };
@@ -278,6 +290,7 @@ export const eventsRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.events.push(newItem));
+    dbStore.syncDocument('events', newItem.id, newItem);
     return newItem;
   },
 };
@@ -300,6 +313,7 @@ export const partnersRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.partners.push(newItem));
+    dbStore.syncDocument('partners', newItem.id, newItem);
     return newItem;
   },
 };
@@ -325,6 +339,7 @@ export const teamRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.teamMembers.push(newItem));
+    dbStore.syncDocument('teamMembers', newItem.id, newItem);
     return newItem;
   },
 };
@@ -340,6 +355,7 @@ export const applicationsRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.volunteerApplications.push(newItem));
+    dbStore.syncDocument('volunteerApplications', newItem.id, newItem);
     return newItem;
   },
 
@@ -357,6 +373,9 @@ export const applicationsRepo = {
         updated = state.volunteerApplications[idx];
       }
     });
+    if (updated) {
+      dbStore.syncDocument('volunteerApplications', (updated as VolunteerApplication).id, updated);
+    }
     return updated;
   },
 
@@ -370,6 +389,7 @@ export const applicationsRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.internshipApplications.push(newItem));
+    dbStore.syncDocument('internshipApplications', newItem.id, newItem);
     return newItem;
   },
 
@@ -387,6 +407,7 @@ export const applicationsRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.partnershipRequests.push(newItem));
+    dbStore.syncDocument('partnershipRequests', newItem.id, newItem);
     return newItem;
   },
 
@@ -412,17 +433,20 @@ export const contactRepo = {
           (s) => s.email.toLowerCase() === data.email.toLowerCase()
         );
         if (!exists) {
-          state.newsletterSubscribers.push({
+          const sub = {
             id: crypto.randomUUID(),
             email: data.email,
             subscribed_at: new Date().toISOString(),
             is_active: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-          });
+          };
+          state.newsletterSubscribers.push(sub);
+          dbStore.syncDocument('newsletterSubscribers', sub.id, sub);
         }
       }
     });
+    dbStore.syncDocument('contactMessages', newItem.id, newItem);
     return newItem;
   },
 
@@ -440,6 +464,9 @@ export const contactRepo = {
         updated = state.contactMessages[idx];
       }
     });
+    if (updated) {
+      dbStore.syncDocument('contactMessages', (updated as ContactMessage).id, updated);
+    }
     return updated;
   },
 };
@@ -469,6 +496,9 @@ export const newsletterRepo = {
         subscriber = newSub;
       }
     });
+    if (subscriber) {
+      dbStore.syncDocument('newsletterSubscribers', (subscriber as NewsletterSubscriber).id, subscriber);
+    }
     return subscriber!;
   },
 };
@@ -518,6 +548,8 @@ export const donationsRepo = {
       state.donations.push(newDonation);
       state.donationTransactions.push(transaction);
     });
+    dbStore.syncDocument('donations', newDonation.id, newDonation);
+    dbStore.syncDocument('donationTransactions', transaction.id, transaction);
 
     return {
       donation: newDonation,
@@ -554,6 +586,9 @@ export const donationsRepo = {
         updated = state.donations[idx];
       }
     });
+    if (updated) {
+      dbStore.syncDocument('donations', (updated as Donation).id, updated);
+    }
     return updated;
   },
 };
@@ -587,6 +622,7 @@ export const documentsRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.documents.push(newItem));
+    dbStore.syncDocument('documents', newItem.id, newItem);
     return newItem;
   },
 
@@ -598,6 +634,7 @@ export const documentsRepo = {
       updated_at: new Date().toISOString(),
     };
     dbStore.update((state) => state.annualReports.push(newItem));
+    dbStore.syncDocument('annualReports', newItem.id, newItem);
     return newItem;
   },
 };
@@ -627,6 +664,7 @@ export const auditRepo = {
       timestamp: new Date().toISOString(),
     };
     dbStore.update((state) => state.auditLogs.push(entry));
+    dbStore.syncDocument('auditLogs', entry.id, entry);
     return entry;
   },
 
