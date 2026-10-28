@@ -3,15 +3,15 @@
     {
       "id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
       "email": "admin@scnswf.org",
-      "passwordHash": "9b78f47c3187d8b6ff941696a99f657574a4538704f1cbd17a684666f976f97d0bb81d49dc9776768194156ccc1f17f256ef52354413bcfcb7e0f01c7ea657f9",
-      "salt": "f726b260509dad00ac7ccd0584fd2ec6",
+      "passwordHash": "490e7eea99f0ada2d6983ba6e85d6fdbfbeb0edfff36c0f85fcae5798ec4b075bedecdf8cced883b7c8044da6929e446efa255fef035a0681e8a076290cb7de4",
+      "salt": "30024e49c41f0621a36e2e7f09517d0b",
       "firstName": "System",
       "lastName": "Administrator",
       "isStaff": true,
       "isActive": true,
       "role": "super_admin",
-      "createdAt": "2026-10-17T04:56:33.855Z",
-      "updatedAt": "2026-10-17T04:56:33.855Z"
+      "createdAt": "2026-10-28T05:47:44.128Z",
+      "updatedAt": "2026-10-28T05:47:44.128Z"
     }
   ],
   "adminProfiles": [
@@ -20,8 +20,8 @@
       "userId": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
       "phone": "+919876543210",
       "avatarUrl": null,
-      "createdAt": "2026-10-17T04:56:33.855Z",
-      "updatedAt": "2026-10-17T04:56:33.855Z"
+      "createdAt": "2026-10-28T05:47:44.128Z",
+      "updatedAt": "2026-10-28T05:47:44.128Z"
     }
   ],
   "programs": [
@@ -320,41 +320,11 @@
       "availability": "Weekends",
       "experience": "2 years volunteering with Red Cross",
       "message": "Eager to support mobile clinics.",
-      "id": "8569bf97-3b0a-4183-9c69-433255a82dbf",
+      "id": "785bdbd7-2d50-45e1-a041-b1c1b9b04b4e",
       "status": "new",
       "is_deleted": false,
-      "created_at": "2026-10-17T04:56:34.677Z",
-      "updated_at": "2026-10-17T04:56:34.677Z"
-    },
-    {
-      "name": "Rahul Mishra",
-      "email": "rahul.mishra@example.com",
-      "phone": "+919876501234",
-      "location": "Cuttack, Odisha",
-      "skills": "First Aid, Community Organizing",
-      "availability": "Weekends",
-      "experience": "2 years volunteering with Red Cross",
-      "message": "Eager to support mobile clinics.",
-      "id": "6d93435b-31c8-4117-96d8-97768e648fdb",
-      "status": "new",
-      "is_deleted": false,
-      "created_at": "2026-10-17T05:01:11.326Z",
-      "updated_at": "2026-10-17T05:01:11.326Z"
-    },
-    {
-      "name": "Rahul Mishra",
-      "email": "rahul.mishra@example.com",
-      "phone": "+919876501234",
-      "location": "Cuttack, Odisha",
-      "skills": "First Aid, Community Organizing",
-      "availability": "Weekends",
-      "experience": "2 years volunteering with Red Cross",
-      "message": "Eager to support mobile clinics.",
-      "id": "49b18d89-d49b-45f2-b194-d8f13bb657a2",
-      "status": "new",
-      "is_deleted": false,
-      "created_at": "2026-10-22T13:43:22.446Z",
-      "updated_at": "2026-10-22T13:43:22.446Z"
+      "created_at": "2026-10-28T05:47:45.663Z",
+      "updated_at": "2026-10-28T05:47:45.663Z"
     }
   ],
   "internshipApplications": [],
@@ -368,44 +338,16 @@
       "subject": "Inquiry regarding medical camp",
       "message": "I would like to volunteer or coordinate for the upcoming health camp.",
       "newsletter_subscription": true,
-      "id": "773acc17-b261-4522-ae12-7f49f2b3c922",
+      "id": "ab672ffa-3dc8-4751-955b-494049193a64",
       "status": "new",
       "is_deleted": false,
-      "created_at": "2026-10-17T04:56:34.662Z",
-      "updated_at": "2026-10-17T04:56:34.662Z"
-    },
-    {
-      "first_name": "Anita",
-      "last_name": "Sahoo",
-      "email": "anita@example.com",
-      "phone": "+919876543210",
-      "subject": "Inquiry regarding medical camp",
-      "message": "I would like to volunteer or coordinate for the upcoming health camp.",
-      "newsletter_subscription": true,
-      "id": "8bddbc3f-e7c7-49df-80b1-f1174c5da88a",
-      "status": "new",
-      "is_deleted": false,
-      "created_at": "2026-10-17T05:01:11.308Z",
-      "updated_at": "2026-10-17T05:01:11.308Z"
-    },
-    {
-      "first_name": "Anita",
-      "last_name": "Sahoo",
-      "email": "anita@example.com",
-      "phone": "+919876543210",
-      "subject": "Inquiry regarding medical camp",
-      "message": "I would like to volunteer or coordinate for the upcoming health camp.",
-      "newsletter_subscription": true,
-      "id": "20d0b01c-dcb8-422b-8303-da81d0af29ca",
-      "status": "new",
-      "is_deleted": false,
-      "created_at": "2026-10-22T13:43:22.427Z",
-      "updated_at": "2026-10-22T13:43:22.427Z"
+      "created_at": "2026-10-28T05:47:45.641Z",
+      "updated_at": "2026-10-28T05:47:45.641Z"
     }
   ],
   "donations": [
     {
-      "id": "63373e9d-7450-42f2-b586-9da7c19ce410",
+      "id": "79d71037-5aa7-4038-9de4-efd8b7c6e5c1",
       "program_id": null,
       "donor_name": "Anita Sahoo",
       "donor_email": "anita@example.com",
@@ -414,78 +356,24 @@
       "amount": 1500,
       "currency": "INR",
       "status": "pending",
-      "receipt_number": "SCNSWF-REC-994694",
+      "receipt_number": "SCNSWF-REC-465685",
       "is_deleted": false,
-      "created_at": "2026-10-17T04:56:34.694Z",
-      "updated_at": "2026-10-17T04:56:34.694Z"
-    },
-    {
-      "id": "32975752-c9be-4a86-bad4-a81f04148dae",
-      "program_id": null,
-      "donor_name": "Anita Sahoo",
-      "donor_email": "anita@example.com",
-      "donor_phone": null,
-      "is_anonymous": false,
-      "amount": 1500,
-      "currency": "INR",
-      "status": "pending",
-      "receipt_number": "SCNSWF-REC-271351",
-      "is_deleted": false,
-      "created_at": "2026-10-17T05:01:11.351Z",
-      "updated_at": "2026-10-17T05:01:11.351Z"
-    },
-    {
-      "id": "23f12162-6c6f-443c-a853-244525c2b6af",
-      "program_id": null,
-      "donor_name": "Anita Sahoo",
-      "donor_email": "anita@example.com",
-      "donor_phone": null,
-      "is_anonymous": false,
-      "amount": 1500,
-      "currency": "INR",
-      "status": "pending",
-      "receipt_number": "SCNSWF-REC-602463",
-      "is_deleted": false,
-      "created_at": "2026-10-22T13:43:22.463Z",
-      "updated_at": "2026-10-22T13:43:22.463Z"
+      "created_at": "2026-10-28T05:47:45.685Z",
+      "updated_at": "2026-10-28T05:47:45.685Z"
     }
   ],
   "donationTransactions": [
     {
-      "id": "d07fcbd1-f329-4c27-b614-4192d569137a",
-      "donation_id": "63373e9d-7450-42f2-b586-9da7c19ce410",
+      "id": "6d7c4960-a831-4be9-a819-91d012751ea6",
+      "donation_id": "79d71037-5aa7-4038-9de4-efd8b7c6e5c1",
       "provider": "razorpay",
-      "provider_order_id": "order_3d998b5aaf6097da",
+      "provider_order_id": "order_263cf2e005344956",
       "provider_payment_id": null,
       "provider_signature": null,
       "raw_payload": {},
       "status": "created",
-      "created_at": "2026-10-17T04:56:34.694Z",
-      "updated_at": "2026-10-17T04:56:34.694Z"
-    },
-    {
-      "id": "5604c201-4ada-436b-a3aa-fa773802a941",
-      "donation_id": "32975752-c9be-4a86-bad4-a81f04148dae",
-      "provider": "razorpay",
-      "provider_order_id": "order_fe3d4da4dd71c55b",
-      "provider_payment_id": null,
-      "provider_signature": null,
-      "raw_payload": {},
-      "status": "created",
-      "created_at": "2026-10-17T05:01:11.351Z",
-      "updated_at": "2026-10-17T05:01:11.351Z"
-    },
-    {
-      "id": "e22fdcfb-6262-4d4b-9809-442064c9276b",
-      "donation_id": "23f12162-6c6f-443c-a853-244525c2b6af",
-      "provider": "razorpay",
-      "provider_order_id": "order_4c51ad5d2aceefbc",
-      "provider_payment_id": null,
-      "provider_signature": null,
-      "raw_payload": {},
-      "status": "created",
-      "created_at": "2026-10-22T13:43:22.463Z",
-      "updated_at": "2026-10-22T13:43:22.463Z"
+      "created_at": "2026-10-28T05:47:45.685Z",
+      "updated_at": "2026-10-28T05:47:45.685Z"
     }
   ],
   "documents": [
@@ -521,20 +409,20 @@
   ],
   "newsletterSubscribers": [
     {
-      "id": "522c00bf-d44a-4f74-b85a-8bd91901c919",
+      "id": "6362bb41-446c-4ccb-a4a3-287f17954a28",
       "email": "anita@example.com",
-      "subscribed_at": "2026-10-17T04:56:34.662Z",
+      "subscribed_at": "2026-10-28T05:47:45.641Z",
       "is_active": true,
-      "created_at": "2026-10-17T04:56:34.662Z",
-      "updated_at": "2026-10-17T04:56:34.662Z"
+      "created_at": "2026-10-28T05:47:45.641Z",
+      "updated_at": "2026-10-28T05:47:45.641Z"
     },
     {
-      "id": "ac74a45c-47f1-4ace-a094-c483644f7619",
+      "id": "c716a5d3-c208-4bba-bf56-0895a7261864",
       "email": "donor@example.com",
-      "subscribed_at": "2026-10-17T04:56:34.686Z",
+      "subscribed_at": "2026-10-28T05:47:45.674Z",
       "is_active": true,
-      "created_at": "2026-10-17T04:56:34.686Z",
-      "updated_at": "2026-10-22T13:43:22.454Z"
+      "created_at": "2026-10-28T05:47:45.674Z",
+      "updated_at": "2026-10-28T05:47:45.674Z"
     }
   ],
   "auditLogs": [
@@ -547,32 +435,8 @@
       "details": {
         "ip": "127.0.0.1"
       },
-      "id": "ac4eb88c-3c0c-4c72-ba1d-591ad9cd2902",
-      "timestamp": "2026-10-17T04:56:34.801Z"
-    },
-    {
-      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
-      "actor_email": "admin@scnswf.org",
-      "action": "login",
-      "entity_type": "User",
-      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
-      "details": {
-        "ip": "127.0.0.1"
-      },
-      "id": "8bd21ae2-c96d-476e-a760-faa7c2cd8948",
-      "timestamp": "2026-10-17T05:01:11.471Z"
-    },
-    {
-      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
-      "actor_email": "admin@scnswf.org",
-      "action": "login",
-      "entity_type": "User",
-      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
-      "details": {
-        "ip": "127.0.0.1"
-      },
-      "id": "b59bca84-e340-426a-a85e-7bd48401616d",
-      "timestamp": "2026-10-22T13:43:22.577Z"
+      "id": "c312cd6b-a4a2-4147-804f-0095568dac21",
+      "timestamp": "2026-10-28T05:47:45.826Z"
     }
   ]
 }

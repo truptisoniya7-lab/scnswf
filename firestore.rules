@@ -1,0 +1,124 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.role == 'super_admin' || request.auth.token.role == 'program_manager');
+    }
+
+    // Public readable content: Programs & Services
+    match /programs/{programId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /programServices/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Impact & Stories
+    match /impactMetrics/{metricId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /impactStories/{storyId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Media & Gallery
+    match /galleryAlbums/{albumId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /galleryImages/{imageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Events, Partners, Team
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /partners/{partnerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /teamMembers/{memberId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Governance & Documents
+    match /documents/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /annualReports/{reportId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Inquiries & Applications (Public Create, Admin Read/Manage)
+    match /contactMessages/{messageId} {
+      allow create: if request.resource.data.name is string && request.resource.data.email is string;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /volunteerApplications/{appId} {
+      allow create: if request.resource.data.full_name is string && request.resource.data.email is string;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /internshipApplications/{appId} {
+      allow create: if request.resource.data.full_name is string && request.resource.data.email is string;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /partnershipRequests/{reqId} {
+      allow create: if request.resource.data.organization_name is string && request.resource.data.email is string;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /newsletterSubscribers/{subId} {
+      allow create: if request.resource.data.email is string;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Donations (Public Create, Admin Manage)
+    match /donations/{donationId} {
+      allow create: if request.resource.data.amount is number && request.resource.data.amount > 0;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /donationTransactions/{txnId} {
+      allow read, write: if isAdmin();
+    }
+
+    // System & Auth (Admin only, mostly backend Admin SDK)
+    match /users/{userId} {
+      allow read, write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+    }
+
+    match /adminProfiles/{profileId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /auditLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
