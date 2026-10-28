@@ -35,10 +35,28 @@ class UnifiedStore {
         const fileContent = fs.readFileSync(this.filePath, 'utf-8');
         const parsed = JSON.parse(fileContent);
         const initial = getInitialSeedData();
-        return {
+        const state: DatabaseState = {
           ...initial,
           ...parsed,
         };
+
+        // Ensure default admin from env exists and credentials match current env
+        if (state.users && initial.users.length > 0) {
+          const defaultAdmin = initial.users[0];
+          const adminIdx = state.users.findIndex(
+            (u) => u.id === defaultAdmin.id || u.email.toLowerCase() === defaultAdmin.email.toLowerCase()
+          );
+          if (adminIdx === -1) {
+            state.users.push(defaultAdmin);
+          } else {
+            state.users[adminIdx].email = defaultAdmin.email;
+            state.users[adminIdx].passwordHash = defaultAdmin.passwordHash;
+            state.users[adminIdx].salt = defaultAdmin.salt;
+            state.users[adminIdx].isActive = true;
+          }
+        }
+
+        return state;
       }
     } catch (err) {
       console.warn('Error reading db.json, initializing fresh store:', err);

@@ -56,17 +56,20 @@ export const donationsController = {
       return;
     }
 
-    const updated = donationsRepo.updateStatus(id, 'succeeded');
+    const updated = donationsRepo.updateStatus(id, 'succeeded') ?? {
+      ...donation,
+      status: 'succeeded' as const,
+    };
 
     sendSuccess(res, {
-      id: updated?.id,
-      amount: updated?.amount,
-      currency: updated?.currency,
-      status: updated?.status,
-      receipt_number: updated?.receipt_number,
-      donor_name: updated?.donor_name,
-      donor_email: updated?.donor_email,
-      created_at: updated?.created_at,
+      id: updated.id,
+      amount: updated.amount,
+      currency: updated.currency,
+      status: updated.status,
+      receipt_number: updated.receipt_number,
+      donor_name: updated.donor_name,
+      donor_email: updated.donor_email,
+      created_at: updated.created_at,
     });
   },
 

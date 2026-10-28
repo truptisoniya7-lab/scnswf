@@ -576,7 +576,7 @@ export const donationsRepo = {
     return dbStore.getState().donations.filter((d) => !d.is_deleted);
   },
 
-  updateStatus: (id: string, status: Donation['status']) => {
+  updateStatus: (id: string, status: Donation['status']): Donation | null => {
     let updated: Donation | null = null;
     dbStore.update((state) => {
       const idx = state.donations.findIndex((d) => d.id === id);
