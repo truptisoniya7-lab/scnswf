@@ -52,8 +52,12 @@ export default function App() {
             <Route path="/impact"                 element={<Impact />} />
             <Route path="/get-involved"           element={<GetInvolved />} />
             <Route path="/get-involved/volunteer" element={<Volunteer />} />
+            <Route path="/volunteer"              element={<Volunteer />} />
             <Route path="/get-involved/internship"element={<Internship />} />
+            <Route path="/internship"             element={<Internship />} />
             <Route path="/get-involved/partner"   element={<Partnerships />} />
+            <Route path="/partnerships"           element={<Partnerships />} />
+            <Route path="/partner"                element={<Partnerships />} />
             <Route path="/donate"                 element={<Donate />} />
             <Route path="/gallery"                element={<Gallery />} />
             <Route path="/stories"                element={<Stories />} />
