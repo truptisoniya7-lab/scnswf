@@ -1,25 +1,44 @@
-import { useParams, Link, Navigate } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
-  Heart, MapPin, ArrowLeft, ChevronRight, Activity,
-  Baby, GraduationCap, Megaphone, Droplets, HandHeart,
-  Stethoscope, CheckCircle2, ShieldCheck
+  Heart, MapPin, ArrowLeft, Activity,
+  Baby, GraduationCap, HandHeart,
+  Stethoscope, CheckCircle2, ShieldCheck, Wifi
 } from "lucide-react"
 import { ImagePlaceholder } from "../components/ui/ImagePlaceholder"
+import { useProgramDetail, useProgramServices } from "../hooks/usePrograms"
 
-/* Grounded program definitions */
-const PROGRAMS: Record<string, {
+/* Grounded program fallback definitions */
+const FALLBACK_PROGRAMS: Record<string, {
   icon: typeof Activity; tag: string; title: string;
   summary: string; description: string; problem: string;
   coverage: string; focus: string; services: string[];
   color: string; bg: string; placeholderLabel: string;
   image?: string;
 }> = {
+  "healthcare-medical-relief": {
+    icon: Activity, tag: "Primary Healthcare",
+    title: "Healthcare & Medical Relief",
+    summary: "Providing accessible healthcare, mobile clinics, and preventative medical camps to underserved rural communities.",
+    description: "Our flagship healthcare initiative bridges the gap between critical medical services and marginalized populations. We operate regular diagnostic camps, provide free essential medications, and conduct widespread awareness campaigns on polio eradication and child hygiene.",
+    problem: "Rural villages lack accessible primary health centers, resulting in untreated chronic illnesses and high maternal and child mortality.",
+    coverage: "Odisha, Jharkhand, and border districts across eastern India.",
+    focus: "Doorstep Medical Diagnosis, Treatment & Primary Referrals",
+    services: [
+      "Mobile Health Clinics & Ambulance Outreach",
+      "Polio & Preventive Immunization Campaigns",
+      "Essential Free Medicine Dispensation",
+      "Emergency Hospital Referral Linkages"
+    ],
+    color: "#1b6b68", bg: "#edfafa",
+    image: "/images/events/free-skin-health-camp-balashram.jpg",
+    placeholderLabel: "Free Medical Health Camp & Consultations",
+  },
   "mobile-health-units": {
     icon: Activity, tag: "Primary Healthcare",
     title: "Mobile Health Units",
     summary: "Bringing comprehensive primary healthcare directly to remote villages that lack a permanent facility.",
-    description: "Our mobile health units operate on a fixed monthly schedule across designated villages. Each unit is staffed by a visiting physician, nurse, and community health worker. Services include outpatient consultations, blood pressure and diabetes screening, maternal health check-ups, and basic diagnostic tests. Referral pathways to district hospitals are maintained for cases requiring specialized care.",
+    description: "Our mobile health units operate on a fixed monthly schedule across designated villages. Each unit is staffed by a visiting physician, nurse, and community health worker. Services include outpatient consultations, blood pressure and diabetes screening, maternal health check-ups, and basic diagnostic tests.",
     problem: "Many rural villages in Odisha are located far from the nearest primary health center. Monsoon accessibility issues and transport expenses frequently delay treatment for common, manageable illnesses until they escalate into serious emergencies.",
     coverage: "High-need rural blocks in Khurda, Nayagarh & adjacent districts",
     focus: "Doorstep Medical Diagnosis, Treatment & Primary Referrals",
@@ -39,7 +58,7 @@ const PROGRAMS: Record<string, {
     icon: Baby, tag: "Maternal Wellness",
     title: "Maternal & Child Health",
     summary: "Supporting mothers and newborns with prenatal care, safe delivery counseling, and postnatal follow-up.",
-    description: "Working alongside village ASHA and Anganwadi workers, our maternal health team provides antenatal registration support, group counselling, iron supplementation follow-ups, and birth preparedness guidance. We focus on bridging the gap between healthcare facilities and pregnant women.",
+    description: "Working alongside village ASHA and Anganwadi workers, our maternal health team provides antenatal registration support, group counselling, iron supplementation follow-ups, and birth preparedness guidance.",
     problem: "Geographic distance, economic constraints, and informational gaps contribute to delayed antenatal care and home deliveries without skilled birth attendants in remote regions.",
     coverage: "Tribal and underserved rural areas of Odisha",
     focus: "Antenatal Guidance & Safe Institutional Delivery Counseling",
@@ -55,98 +74,86 @@ const PROGRAMS: Record<string, {
     image: "/images/healthcare/womens-health-hygiene-centurion-auditorium.jpg",
     placeholderLabel: "Women's Health & Hygiene Education",
   },
-  "skill-development": {
+  "education-skill-development": {
     icon: GraduationCap, tag: "Livelihood & Skills",
-    title: "Skill Development & Livelihood",
-    summary: "Empowering rural youth and women with market-relevant vocational skills and entrepreneurship support.",
-    description: "Our skill development modules offer practical training in tailoring, basic computer operations, and artisan entrepreneurship. Trainees receive mentorship, market linkages, and guidance on establishing independent home-based or cooperative enterprises.",
-    problem: "Limited local vocational training opportunities often leave rural youth with few options besides insecure informal labor or distress migration. Practical skill-building provides a sustainable pathway to dignified local earnings.",
-    coverage: "Rural clusters and peri-urban hubs in Odisha",
+    title: "Quality Education & Skill Development",
+    summary: "Empowering children and youth through foundational learning kits, digital literacy, and job-oriented vocational training.",
+    description: "Education is the most sustainable antidote to generational poverty. SCNSWF supports government schools, distributes high-quality study materials, runs after-school learning centers, and trains youth in market-relevant vocational skills.",
+    problem: "Severe school dropout rates after primary grades and youth unemployability due to lack of practical vocational skills.",
+    coverage: "Semi-urban slums and remote tribal educational clusters.",
     focus: "Vocational Training & Micro-Enterprise Mentorship",
     services: [
-      "Garment Tailoring & Stitching Modules",
+      "Child Hygiene & Handwashing Education",
       "Basic Computer Literacy Courses",
-      "Women Self-Help Group (SHG) Support",
-      "Financial Literacy & Banking Assistance",
-      "Market Exhibition & Linkage Support",
+      "Garment Tailoring & Stitching Modules",
       "Youth Career Counseling"
     ],
     color: "#d97706", bg: "#fffbeb",
     image: "/images/healthcare/saukhyam-pads-campus-outreach.jpg",
     placeholderLabel: "Sustainable Hygiene & Skill Enterprise",
   },
-  "health-awareness": {
-    icon: Megaphone, tag: "Preventive Awareness",
-    title: "Health Awareness Campaigns",
-    summary: "Community-level behavior change campaigns on hygiene, disease prevention, mental health, and reproductive health.",
-    description: "Using village health camps, interactive sessions, and trained peer volunteers, our campaigns address preventable illness driven by knowledge gaps. Flagship initiatives include menstrual hygiene education, seasonal fever awareness, and vector-borne illness prevention.",
-    problem: "Preventable waterborne and vector-borne conditions continue to impact rural families, often because early warning signs are missed or basic preventive sanitation measures are not understood.",
-    coverage: "Targeted rural communities and local schools",
-    focus: "Community Hygiene & Preventative Health Education",
+  "women-empowerment-self-reliance": {
+    icon: GraduationCap, tag: "Empowerment",
+    title: "Women Empowerment & Self-Reliance",
+    summary: "Fostering financial independence through micro-enterprise coaching, self-help groups (SHGs), and leadership workshops.",
+    description: "We organize rural women into self-help groups, providing seed capital guidance, artisan handicraft training, and financial literacy to foster true autonomy and gender equity.",
+    problem: "Women facing financial dependence, lack of credit access, and low economic participation in rural economies.",
+    coverage: "Coastal and tribal districts.",
+    focus: "Artisan Micro-Finance & Skill Training",
     services: [
-      "Menstrual Hygiene Awareness for Adolescents",
-      "Handwashing & Sanitation Demonstrations",
-      "Malaria & Dengue Prevention Drives",
-      "Tobacco & Substance Abuse Sensitization",
-      "School Health & Nutrition Camps",
-      "Community Volunteer Sensitization"
+      "Artisan Micro-Finance & Skill Training",
+      "Market Exhibition & Linkage Support",
+      "Women Self-Help Group (SHG) Support"
     ],
-    color: "#1b6b68", bg: "#edfafa",
-    image: "/images/education/child-health-handwashing.jpg",
-    placeholderLabel: "Health & Hygiene Community Session",
+    color: "#d97706", bg: "#fffbeb",
+    image: "/images/healthcare/saukhyam-pads-campus-outreach.jpg",
+    placeholderLabel: "Women Enterprise & Skills",
   },
-  "clean-water-sanitation": {
-    icon: Droplets, tag: "WASH Initiatives",
-    title: "Clean Water & Sanitation",
-    summary: "Facilitating access to safe drinking water, household sanitation, and hygiene infrastructure.",
-    description: "In collaboration with village committees, we support awareness on water purification, hygiene infrastructure, and maintenance of clean communal water points.",
-    problem: "Contaminated surface water and groundwater issues in flood-prone zones create high seasonal incidences of gastrointestinal illnesses and related child malnutrition.",
-    coverage: "Selected rural settlements and flood-prone blocks",
-    focus: "Potable Water Safety & Household Sanitation",
-    services: [
-      "Water Contamination Awareness",
-      "Household Filtration Demonstrations",
-      "Community Sanitation Advocacy",
-      "Flood Resilience Hygiene Guidance",
-      "School WASH Facilities Review",
-      "Village Water Committee Training"
-    ],
-    color: "#279490", bg: "#edfafa",
-    image: "/images/education/global-handwashing-day.jpg",
-    placeholderLabel: "Clean Water & Sanitation Demonstration",
-  },
-  "disability-inclusion": {
+  "disaster-relief-community-welfare": {
     icon: HandHeart, tag: "Community Inclusion",
-    title: "Disability Support & Inclusion",
-    summary: "Rehabilitation support, assistive devices, and social inclusion programming for persons with disabilities.",
-    description: "Our disability support initiative connects persons with physical challenges to medical screening boards, helps facilitate mobility aids, and assists with enrollment in state welfare pensions.",
-    problem: "Persons with physical disabilities in rural communities frequently face multiple barriers — lack of assistive equipment, social exclusion, and difficulty accessing government disability certifications.",
-    coverage: "Rural blocks with limited rehabilitation access",
-    focus: "Mobility Aid Linkage & Government Scheme Facilitation",
+    title: "Disaster Relief & Community Welfare",
+    summary: "Rapid response emergency supplies, cyclone shelters, winter clothing distribution, and geriatric support.",
+    description: "When natural catastrophes strike or severe winter winds arrive, our field volunteers deploy immediately with dry rations, water purification kits, hygiene packs, and temporary shelter rehabilitation.",
+    problem: "Vulnerability of coastal and riverine families to cyclones, floods, and seasonal extremes.",
+    coverage: "High-risk coastal flood and cyclone belts.",
+    focus: "Rapid Emergency Response & Assistive Aid Linkage",
     services: [
-      "Community Needs Identification",
+      "Emergency Food Rations & Water Relief",
       "Assistive Device Facilitation",
-      "Disability Certificate Application Support",
-      "State Pension & Scheme Linkage",
-      "Inclusive Education Counseling",
-      "Caregiver Support"
+      "Shelter Rehabilitation Guidance"
     ],
     color: "#134a48", bg: "#edfafa",
     image: "/images/healthcare/body-pain-causes-cures.jpg",
-    placeholderLabel: "Disability Aid & Welfare Camp",
+    placeholderLabel: "Disaster Relief & Community Care",
   },
 }
 
 export default function ProgramDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const program = slug ? PROGRAMS[slug] : undefined
+  const safeSlug = slug || ""
 
-  if (!program) return <Navigate to="/programs" replace />
+  // Live API queries
+  const { data: apiProgram, isLoading } = useProgramDetail(safeSlug)
+  const { data: apiServices } = useProgramServices(safeSlug)
 
-  const {
-    icon: Icon, tag, title, summary, description,
-    problem, coverage, focus, services, color, placeholderLabel, image
-  } = program
+  const fallback = FALLBACK_PROGRAMS[safeSlug] || FALLBACK_PROGRAMS["healthcare-medical-relief"]
+
+  const title = apiProgram?.title || fallback.title
+  const summary = apiProgram?.summary || fallback.summary
+  const description = apiProgram?.description || fallback.description
+  const problem = apiProgram?.problem_addressed || fallback.problem
+  const coverage = apiProgram?.geographical_coverage || fallback.coverage
+  const focus = fallback.focus
+  const color = fallback.color
+  const Icon = fallback.icon
+  const tag = fallback.tag
+  const image = apiProgram?.cover_image_url || fallback.image
+  const placeholderLabel = fallback.placeholderLabel
+
+  // Services from live API if present, otherwise fallback
+  const servicesList = (apiServices && apiServices.length > 0)
+    ? apiServices.map(s => s.title)
+    : fallback.services
 
   return (
     <>
@@ -163,7 +170,7 @@ export default function ProgramDetail() {
             <ArrowLeft size={16} /> Back to All Programs
           </Link>
 
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 text-teal-200 border border-white/15">
               <Icon size={20} />
             </div>
@@ -173,10 +180,16 @@ export default function ProgramDetail() {
             >
               {tag}
             </span>
+
+            {apiProgram && (
+              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono">
+                <Wifi size={12} /> Live API Synced
+              </span>
+            )}
           </div>
 
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-4">
-            {title}
+            {isLoading ? "Loading program details…" : title}
           </h1>
           <p className="text-base sm:text-lg max-w-3xl leading-relaxed text-teal-50/90 font-normal">
             {summary}
@@ -221,138 +234,88 @@ export default function ProgramDetail() {
                 </div>
               </motion.div>
 
-              {/* How We Work */}
-              <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              {/* Implementation Strategy */}
+              <div>
                 <h2 className="font-display text-2xl font-bold mb-3 text-slate-900">
-                  Operational Approach & Delivery
+                  How SCNSWF Implements This Program
                 </h2>
-                <p className="text-sm sm:text-base leading-relaxed text-slate-700">
+                <p className="text-slate-600 leading-relaxed text-sm mb-4">
                   {description}
                 </p>
-              </motion.div>
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 flex items-start gap-3">
+                  <ShieldCheck size={20} className="text-teal-700 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-slate-900 block mb-1">Collaborative Delivery Model</span>
+                    We collaborate actively with local village panchayats, district health offices, and existing public infrastructure to guarantee continuity and avoid redundant service overlaps.
+                  </div>
+                </div>
+              </div>
 
-              {/* Services List */}
-              <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              {/* Field Services */}
+              <div>
                 <h2 className="font-display text-2xl font-bold mb-4 text-slate-900">
-                  Key Interventions & Deliverables
+                  Key Services & Interventions
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {services.map(s => (
-                    <div
-                      key={s}
-                      className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm font-medium text-slate-800"
-                    >
+                  {servicesList.map(s => (
+                    <div key={s} className="flex items-center gap-2.5 p-3.5 rounded-xl border border-slate-200 bg-white shadow-2xs">
                       <CheckCircle2 size={16} style={{ color }} className="shrink-0" />
-                      <span>{s}</span>
+                      <span className="text-xs sm:text-sm font-medium text-slate-800">{s}</span>
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             </div>
 
-            {/* Right Column: Sidebar */}
+            {/* Right Column: Operational Summary & Donation Widget */}
             <div className="lg:col-span-4 space-y-6">
-              {/* Scope Box */}
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-sm" style={{ borderTop: `4px solid ${color}` }}>
-                <h3 className="font-display font-bold text-base mb-4 text-slate-900">Program Scope</h3>
-                <div className="space-y-4 text-xs sm:text-sm">
+              <div className="p-6 rounded-3xl border border-slate-200 bg-slate-50 shadow-sm sticky top-24">
+                <h3 className="font-display font-bold text-lg text-slate-900 mb-4 pb-2 border-b border-slate-200">
+                  Program Snapshot
+                </h3>
+
+                <div className="space-y-4 text-xs sm:text-sm mb-6">
                   <div>
-                    <span className="font-bold text-slate-500 uppercase tracking-wider block mb-1 text-[11px]">
-                      Geographic Region
+                    <span className="text-slate-500 block mb-1 flex items-center gap-1.5 font-medium">
+                      <MapPin size={14} className="text-teal-600" /> Geographic Coverage
                     </span>
-                    <p className="flex items-start gap-2 text-slate-800 font-medium">
-                      <MapPin size={16} className="text-teal-600 mt-0.5 shrink-0" />
-                      <span>{coverage}</span>
-                    </p>
+                    <span className="font-semibold text-slate-800">{coverage}</span>
                   </div>
+
                   <div>
-                    <span className="font-bold text-slate-500 uppercase tracking-wider block mb-1 text-[11px]">
-                      Operational Focus
+                    <span className="text-slate-500 block mb-1 flex items-center gap-1.5 font-medium">
+                      <Stethoscope size={14} className="text-teal-600" /> Operational Approach
                     </span>
-                    <p className="flex items-start gap-2 text-slate-800 font-medium">
-                      <Stethoscope size={16} className="text-teal-600 mt-0.5 shrink-0" />
-                      <span>{focus}</span>
-                    </p>
+                    <span className="font-semibold text-slate-800">{focus}</span>
                   </div>
+
                   <div>
-                    <span className="font-bold text-slate-500 uppercase tracking-wider block mb-1 text-[11px]">
-                      Stewardship
+                    <span className="text-slate-500 block mb-1 flex items-center gap-1.5 font-medium">
+                      <Heart size={14} className="text-teal-600" /> Status
                     </span>
-                    <p className="flex items-center gap-2 text-teal-700 font-semibold">
-                      <ShieldCheck size={16} /> Section 8 Registered Non-Profit
-                    </p>
+                    <span className="font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 inline-block">
+                      Active Field Operations
+                    </span>
                   </div>
                 </div>
-              </div>
 
-              {/* Donate Box */}
-              <div
-                className="rounded-2xl p-6 text-white shadow-md"
-                style={{ background: "linear-gradient(145deg, #0d2e2c 0%, #1b6b68 100%)" }}
-              >
-                <h3 className="font-display font-bold text-lg mb-2">Fund this Program</h3>
-                <p className="text-xs sm:text-sm mb-5 text-teal-100 leading-relaxed">
-                  Directly support medical supplies, field doctor visits, and outreach equipment for this initiative.
-                </p>
-                <Link to="/donate" className="btn btn-accent w-full justify-center text-sm shadow-md">
-                  <Heart size={16} fill="currentColor" /> Donate to this Cause
-                </Link>
-              </div>
+                <div className="space-y-3 pt-2">
+                  <Link
+                    to={`/donate?program=${safeSlug}`}
+                    className="btn btn-accent w-full justify-center text-sm py-3"
+                  >
+                    <Heart size={16} fill="currentColor" /> Donate to this Program
+                  </Link>
 
-              {/* Related Links */}
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h3 className="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-3">
-                  More Options
-                </h3>
-                <div className="space-y-2">
-                  <Link to="/impact" className="flex items-center justify-between text-xs font-semibold text-slate-700 hover:text-teal-700 py-1.5 border-b border-slate-100">
-                    <span>Our Impact Overview</span>
-                    <ChevronRight size={14} />
-                  </Link>
-                  <Link to="/get-involved/volunteer" className="flex items-center justify-between text-xs font-semibold text-slate-700 hover:text-teal-700 py-1.5 border-b border-slate-100">
-                    <span>Volunteer for Health Camps</span>
-                    <ChevronRight size={14} />
-                  </Link>
-                  <Link to="/get-involved/partner" className="flex items-center justify-between text-xs font-semibold text-slate-700 hover:text-teal-700 py-1.5">
-                    <span>CSR Partnership Opportunities</span>
-                    <ChevronRight size={14} />
+                  <Link
+                    to="/get-involved/volunteer"
+                    className="btn btn-secondary w-full justify-center text-xs py-2.5"
+                  >
+                    Volunteer on this Initiative
                   </Link>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Other Programs ── */}
-      <section className="py-14 bg-slate-50 border-t border-slate-200">
-        <div className="container-custom">
-          <h2 className="font-display text-2xl font-bold mb-6 text-slate-900">Explore Other Programs</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {Object.entries(PROGRAMS)
-              .filter(([s]) => s !== slug)
-              .slice(0, 3)
-              .map(([s, p]) => {
-                const OtherIcon = p.icon
-                return (
-                  <Link
-                    key={s}
-                    to={`/programs/${s}`}
-                    className="p-6 rounded-2xl border border-slate-200 bg-white hover:border-teal-300 hover:shadow-md transition-all flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-teal-50 text-teal-700">
-                        <OtherIcon size={20} />
-                      </div>
-                      <h3 className="font-display font-bold text-base text-slate-900 mb-1">{p.title}</h3>
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-4">{p.summary}</p>
-                    </div>
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-teal-700">
-                      View details <ChevronRight size={14} />
-                    </span>
-                  </Link>
-                )
-              })}
           </div>
         </div>
       </section>

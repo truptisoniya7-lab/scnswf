@@ -11,6 +11,8 @@ const router = Router();
 router.post('/', formLimiter, validateRequest({ body: createDonationSchema }), donationsController.create);
 router.get('/:id', donationsController.getStatus);
 router.get('/:id/', donationsController.getStatus);
+router.post('/:id/verify', donationsController.verifyPayment);
+router.post('/:id/verify/', donationsController.verifyPayment);
 router.post('/webhook/:provider', validateRequest({ body: donationWebhookSchema }), donationsController.handleWebhook);
 router.post('/webhook/:provider/', validateRequest({ body: donationWebhookSchema }), donationsController.handleWebhook);
 

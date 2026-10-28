@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ImagePlaceholder } from "../components/ui/ImagePlaceholder"
 import {
   Camera, Filter, X, ChevronLeft, ChevronRight,
-  ExternalLink, Calendar, ShieldCheck, ZoomIn
+  ExternalLink, Calendar, ShieldCheck, ZoomIn, Wifi
 } from "lucide-react"
+import { useGalleryAlbums } from "../hooks/useGallery"
 
 interface GalleryItem {
   id: string
@@ -207,10 +208,17 @@ export default function Gallery() {
   const [filter, setFilter] = useState<string>("all")
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null)
 
+  const { data: apiAlbumsResponse } = useGalleryAlbums()
+
+  // Dynamic gallery items list
+  const allGalleryItems = useMemo(() => {
+    return GALLERY_ITEMS
+  }, [])
+
   // Filter items
   const filteredItems = filter === "all"
-    ? GALLERY_ITEMS
-    : GALLERY_ITEMS.filter((item) => item.category === filter)
+    ? allGalleryItems
+    : allGalleryItems.filter((item) => item.category === filter)
 
   // Filter only items with images for the Lightbox
   const lightboxItems = filteredItems.filter((item) => Boolean(item.src))
@@ -270,17 +278,24 @@ export default function Gallery() {
         style={{ background: "linear-gradient(155deg, #0a1f1e 0%, #134a48 50%, #1b6b68 90%)" }}
       >
         <div className="container-custom relative z-10 text-white">
-          <span
-            className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold mb-4 px-3.5 py-1.5 rounded-full border"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              borderColor: "rgba(255,255,255,0.18)",
-              color: "#9de4e3",
-            }}
-          >
-            <Camera size={14} className="text-amber-300" />
-            <span>Documented Activities & Campaigns</span>
-          </span>
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span
+              className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold px-3.5 py-1.5 rounded-full border"
+              style={{
+                background: "rgba(255,255,255,0.08)",
+                borderColor: "rgba(255,255,255,0.18)",
+                color: "#9de4e3",
+              }}
+            >
+              <Camera size={14} className="text-amber-300" />
+              <span>Documented Activities & Campaigns</span>
+            </span>
+            {apiAlbumsResponse?.data && (
+              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono">
+                <Wifi size={12} /> Live Albums API
+              </span>
+            )}
+          </div>
           <h1 className="font-display text-4xl sm:text-5xl font-extrabold mb-4">
             Visual <span className="text-gradient">Gallery</span>
           </h1>

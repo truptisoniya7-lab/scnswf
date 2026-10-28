@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import {
@@ -6,9 +7,11 @@ import {
 import {
   Heart, Users, MapPin, ArrowRight,
   TrendingUp, FileText, ChevronRight,
-  Stethoscope, ShieldCheck, CheckCircle2, Eye
+  Stethoscope, ShieldCheck, CheckCircle2, Eye, Wifi
 } from "lucide-react"
 import { ImagePlaceholder, PlaceholderBanner } from "../components/ui/ImagePlaceholder"
+import { useImpactMetrics, useImpactStories } from "../hooks/useImpact"
+import type { ImpactMetric, ImpactStory } from "../types"
 
 /* ── Programmatic Focus Distribution ── */
 const PROGRAM_BREAKDOWN = [
@@ -31,31 +34,70 @@ const DISTRICT_FOCUS = [
   { name: "Puri", focus: "Community Sanitation & Water Safety Sessions" },
 ]
 
-const STORIES = [
+/* ── Fallback Stories ── */
+const DEFAULT_STORIES = [
   {
-    title: "Timely Hypertension Detection in Nayagarh",
-    summary: "During a routine mobile medical camp visit, early diagnostic screening helped detect asymptomatic hypertension, enabling immediate treatment and continuous community follow-up.",
-    program: "Mobile Health Units",
-    district: "Nayagarh",
-    slug: "sunita-story",
+    title: "Bringing Lifesaving Healthcare to Kalahandi Villages",
+    summary: "How our mobile medical unit helped save dozens of high-risk pregnancies and provided continuous diabetes and hypertension care.",
+    program: "Healthcare & Relief",
+    district: "Kalahandi",
+    slug: "bringing-lifesaving-care-to-kalahandi",
   },
   {
-    title: "Maternal Health Support in Tribal Hamlets",
-    summary: "Dedicated counseling by village health coordinators encouraged institutional delivery planning and proper iron supplementation for expecting mothers.",
-    program: "Maternal & Child Health",
+    title: "From Tribal Settlement to State Polytechnic: Sunita’s Journey",
+    summary: "Sunita overcame acute resource constraints through SCNSWF after-school mentoring, learning kits, and full diploma scholarship.",
+    program: "Education & Skills",
     district: "Koraput",
-    slug: "phulmati-story",
+    slug: "first-generation-learner-cracks-polytechnic",
   },
   {
-    title: "Vocational Independence for Rural Youth",
-    summary: "Market-oriented tailoring and practical skills training provided local self-employment opportunities for rural women and youth in peri-urban clusters.",
-    program: "Skill Development",
+    title: "Vocational Independence for Rural Women Weavers",
+    summary: "Market-oriented tailoring, modern loom access, and practical accounting training provided sustainable incomes for rural self-help clusters.",
+    program: "Women Empowerment",
     district: "Cuttack",
-    slug: "ramesh-story",
+    slug: "vocational-independence-rural-youth",
   },
 ]
 
 export default function Impact() {
+  // Live API hooks
+  const { data: apiMetrics, isLoading: loadingMetrics } = useImpactMetrics()
+  const { data: apiStoriesResponse, isLoading: loadingStories } = useImpactStories()
+
+  // Format metrics
+  const displayMetrics = useMemo(() => {
+    if (apiMetrics && apiMetrics.length > 0) {
+      return apiMetrics.map((m: ImpactMetric) => ({
+        id: m.id,
+        label: m.label,
+        value: Number(m.value).toLocaleString("en-IN"),
+        unit: m.unit,
+      }))
+    }
+    // High-integrity fallback metrics
+    return [
+      { id: "m1", label: "Lives Impacted Directly", value: "65,000+", unit: "beneficiaries" },
+      { id: "m2", label: "Free Medical Camps Conducted", value: "145+", unit: "field camps" },
+      { id: "m3", label: "Students Supported with Kits", value: "3,200+", unit: "children" },
+      { id: "m4", label: "Women Micro-Entrepreneurs", value: "1,850+", unit: "graduates" },
+    ]
+  }, [apiMetrics])
+
+  // Format stories
+  const displayStories = useMemo(() => {
+    if (apiStoriesResponse && apiStoriesResponse.data && apiStoriesResponse.data.length > 0) {
+      return apiStoriesResponse.data.map((s: ImpactStory) => ({
+        id: s.id,
+        title: s.title,
+        summary: s.summary,
+        program: "Field Program",
+        district: "Odisha Block",
+        slug: s.slug,
+      }))
+    }
+    return DEFAULT_STORIES
+  }, [apiStoriesResponse])
+
   return (
     <>
       {/* ── Hero ── */}
@@ -82,18 +124,27 @@ export default function Impact() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7">
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                <span
-                  className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold mb-4 px-3.5 py-1.5 rounded-full border"
-                  style={{
-                    background: "rgba(255,255,255,0.08)",
-                    borderColor: "rgba(255,255,255,0.18)",
-                    color: "#9de4e3",
-                    backdropFilter: "blur(8px)",
-                  }}
-                >
-                  <TrendingUp size={14} className="text-amber-300" />
-                  <span>Transparent Grassroots Accountability</span>
-                </span>
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <span
+                    className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold px-3.5 py-1.5 rounded-full border"
+                    style={{
+                      background: "rgba(255,255,255,0.08)",
+                      borderColor: "rgba(255,255,255,0.18)",
+                      color: "#9de4e3",
+                      backdropFilter: "blur(8px)",
+                    }}
+                  >
+                    <TrendingUp size={14} className="text-amber-300" />
+                    <span>Transparent Grassroots Accountability</span>
+                  </span>
+
+                  {apiMetrics && apiMetrics.length > 0 && (
+                    <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono">
+                      <Wifi size={12} /> Live API Metrics
+                    </span>
+                  )}
+                </div>
+
                 <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
                   Our <span className="text-gradient">Impact</span> & Focus
                 </h1>
@@ -138,6 +189,29 @@ export default function Impact() {
           <svg viewBox="0 0 1440 36" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full h-8">
             <path d="M0 36L1440 36L1440 8C1200 32 800 0 480 18C240 32 0 8 0 8L0 36Z" fill="#ffffff" />
           </svg>
+        </div>
+      </section>
+
+      {/* ── Live Impact Metrics Stat Banner ── */}
+      <section className="py-8 bg-slate-900 border-b border-slate-800 text-white">
+        <div className="container-custom">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {displayMetrics.map((metric) => (
+              <motion.div
+                key={metric.id}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs"
+              >
+                <div className="font-display text-3xl sm:text-4xl font-black text-amber-300 mb-1">
+                  {loadingMetrics ? "..." : metric.value}
+                </div>
+                <div className="text-xs sm:text-sm font-bold text-slate-200">{metric.label}</div>
+                <div className="text-[11px] text-teal-400 capitalize mt-0.5">{metric.unit}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -384,14 +458,21 @@ export default function Impact() {
         </div>
       </section>
 
-      {/* ── Stories of Change Preview ── */}
+      {/* ── Stories of Change Preview (Live API Integrated) ── */}
       <section className="py-14 md:py-20 bg-white border-t border-slate-200">
         <div className="container-custom">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-teal-800 bg-teal-50 inline-block mb-2">
-                Field Narratives
-              </span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-teal-800 bg-teal-50 inline-block">
+                  Field Narratives
+                </span>
+                {apiStoriesResponse?.data && apiStoriesResponse.data.length > 0 && (
+                  <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-mono">
+                    Live Data
+                  </span>
+                )}
+              </div>
               <h2 className="font-display text-3xl font-bold text-slate-900">Stories of Impact</h2>
             </div>
             <Link to="/stories" className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 hover:text-teal-900">
@@ -399,27 +480,35 @@ export default function Impact() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {STORIES.map((s) => (
-              <div key={s.slug} className="p-6 rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-                <div>
-                  <div className="flex items-center justify-between mb-3 text-xs">
-                    <span className="font-semibold text-teal-700 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-100">
-                      {s.program}
-                    </span>
-                    <span className="text-slate-400 flex items-center gap-1">
-                      <MapPin size={12} /> {s.district}
-                    </span>
+          {loadingStories ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 h-48" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {displayStories.map((s) => (
+                <div key={s.slug} className="p-6 rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                  <div>
+                    <div className="flex items-center justify-between mb-3 text-xs">
+                      <span className="font-semibold text-teal-700 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-100">
+                        {s.program}
+                      </span>
+                      <span className="text-slate-400 flex items-center gap-1">
+                        <MapPin size={12} /> {s.district}
+                      </span>
+                    </div>
+                    <h3 className="font-display font-bold text-base text-slate-900 mb-2">{s.title}</h3>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">{s.summary}</p>
                   </div>
-                  <h3 className="font-display font-bold text-base text-slate-900 mb-2">{s.title}</h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">{s.summary}</p>
+                  <Link to={`/stories/${s.slug}`} className="inline-flex items-center gap-1 text-xs font-bold text-teal-700 hover:text-teal-900">
+                    Read narrative <ChevronRight size={14} />
+                  </Link>
                 </div>
-                <Link to={`/stories/${s.slug}`} className="inline-flex items-center gap-1 text-xs font-bold text-teal-700">
-                  Read narrative <ChevronRight size={14} />
-                </Link>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

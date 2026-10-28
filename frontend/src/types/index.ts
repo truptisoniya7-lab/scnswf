@@ -1,4 +1,4 @@
-﻿/* Shared TypeScript types — mirrors DRF serializer shapes */
+/* Shared TypeScript types — mirrors DRF serializer shapes */
 
 export interface PaginatedResponse<T> {
   data: T[]
@@ -18,6 +18,14 @@ export interface Program {
   display_order: number
   created_at: string
   updated_at: string
+}
+
+export interface ProgramService {
+  id: string
+  program_id: string
+  title: string
+  description: string
+  display_order: number
 }
 
 export interface ImpactMetric {
@@ -144,4 +152,34 @@ export interface DonationPayload {
   donor_name?: string
   donor_email?: string
   donor_phone?: string
+}
+
+export interface DonationSessionResponse {
+  data: {
+    id: string
+    status: string
+    payment_session: {
+      provider: string
+      order_id: string
+      checkout_params: {
+        key: string
+        amount: number
+        currency: string
+        name: string
+        description: string
+        order_id: string
+      }
+    }
+  }
+}
+
+export interface DonationReceipt {
+  id: string
+  amount: number
+  currency: string
+  status: string
+  receipt_number: string
+  donor_name?: string | null
+  donor_email?: string | null
+  created_at: string
 }

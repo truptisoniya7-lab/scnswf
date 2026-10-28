@@ -173,6 +173,14 @@ describe('Donations API', () => {
     const statusRes = await request(app).get(`/api/v1/donations/${donationId}/`);
     expect(statusRes.status).toBe(200);
     expect(statusRes.body.data.amount).toBe(1500);
+
+    // Test verifying payment
+    const verifyRes = await request(app)
+      .post(`/api/v1/donations/${donationId}/verify/`)
+      .send({ razorpay_payment_id: 'pay_test123' });
+    expect(verifyRes.status).toBe(200);
+    expect(verifyRes.body.data.status).toBe('succeeded');
+    expect(verifyRes.body.data.receipt_number).toBeDefined();
   });
 });
 

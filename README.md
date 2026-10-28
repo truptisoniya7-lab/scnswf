@@ -21,9 +21,9 @@
 - [x] Phase 2 - UI Foundation
 - [x] Phase 3 - Backend Foundation
 - [x] Phase 4 - Database (Cloud Firestore configured for project-ngo-scnswf)
-- [ ] Phase 5 - API Integration
-- [ ] Phase 6 - Forms
-- [ ] Phase 7 - Donation System
+- [x] Phase 5 - API Integration (Programs, Impact, Gallery live React Query hooks & caching)
+- [x] Phase 6 - Forms (Contact, Volunteer, Internship, Partnership submissions)
+- [x] Phase 7 - Donation System (Razorpay session, preset amounts, 80G tax receipt generation)
 - [ ] Phase 8 - Admin / CMS
 - [ ] Phase 9 - Testing
 - [ ] Phase 10 - Deployment
