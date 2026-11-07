@@ -24,6 +24,7 @@ const Terms          = lazy(() => import('./pages/legal/Terms'))
 const RefundPolicy   = lazy(() => import('./pages/legal/RefundPolicy'))
 const Disclaimer     = lazy(() => import('./pages/legal/Disclaimer'))
 const DesignSystem   = lazy(() => import('./pages/DesignSystem'))
+const Login          = lazy(() => import('./pages/Login'))
 const NotFound       = lazy(() => import('./pages/NotFound'))
 
 function PageLoader() {
@@ -44,6 +45,11 @@ export default function App() {
       <ScrollToTop />
       <Suspense fallback={<PageLoader />}>
         <Routes>
+          {/* Standalone full-screen auth routes matching design layout */}
+          <Route path="/login"    element={<Login />} />
+          <Route path="/register" element={<Login defaultMode="register" />} />
+          <Route path="/signup"   element={<Login defaultMode="register" />} />
+
           <Route element={<PublicLayout />}>
             <Route path="/"                index element={<Home />} />
             <Route path="/about"                  element={<About />} />

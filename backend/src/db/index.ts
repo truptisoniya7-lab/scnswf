@@ -654,6 +654,21 @@ export const usersRepo = {
   findProfileByUserId: (userId: string) => {
     return dbStore.getState().adminProfiles.find((p) => p.userId === userId) || null;
   },
+
+  create: (user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date().toISOString();
+    const newUser: User = {
+      ...user,
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    dbStore.setState((state) => ({
+      ...state,
+      users: [...state.users, newUser],
+    }));
+    return newUser;
+  },
 };
 
 export const auditRepo = {

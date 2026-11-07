@@ -6,6 +6,7 @@ import {
   refreshSchema,
   volunteerRequestOtpSchema,
   volunteerVerifyOtpSchema,
+  googleAuthSchema,
 } from './accounts.schema';
 import { authenticate } from '../../middleware/auth';
 import { authLimiter } from '../../middleware/rateLimiter';
@@ -18,6 +19,15 @@ router.post(
   authLimiter,
   validateRequest({ body: loginSchema }),
   accountsController.login
+);
+
+
+// Google Sign-In & Sign-Up (POST /api/v1/auth/google)
+router.post(
+  ['/auth/google', '/auth/google/', '/google', '/google/'],
+  authLimiter,
+  validateRequest({ body: googleAuthSchema }),
+  accountsController.googleAuth
 );
 
 router.post(

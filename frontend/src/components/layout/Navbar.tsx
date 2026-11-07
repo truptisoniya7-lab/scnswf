@@ -122,8 +122,14 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Desktop Single Standout CTA — Donate */}
-          <div className="hidden md:flex items-center">
+          {/* Desktop Single Standout CTA — Donate & Login */}
+          <div className="hidden md:flex items-center gap-2">
+            <Link
+              to="/login"
+              className="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-[#105e49] hover:bg-[#f0fbf7] transition-all"
+            >
+              Log In
+            </Link>
             <Button
               variant="primary"
               size="md"
@@ -192,8 +198,8 @@ export default function Navbar() {
                   )
                 })}
 
-                {/* Mobile Full-Width CTA Button: [ Donate Now ] */}
-                <div className="pt-4 mt-2 border-t border-slate-100 flex flex-col">
+                {/* Mobile Full-Width CTA Button: [ Donate Now ] & [ Log In ] */}
+                <div className="pt-4 mt-2 border-t border-slate-100 flex flex-col gap-2">
                   <Button
                     variant="primary"
                     size="lg"
@@ -203,6 +209,13 @@ export default function Navbar() {
                   >
                     Donate Now
                   </Button>
+                  <Link
+                    to="/login"
+                    onClick={() => setOpen(false)}
+                    className="block text-center py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                  >
+                    Log In to Account
+                  </Link>
                 </div>
               </div>
             </motion.div>

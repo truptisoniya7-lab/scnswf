@@ -233,4 +233,61 @@ export const accountsController = {
       created_at: user.createdAt,
     });
   },
+
+  // Google Authentication (Sign In & Sign Up)
+  googleAuth: async (req: Request, res: Response): Promise<void> => {
+    const { email, name, avatar } = req.body;
+    let user = usersRepo.findByEmail(email);
+
+    if (!user) {
+      const parts = (name || 'Supporter').trim().split(' ');
+      const firstName = parts[0] || 'SCNSWF';
+      const lastName = parts.slice(1).join(' ') || 'Member';
+
+      user = usersRepo.create({
+        email: email.toLowerCase().trim(),
+        passwordHash: '',
+        salt: '',
+        firstName,
+        lastName,
+        isStaff: false,
+        isActive: true,
+        role: 'volunteer',
+      });
+    }
+
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || 'Supporter';
+    const payload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      name: fullName,
+    };
+    const access = generateAccessToken(payload);
+    const refresh = generateRefreshToken(payload);
+
+    auditRepo.log({
+      actor_user_id: user.id,
+      actor_email: user.email,
+      action: 'google_auth_login',
+      entity_type: 'User',
+      entity_id: user.id,
+      details: { ip: req.ip, avatar },
+    });
+
+    sendSuccess(res, {
+      access,
+      refresh,
+      user: {
+        id: user.id,
+        email: user.email,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        name: fullName,
+        role: user.role,
+        is_staff: user.isStaff,
+        avatar_url: avatar || null,
+      },
+    });
+  },
 };

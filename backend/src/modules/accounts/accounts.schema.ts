@@ -17,3 +17,11 @@ export const volunteerVerifyOtpSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
   otp: z.string().regex(/^\d{6}$/, 'Verification code must be exactly 6 digits.'),
 });
+
+
+export const googleAuthSchema = z.object({
+  email: z.string().email('Please enter a valid email address.'),
+  name: z.string().optional(),
+  avatar: z.string().optional(),
+  idToken: z.string().optional(),
+});
