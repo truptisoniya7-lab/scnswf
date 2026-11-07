@@ -38,9 +38,11 @@ export const createApp = () => {
       origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps, curl, or server-to-server)
         if (!origin) return callback(null, true);
+        const normalized = origin.replace(/\/+$/, '');
         if (
           env.NODE_ENV === 'development' ||
           env.corsOrigins.includes(origin) ||
+          env.corsOrigins.includes(normalized) ||
           env.corsOrigins.includes('*')
         ) {
           return callback(null, true);
@@ -84,7 +86,10 @@ export const createApp = () => {
         applications_volunteer: '/api/v1/applications/volunteer/',
         newsletter_subscribe: '/api/v1/newsletter/subscribe/',
         donations: '/api/v1/donations/',
-        auth_login: '/api/v1/accounts/auth/login/',
+        auth_admin_login: '/api/v1/auth/admin/login/',
+        auth_volunteer_request_otp: '/api/v1/auth/volunteer/request-otp/',
+        auth_volunteer_verify_otp: '/api/v1/auth/volunteer/verify-otp/',
+        auth_me: '/api/v1/auth/me/',
       },
     });
   };
@@ -132,6 +137,7 @@ export const createApp = () => {
 
   // Public & Domain routes
   apiV1.use('/accounts', accountsRouter);
+  apiV1.use('/auth', accountsRouter);
   apiV1.use('/programs', programsRouter);
   apiV1.use('/impact', impactRouter);
   apiV1.use('/gallery', galleryRouter);

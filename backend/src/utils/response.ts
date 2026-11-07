@@ -19,7 +19,7 @@ export const sendError = (
   statusCode: number,
   code: string,
   message: string,
-  details?: Record<string, string[]>
+  details?: Record<string, unknown>
 ) => {
   return res.status(statusCode).json({
     error: {

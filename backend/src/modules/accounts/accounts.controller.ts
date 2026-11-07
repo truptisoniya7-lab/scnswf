@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { usersRepo, auditRepo } from '../../db';
+import { usersRepo, auditRepo, applicationsRepo } from '../../db';
 import {
   verifyPassword,
   generateAccessToken,
@@ -7,8 +7,12 @@ import {
   verifyRefreshToken,
 } from '../../utils/security';
 import { sendSuccess, sendError } from '../../utils/response';
+import { otpService } from './otp.service';
+
+const ADMIN_ROLES = ['super_admin', 'admin', 'content_editor', 'applications_reviewer'];
 
 export const accountsController = {
+  // Admin authentication (email + password)
   login: async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
     const user = usersRepo.findByEmail(email);
@@ -18,20 +22,31 @@ export const accountsController = {
       return;
     }
 
+    // Backend-authoritative verification: ensure account has admin or staff privileges
+    if (!user.isStaff && !ADMIN_ROLES.includes(user.role)) {
+      sendError(res, 403, 'permission_denied', 'This account is not authorized for administrative access.');
+      return;
+    }
+
     const isValid = verifyPassword(password, user.passwordHash, user.salt);
     if (!isValid) {
       sendError(res, 401, 'invalid_credentials', 'No active account found with the given credentials.');
       return;
     }
 
-    const payload = { userId: user.id, email: user.email, role: user.role };
+    const payload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      name: `${user.firstName} ${user.lastName}`.trim(),
+    };
     const access = generateAccessToken(payload);
     const refresh = generateRefreshToken(payload);
 
     auditRepo.log({
       actor_user_id: user.id,
       actor_email: user.email,
-      action: 'login',
+      action: 'admin_login',
       entity_type: 'User',
       entity_id: user.id,
       details: { ip: req.ip },
@@ -45,8 +60,80 @@ export const accountsController = {
         email: user.email,
         first_name: user.firstName,
         last_name: user.lastName,
+        name: `${user.firstName} ${user.lastName}`.trim(),
         role: user.role,
         is_staff: user.isStaff,
+      },
+    });
+  },
+
+  // Volunteer OTP Request
+  volunteerRequestOtp: async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+    const result = await otpService.requestOtp(email);
+
+    if (!result.success) {
+      if (result.errorType === 'not_found') {
+        sendError(res, 404, 'volunteer_not_found', result.message);
+        return;
+      }
+      if (result.errorType === 'not_approved') {
+        sendError(res, 403, 'volunteer_not_approved', result.message);
+        return;
+      }
+      if (result.errorType === 'cooldown') {
+        sendError(res, 429, 'cooldown_active', result.message, {
+          cooldown_seconds: result.cooldownSeconds,
+        });
+        return;
+      }
+      sendError(res, 500, 'otp_dispatch_failed', result.message);
+      return;
+    }
+
+    sendSuccess(res, {
+      message: result.message,
+      resend_cooldown: result.cooldownSeconds || 60,
+    });
+  },
+
+  // Volunteer OTP Verification
+  volunteerVerifyOtp: async (req: Request, res: Response): Promise<void> => {
+    const { email, otp } = req.body;
+    const result = otpService.verifyOtp(email, otp);
+
+    if (!result.success || !result.volunteer) {
+      const statusCode = result.errorType === 'not_found' ? 404 : 400;
+      sendError(res, statusCode, result.errorType || 'verification_failed', result.message);
+      return;
+    }
+
+    const payload = {
+      userId: result.volunteer.id,
+      email: result.volunteer.email,
+      role: 'volunteer' as const,
+      name: result.volunteer.name,
+    };
+    const access = generateAccessToken(payload);
+    const refresh = generateRefreshToken(payload);
+
+    auditRepo.log({
+      actor_user_id: result.volunteer.id,
+      actor_email: result.volunteer.email,
+      action: 'volunteer_otp_login',
+      entity_type: 'VolunteerApplication',
+      entity_id: result.volunteer.id,
+      details: { ip: req.ip },
+    });
+
+    sendSuccess(res, {
+      access,
+      refresh,
+      user: {
+        id: result.volunteer.id,
+        email: result.volunteer.email,
+        name: result.volunteer.name,
+        role: 'volunteer',
       },
     });
   },
@@ -55,6 +142,26 @@ export const accountsController = {
     const { refresh } = req.body;
     try {
       const payload = verifyRefreshToken(refresh);
+
+      // Handle volunteer refresh
+      if (payload.role === 'volunteer') {
+        const volunteer = otpService.findApprovedVolunteer(payload.email);
+        if (!volunteer || !volunteer.isApproved) {
+          sendError(res, 401, 'token_invalid', 'Volunteer account no longer approved or active.');
+          return;
+        }
+
+        const access = generateAccessToken({
+          userId: volunteer.id,
+          email: volunteer.email,
+          role: 'volunteer',
+          name: volunteer.name,
+        });
+        sendSuccess(res, { access });
+        return;
+      }
+
+      // Handle staff / admin refresh
       const user = usersRepo.findById(payload.userId);
       if (!user || !user.isActive) {
         sendError(res, 401, 'token_invalid', 'User inactive or no longer exists.');
@@ -65,6 +172,7 @@ export const accountsController = {
         userId: user.id,
         email: user.email,
         role: user.role,
+        name: `${user.firstName} ${user.lastName}`.trim(),
       });
 
       sendSuccess(res, { access });
@@ -84,6 +192,26 @@ export const accountsController = {
       return;
     }
 
+    if (req.user.role === 'volunteer') {
+      const volunteer = otpService.findApprovedVolunteer(req.user.email);
+      if (!volunteer) {
+        sendError(res, 404, 'not_found', 'Volunteer record not found.');
+        return;
+      }
+
+      sendSuccess(res, {
+        id: volunteer.id,
+        email: volunteer.email,
+        name: volunteer.name,
+        role: 'volunteer',
+        status: volunteer.status,
+        phone: (volunteer as any).phone || null,
+        location: (volunteer as any).location || null,
+        skills: (volunteer as any).skills || null,
+      });
+      return;
+    }
+
     const user = usersRepo.findById(req.user.userId);
     if (!user) {
       sendError(res, 404, 'not_found', 'User not found.');
@@ -97,6 +225,7 @@ export const accountsController = {
       email: user.email,
       first_name: user.firstName,
       last_name: user.lastName,
+      name: `${user.firstName} ${user.lastName}`.trim(),
       role: user.role,
       is_staff: user.isStaff,
       phone: profile?.phone || null,

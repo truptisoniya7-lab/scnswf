@@ -21,6 +21,13 @@ const envSchema = z.object({
   FIREBASE_CLIENT_EMAIL: z.string().optional(),
   FIREBASE_PRIVATE_KEY: z.string().optional(),
   FIREBASE_DATABASE_URL: z.string().optional(),
+  // Zoho Mail / SMTP Configuration
+  SMTP_HOST: z.string().default('smtp.zoho.com'),
+  SMTP_PORT: z.coerce.number().default(465),
+  SMTP_SECURE: z.coerce.boolean().default(true),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  SMTP_FROM: z.string().default('SCNSWF Foundation <auth@scnswf.org>'),
 });
 
 const parseEnv = () => {
@@ -29,9 +36,18 @@ const parseEnv = () => {
     console.error('❌ Invalid environment variables:', parsed.error.format());
     throw new Error('Environment configuration error');
   }
+  const origins = parsed.data.CORS_ALLOWED_ORIGINS.split(',')
+    .map((o) => o.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+
+  // Always ensure production domain & local ports are allowed if configured
+  if (!origins.includes('https://scnswf.vercel.app')) {
+    origins.push('https://scnswf.vercel.app');
+  }
+
   return {
     ...parsed.data,
-    corsOrigins: parsed.data.CORS_ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean),
+    corsOrigins: origins,
   };
 };
 

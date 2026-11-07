@@ -7,6 +7,7 @@ export interface TokenPayload {
   userId: string;
   email: string;
   role: Role;
+  name?: string;
 }
 
 export const hashPassword = (password: string, salt?: string): { hash: string; salt: string } => {

@@ -1,22 +1,76 @@
 import { Router } from 'express';
 import { accountsController } from './accounts.controller';
 import { validateRequest } from '../../middleware/validate';
-import { loginSchema, refreshSchema } from './accounts.schema';
+import {
+  loginSchema,
+  refreshSchema,
+  volunteerRequestOtpSchema,
+  volunteerVerifyOtpSchema,
+} from './accounts.schema';
 import { authenticate } from '../../middleware/auth';
 import { authLimiter } from '../../middleware/rateLimiter';
 
 const router = Router();
 
-router.post('/auth/login', authLimiter, validateRequest({ body: loginSchema }), accountsController.login);
-router.post('/auth/login/', authLimiter, validateRequest({ body: loginSchema }), accountsController.login);
+// Admin Authentication (POST /api/v1/auth/admin/login or /api/v1/accounts/auth/login)
+router.post(
+  ['/auth/admin/login', '/auth/admin/login/', '/admin/login', '/admin/login/'],
+  authLimiter,
+  validateRequest({ body: loginSchema }),
+  accountsController.login
+);
 
-router.post('/auth/refresh', validateRequest({ body: refreshSchema }), accountsController.refresh);
-router.post('/auth/refresh/', validateRequest({ body: refreshSchema }), accountsController.refresh);
+router.post(
+  ['/auth/login', '/auth/login/'],
+  authLimiter,
+  validateRequest({ body: loginSchema }),
+  accountsController.login
+);
 
-router.post('/auth/logout', accountsController.logout);
-router.post('/auth/logout/', accountsController.logout);
+// Volunteer OTP Request (POST /api/v1/auth/volunteer/request-otp)
+router.post(
+  [
+    '/auth/volunteer/request-otp',
+    '/auth/volunteer/request-otp/',
+    '/volunteer/request-otp',
+    '/volunteer/request-otp/',
+  ],
+  authLimiter,
+  validateRequest({ body: volunteerRequestOtpSchema }),
+  accountsController.volunteerRequestOtp
+);
 
-router.get('/me', authenticate, accountsController.me);
-router.get('/me/', authenticate, accountsController.me);
+// Volunteer OTP Verify (POST /api/v1/auth/volunteer/verify-otp)
+router.post(
+  [
+    '/auth/volunteer/verify-otp',
+    '/auth/volunteer/verify-otp/',
+    '/volunteer/verify-otp',
+    '/volunteer/verify-otp/',
+  ],
+  authLimiter,
+  validateRequest({ body: volunteerVerifyOtpSchema }),
+  accountsController.volunteerVerifyOtp
+);
+
+// Session Refresh (POST /api/v1/auth/refresh)
+router.post(
+  ['/auth/refresh', '/auth/refresh/', '/refresh', '/refresh/'],
+  validateRequest({ body: refreshSchema }),
+  accountsController.refresh
+);
+
+// Logout (POST /api/v1/auth/logout)
+router.post(
+  ['/auth/logout', '/auth/logout/', '/logout', '/logout/'],
+  accountsController.logout
+);
+
+// Current User Profile (GET /api/v1/auth/me)
+router.get(
+  ['/me', '/me/', '/auth/me', '/auth/me/'],
+  authenticate,
+  accountsController.me
+);
 
 export default router;

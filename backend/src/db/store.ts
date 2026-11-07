@@ -56,6 +56,17 @@ class UnifiedStore {
           }
         }
 
+        // Ensure initial seed volunteer applications are loaded if missing
+        if (!state.volunteerApplications || state.volunteerApplications.length === 0) {
+          state.volunteerApplications = initial.volunteerApplications;
+        } else {
+          for (const seedVol of initial.volunteerApplications) {
+            if (!state.volunteerApplications.some((v) => v.email.toLowerCase() === seedVol.email.toLowerCase())) {
+              state.volunteerApplications.push(seedVol);
+            }
+          }
+        }
+
         return state;
       }
     } catch (err) {
