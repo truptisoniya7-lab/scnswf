@@ -212,4 +212,51 @@ describe('Authentication & Admin API', () => {
     expect(res.status).toBe(401);
     expect(res.body.error.code).toBe('authentication_required');
   });
+
+  it('POST /api/v1/auth/register registers new user and issues JWT tokens', async () => {
+    const newEmail = `volunteer_${Date.now()}@example.com`;
+    const res = await request(app).post('/api/v1/auth/register').send({
+      email: newEmail,
+      password: 'SecurePassword123!',
+      name: 'Priyanka Senapati',
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data).toHaveProperty('access');
+    expect(res.body.data).toHaveProperty('refresh');
+    expect(res.body.data.user.email).toBe(newEmail);
+    expect(res.body.data.user.name).toBe('Priyanka Senapati');
+
+    // Duplicate email registration should be rejected
+    const dupRes = await request(app).post('/api/v1/auth/register').send({
+      email: newEmail,
+      password: 'AnotherPassword456!',
+      name: 'Duplicate Attempt',
+    });
+    expect(dupRes.status).toBe(409);
+
+    // Login with new user credentials
+    const loginRes = await request(app).post('/api/v1/auth/login').send({
+      email: newEmail,
+      password: 'SecurePassword123!',
+    });
+    expect(loginRes.status).toBe(200);
+    expect(loginRes.body.data).toHaveProperty('access');
+  });
+
+  it('POST /api/v1/auth/forgot-password sends password reset code', async () => {
+    const res = await request(app).post('/api/v1/auth/forgot-password').send({
+      email: env.DEFAULT_ADMIN_EMAIL,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.message).toBeDefined();
+
+    // Verify invalid OTP code returns 400
+    const verifyRes = await request(app).post('/api/v1/auth/verify-reset-otp').send({
+      email: env.DEFAULT_ADMIN_EMAIL,
+      otp: '000000',
+    });
+    expect(verifyRes.status).toBe(400);
+  });
 });

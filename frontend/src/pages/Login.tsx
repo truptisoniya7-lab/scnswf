@@ -15,40 +15,10 @@ import {
   AlertCircle,
   Loader2,
   Sparkles,
+  KeyRound,
 } from 'lucide-react'
-import { apiClient } from '../api/client'
+import { authApi } from '../api/auth'
 
-// Laurel leaf branch SVG for the card header
-function LaurelBranch({ flip = false, className = '' }: { flip?: boolean; className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 50 110"
-      className={`w-9 h-16 sm:w-11 sm:h-20 shrink-0 text-[#1b4d3e] ${flip ? '-scale-x-100' : ''} ${className}`}
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      {/* Central curved stem */}
-      <path
-        d="M26 105 C26 75 24 45 16 12"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        fill="none"
-        strokeLinecap="round"
-      />
-      {/* Paired olive leaves */}
-      <path d="M25 90 C18 86 8 88 6 80 C14 78 21 83 25 90 Z" />
-      <path d="M26 84 C32 81 42 84 43 76 C36 74 29 78 26 84 Z" />
-      <path d="M23 70 C16 66 7 66 6 58 C13 57 20 62 23 70 Z" />
-      <path d="M24 64 C30 61 39 62 40 54 C34 52 27 57 24 64 Z" />
-      <path d="M20 50 C14 46 7 45 7 37 C14 37 19 43 20 50 Z" />
-      <path d="M21 44 C27 41 35 40 36 32 C30 31 24 37 21 44 Z" />
-      <path d="M18 30 C13 26 8 23 9 16 C15 17 19 23 18 30 Z" />
-      <path d="M18 25 C23 21 29 18 30 12 C24 13 20 19 18 25 Z" />
-      {/* Top bud leaf */}
-      <path d="M16 12 C15 6 16 2 17 0 C18 2 19 6 17 12 Z" />
-    </svg>
-  )
-}
 
 // Google official 4-color G icon
 function GoogleIcon() {
@@ -114,24 +84,31 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   const [errorMsg, setErrorMsg] = useState('')
   const [successToast, setSuccessToast] = useState<string | null>(null)
 
-  // Forgot password modal
+  // Multi-Step Password Recovery
   const [showForgotModal, setShowForgotModal] = useState(false)
+  const [forgotStep, setForgotStep] = useState<'email' | 'otp' | 'new_password'>('email')
   const [forgotEmail, setForgotEmail] = useState('')
-  const [forgotSent, setForgotSent] = useState(false)
+  const [forgotOtp, setForgotOtp] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
+  const [forgotError, setForgotError] = useState('')
+  const [forgotSuccess, setForgotSuccess] = useState('')
+  const [cooldown, setCooldown] = useState(0)
 
-  // Google Account Selector simulation modal (fallback or custom account selection)
+  // Google Account Selector simulation modal
   const [showGoogleModal, setShowGoogleModal] = useState(false)
   const [customGoogleEmail, setCustomGoogleEmail] = useState('')
   const [customGoogleName, setCustomGoogleName] = useState('')
 
-  // Sync mode with prop/URL
+  // Cooldown countdown
   useEffect(() => {
-    if (searchParams.get('mode') === 'register') {
-      setIsRegister(true)
-    }
-  }, [searchParams])
+    if (cooldown <= 0) return
+    const timer = setInterval(() => {
+      setCooldown((prev) => (prev > 0 ? prev - 1 : 0))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [cooldown])
 
-  // Clear errors when toggling modes
   const toggleMode = (targetRegister: boolean) => {
     setIsRegister(targetRegister)
     setErrorMsg('')
@@ -171,15 +148,16 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
     try {
       if (isRegister) {
-        // Direct register / simulation
-        const response = await apiClient.post('/auth/google', {
+        // Register API call
+        const data = await authApi.register({
           email: email.trim().toLowerCase(),
+          password,
           name: name.trim(),
         })
 
-        if (response.data?.data) {
-          localStorage.setItem('access_token', response.data.data.access)
-          localStorage.setItem('auth_user', JSON.stringify(response.data.data.user))
+        if (data?.access) {
+          localStorage.setItem('access_token', data.access)
+          localStorage.setItem('auth_user', JSON.stringify(data.user))
         }
 
         if (rememberMe) {
@@ -188,20 +166,20 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
           localStorage.removeItem('scnswf_remember_email')
         }
 
-        setSuccessToast(`Welcome to SCNSWF, ${name}! Your account has been created.`)
+        setSuccessToast(`Welcome to SCNSWF, ${data.user.name || name}! Your account is ready.`)
         setTimeout(() => {
           navigate('/')
-        }, 1500)
+        }, 1300)
       } else {
-        // Login
-        const response = await apiClient.post('/auth/login', {
+        // Login API call
+        const data = await authApi.login({
           email: email.trim().toLowerCase(),
           password,
         })
 
-        if (response.data?.data) {
-          localStorage.setItem('access_token', response.data.data.access)
-          localStorage.setItem('auth_user', JSON.stringify(response.data.data.user))
+        if (data?.access) {
+          localStorage.setItem('access_token', data.access)
+          localStorage.setItem('auth_user', JSON.stringify(data.user))
         }
 
         if (rememberMe) {
@@ -210,42 +188,27 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
           localStorage.removeItem('scnswf_remember_email')
         }
 
-        setSuccessToast('Logged in successfully! Redirecting…')
+        setSuccessToast(`Welcome back, ${data.user.name || 'Member'}! Logged in successfully.`)
         setTimeout(() => {
           navigate('/')
         }, 1200)
       }
     } catch (err: any) {
-      // If backend reports invalid credentials, or in offline dev preview mode
-      const apiError = err?.response?.data?.message || err?.response?.data?.error
+      const apiError =
+        err?.response?.data?.message ||
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.error
       if (apiError) {
         setErrorMsg(apiError)
       } else {
-        // Graceful fallback for offline demo preview
-        localStorage.setItem('access_token', `demo-jwt-token-${Date.now()}`)
-        localStorage.setItem(
-          'auth_user',
-          JSON.stringify({
-            email: email.trim().toLowerCase(),
-            name: name.trim() || email.split('@')[0],
-            role: 'volunteer',
-          })
-        )
-        setSuccessToast(
-          isRegister
-            ? `Account created! Welcome, ${name || email.split('@')[0]}.`
-            : 'Welcome back! Logged in successfully.'
-        )
-        setTimeout(() => {
-          navigate('/')
-        }, 1300)
+        setErrorMsg('Unable to connect to authentication server. Please try again.')
       }
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Handle Google OAuth / Sign In & Sign Up
+  // Handle Google Auth
   const handleGoogleAuth = async (userProfile?: { email: string; name: string; avatar?: string }) => {
     setIsLoading(true)
     setErrorMsg('')
@@ -258,131 +221,164 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
     }
 
     try {
-      // Connect to backend Google authentication endpoint
-      const response = await apiClient.post('/auth/google', {
+      const data = await authApi.googleAuth({
         email: googleUser.email,
         name: googleUser.name,
         avatar: googleUser.avatar,
       })
 
-      const data = response.data?.data
       if (data?.access) {
         localStorage.setItem('access_token', data.access)
         localStorage.setItem('auth_user', JSON.stringify(data.user))
       }
-    } catch {
-      // Client-side fallback if backend API is offline
-      localStorage.setItem('access_token', `google-token-${Date.now()}`)
-      localStorage.setItem(
-        'auth_user',
-        JSON.stringify({
-          email: googleUser.email,
-          name: googleUser.name,
-          avatar: googleUser.avatar,
-          provider: 'google',
-        })
+
+      setSuccessToast(
+        isRegister
+          ? `Signed up with Google as ${googleUser.name}! Welcome to SCNSWF.`
+          : `Signed in with Google as ${googleUser.name}!`
       )
+
+      setTimeout(() => {
+        navigate('/')
+      }, 1300)
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Google authentication failed. Please try again.'
+      setErrorMsg(msg)
+    } finally {
+      setIsLoading(false)
     }
-
-    setSuccessToast(
-      isRegister
-        ? `Signed up with Google as ${googleUser.name}! Welcome to SCNSWF.`
-        : `Signed in with Google as ${googleUser.name}!`
-    )
-
-    setTimeout(() => {
-      navigate('/')
-    }, 1400)
-
-    setIsLoading(false)
   }
 
   // Handle Microsoft Auth
   const handleMicrosoftAuth = () => {
-    setIsLoading(true)
-    setErrorMsg('')
-
-    setTimeout(() => {
-      localStorage.setItem('access_token', `microsoft-token-${Date.now()}`)
-      localStorage.setItem(
-        'auth_user',
-        JSON.stringify({
-          email: 'user@outlook.com',
-          name: 'Microsoft User',
-          provider: 'microsoft',
-        })
-      )
-      setSuccessToast('Signed in with Microsoft account successfully!')
-      setTimeout(() => navigate('/'), 1200)
-      setIsLoading(false)
-    }, 600)
+    handleGoogleAuth({
+      email: 'member.odisha@outlook.com',
+      name: 'Odisha Community Member',
+    })
   }
 
-  // Handle Forgot Password submission
-  const handleForgotSubmit = (e: React.FormEvent) => {
+  // Step 1: Request Password Reset OTP
+  const handleRequestResetOtp = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!forgotEmail.trim()) return
-    setForgotSent(true)
-    setTimeout(() => {
-      setShowForgotModal(false)
-      setForgotSent(false)
-      setForgotEmail('')
-      setSuccessToast('Password reset link sent to your email inbox.')
-    }, 2000)
+    setForgotError('')
+    setForgotSuccess('')
+
+    if (!forgotEmail.trim()) {
+      setForgotError('Please enter your registered email address.')
+      return
+    }
+
+    setForgotLoading(true)
+    try {
+      const res = await authApi.forgotPassword(forgotEmail.trim().toLowerCase())
+      setForgotSuccess(res.message || 'Verification code sent to your email.')
+      setCooldown(res.resend_cooldown || 60)
+      setForgotStep('otp')
+    } catch (err: any) {
+      setForgotError(err?.response?.data?.message || 'Failed to dispatch reset code. Please try again.')
+    } finally {
+      setForgotLoading(false)
+    }
+  }
+
+  // Step 2: Verify OTP
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setForgotError('')
+    setForgotSuccess('')
+
+    if (!forgotOtp.trim() || forgotOtp.length !== 6) {
+      setForgotError('Please enter the complete 6-digit verification code.')
+      return
+    }
+
+    setForgotLoading(true)
+    try {
+      await authApi.verifyResetOtp(forgotEmail.trim().toLowerCase(), forgotOtp.trim())
+      setForgotSuccess('Code verified! Enter your new password.')
+      setForgotStep('new_password')
+    } catch (err: any) {
+      setForgotError(err?.response?.data?.message || 'Invalid or expired verification code.')
+    } finally {
+      setForgotLoading(false)
+    }
+  }
+
+  // Step 3: Set New Password
+  const handleSetNewPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setForgotError('')
+    setForgotSuccess('')
+
+    if (newPassword.length < 6) {
+      setForgotError('New password must be at least 6 characters.')
+      return
+    }
+
+    setForgotLoading(true)
+    try {
+      const res = await authApi.resetPassword({
+        email: forgotEmail.trim().toLowerCase(),
+        otp: forgotOtp.trim(),
+        newPassword,
+      })
+      setForgotSuccess(res.message || 'Password reset successfully!')
+      setTimeout(() => {
+        setShowForgotModal(false)
+        setForgotStep('email')
+        setForgotEmail('')
+        setForgotOtp('')
+        setNewPassword('')
+        setIsRegister(false)
+        setSuccessToast('Password reset successfully! Please sign in with your new password.')
+      }, 1500)
+    } catch (err: any) {
+      setForgotError(err?.response?.data?.message || 'Failed to reset password. Please try again.')
+    } finally {
+      setForgotLoading(false)
+    }
   }
 
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden font-sans select-none bg-[#0a2e1f]">
-      {/* =========================================================================
-          BACKGROUND LAYER: Smiling Children + Dark Green Waves
-          ========================================================================= */}
+      {/* Background layer */}
       <div
-        className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-center"
+        className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-[center_left] lg:bg-center"
         style={{
           backgroundImage: `url('/images/login-clean-bg.jpg')`,
         }}
         aria-hidden="true"
       >
-        {/* Soft overlay gradient to ensure high readability on all screens */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/20 to-black/35 lg:to-transparent" />
+        {/* Soft top gradient to ensure navbar text contrast while preserving sunny daylight */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-transparent pointer-events-none" />
       </div>
 
-      {/* =========================================================================
-          TOP NAVBAR: Exact SCNSWF Brand + Navigation Links + Donate Pill
-          ========================================================================= */}
-      <header className="relative z-20 w-full pt-3 sm:pt-4 px-4 sm:px-8 lg:px-12">
+      {/* TOP NAVBAR */}
+      <header className="relative z-20 w-full pt-4 px-4 sm:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Brand Logo & Tagline */}
-          <Link to="/" className="flex items-center gap-3 sm:gap-3.5 group">
-            {/* 3D Glossy NGO Logo */}
-            <img
-              src="/images/ngo-hands-emblem.png"
-              alt="NGO Logo"
-              className="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
-              onError={(e) => {
-                // Graceful fallback to about logo if needed
-                ;(e.currentTarget as HTMLImageElement).src = '/images/about/scnswf-logo.png'
-              }}
-            />
-            {/* Vertical Divider */}
-            <div className="h-9 sm:h-10 w-[1.5px] bg-white/40" />
-            {/* Typography */}
+          <Link to="/" className="flex items-center gap-3 group" aria-label="SCNSWF Home">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/95 p-1.5 flex items-center justify-center shadow-md backdrop-blur-xs group-hover:scale-105 transition-transform border border-white/60 shrink-0">
+              <img
+                src="/images/scnswf-lotus-flower.png"
+                alt="SCNSWF Lotus Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="h-8 w-[1.5px] bg-white/40" />
             <div className="flex flex-col text-white">
-              <span className="font-serif font-bold text-lg sm:text-2xl tracking-wider leading-none">
+              <span className="font-heading font-extrabold text-lg sm:text-xl tracking-wider leading-none">
                 SCNSWF
               </span>
-              <span className="font-serif italic text-xs sm:text-sm text-emerald-200 tracking-wide mt-0.5">
-                Together We Rise
+              <span className="text-[11px] sm:text-xs text-emerald-200 tracking-wide font-medium mt-0.5">
+                Healthcare for All
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-white font-medium text-sm lg:text-[15px]">
-            <Link
-              to="/"
-              className="relative flex items-center gap-1.5 py-1 text-white hover:text-emerald-200 transition-colors after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
-            >
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-white font-medium text-sm">
+            <Link to="/" className="flex items-center gap-1.5 py-1 text-white hover:text-emerald-200 transition-colors">
               <Home className="w-4 h-4" />
               <span>Home</span>
             </Link>
@@ -396,29 +392,29 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               Get Involved
             </Link>
 
-            {/* Donate Button */}
             <Link
               to="/donate"
-              className="flex items-center gap-2 px-5 py-2 rounded-full border border-white/80 bg-black/20 hover:bg-white hover:text-[#082e23] transition-all text-white font-semibold text-sm shadow-xs backdrop-blur-xs"
+              className="flex items-center gap-2 px-5 py-2 rounded-full border border-white/80 bg-white/10 hover:bg-white hover:text-[#082e23] transition-all text-white font-semibold text-sm shadow-xs backdrop-blur-xs cursor-pointer"
             >
-              <Heart className="w-4 h-4 fill-white hover:fill-[#082e23] text-transparent" />
+              <Heart className="w-4 h-4 fill-white hover:fill-[#082e23]" />
               <span>Donate</span>
             </Link>
           </nav>
 
-          {/* Mobile Menu Hamburger */}
-          <div className="flex items-center gap-2 md:hidden">
+          {/* Mobile Right: Donate + Hamburger */}
+          <div className="flex items-center gap-2.5 md:hidden">
             <Link
               to="/donate"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/80 bg-white/10 text-white text-xs font-semibold"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/80 bg-white/15 text-white text-xs font-semibold"
             >
-              <Heart className="w-3.5 h-3.5 fill-white text-transparent" />
+              <Heart className="w-3.5 h-3.5 fill-white" />
               <span>Donate</span>
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-white bg-black/20 backdrop-blur-xs border border-white/20 focus:outline-hidden"
-              aria-label="Toggle navigation menu"
+              className="p-2.5 rounded-xl text-white bg-black/25 backdrop-blur-xs border border-white/20 focus:outline-hidden min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -427,10 +423,10 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-3 p-4 bg-[#082e23]/95 backdrop-blur-md rounded-2xl border border-white/20 text-white space-y-3 shadow-xl">
+          <div className="md:hidden mt-3 p-4 bg-[#082e23]/95 backdrop-blur-md rounded-2xl border border-white/20 text-white space-y-2.5 shadow-2xl animate-fadeIn">
             <Link
               to="/"
-              className="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-white/10"
+              className="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-white/10 text-sm font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
               <Home className="w-4 h-4" />
@@ -438,264 +434,275 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
             </Link>
             <Link
               to="/about"
-              className="block py-2 px-3 rounded-lg hover:bg-white/10"
+              className="block py-2.5 px-3 rounded-xl hover:bg-white/10 text-sm font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
               About
             </Link>
             <Link
               to="/programs"
-              className="block py-2 px-3 rounded-lg hover:bg-white/10"
+              className="block py-2.5 px-3 rounded-xl hover:bg-white/10 text-sm font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
               Our Work
             </Link>
             <Link
               to="/get-involved"
-              className="block py-2 px-3 rounded-lg hover:bg-white/10"
+              className="block py-2.5 px-3 rounded-xl hover:bg-white/10 text-sm font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
               Get Involved
             </Link>
             <Link
               to="/donate"
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-emerald-600 text-white font-semibold text-center"
+              className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-center mt-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Heart className="w-4 h-4 fill-white text-transparent" />
+              <Heart className="w-4 h-4 fill-white" />
               <span>Donate to SCNSWF</span>
             </Link>
           </div>
         )}
       </header>
 
-      {/* =========================================================================
-          MAIN CONTENT AREA: 2-Column Hero on Desktop, Stacked on Mobile
-          ========================================================================= */}
-      <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 lg:px-12 py-4 sm:py-6 lg:py-8 flex items-center">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
-          {/* ---------------------------------------------------------------------
-              LEFT COLUMN: Spacer on Desktop (Background displays artwork) + Clickable Learn More
-              --------------------------------------------------------------------- */}
-          <div className="lg:col-span-7 xl:col-span-7 flex flex-col items-start justify-end py-2 sm:py-4 lg:min-h-[480px]">
-            {/* Mobile Header Title (shown on small screens where background photo crops) */}
-            <div className="lg:hidden text-center mx-auto mb-3">
-              <h1 className="font-['Caveat',cursive] text-4xl sm:text-5xl text-white font-bold tracking-tight leading-none drop-shadow-md">
-                Together <span className="text-[#38d484]">We Rise</span>
-              </h1>
-              <p className="text-white/90 text-xs sm:text-sm mt-1">
-                Empowering communities. Building a brighter future.
-              </p>
-            </div>
+      {/* MAIN CONTENT AREA */}
+      <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-10 flex items-center">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* LEFT COLUMN: Open space allowing the 4 smiling children in the background to shine clearly */}
+          <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
 
-            {/* Desktop interactive CTA hotspot matching the artwork's 'Learn More' position */}
-            <div className="hidden lg:block mt-auto pb-4">
-              <Link
-                to="/about"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/80 bg-black/20 hover:bg-white hover:text-[#082e23] text-white text-sm font-semibold transition-all duration-200 backdrop-blur-xs shadow-sm hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <span>Learn More</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
+          {/* RIGHT COLUMN: Refined Login & Register Card matching brand design */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
+            <div className="relative w-full max-w-[420px] sm:max-w-[440px] bg-white/90 sm:bg-white/92 backdrop-blur-md rounded-[28px] sm:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 border border-white/80 transition-all duration-300 mx-auto lg:ml-auto lg:mr-0">
+              {/* Card Brand Header */}
+              <div className="text-center mb-3">
+                <img
+                  src="/images/scnswf-lotus-flower.png"
+                  alt="SCNSWF Lotus Logo"
+                  className="h-12 sm:h-14 w-auto mx-auto object-contain drop-shadow-xs"
+                />
+                <h1 className="font-heading font-extrabold text-2xl sm:text-[26px] text-[#166534] tracking-wider leading-none mt-2">
+                  SCNSWF
+                </h1>
+                <p className="text-xs sm:text-sm font-semibold text-[#166534] tracking-wide mt-1">
+                  Healthcare for All
+                </p>
+              </div>
 
-          {/* ---------------------------------------------------------------------
-              RIGHT COLUMN: Exact Floating Login / Register Card
-              --------------------------------------------------------------------- */}
-          <div className="lg:col-span-5 xl:col-span-5 flex justify-center lg:justify-end w-full">
-            <div className="relative w-full max-w-[420px] bg-white rounded-3xl sm:rounded-[36px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] p-6 sm:p-7 lg:p-8 border border-gray-100 transition-all duration-300">
-              {/* Card Header with Symmetrical Laurel Branches */}
-              <div className="relative flex items-center justify-center mb-5 sm:mb-6">
-                {/* Left Laurel Branch */}
-                <LaurelBranch className="text-[#105e49]" />
-
-                {/* Header Title & Subtitle */}
-                <div className="text-center px-2">
-                  <h3 className="text-2xl sm:text-3xl font-serif font-bold text-gray-900 tracking-tight leading-tight">
-                    {isRegister ? 'Join SCNSWF' : 'Welcome Back!'}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                    {isRegister ? 'Sign up to start making an impact' : 'Log in to continue making an impact'}
-                  </p>
-                  {/* Dark green decorative underline */}
-                  <div className="w-14 h-1 bg-[#105e49] rounded-full mx-auto mt-2.5" />
-                </div>
-
-                {/* Right Laurel Branch (Mirrored) */}
-                <LaurelBranch flip className="text-[#105e49]" />
+              {/* Title & Underline */}
+              <div className="text-center mb-5">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#166534] tracking-tight">
+                  {isRegister ? 'Register' : 'Login'}
+                </h2>
+                <div className="w-12 h-0.5 bg-[#166534] rounded-full mx-auto mt-1.5" />
               </div>
 
               {/* Error Alert */}
               {errorMsg && (
-                <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-start gap-2 animate-shake">
+                <div
+                  role="alert"
+                  className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-start gap-2 animate-shake"
+                >
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-600" />
-                  <span className="flex-1">{errorMsg}</span>
+                  <span className="flex-1 font-medium">{errorMsg}</span>
                 </div>
               )}
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
-                {/* Full Name field (Only in Register mode) */}
+              <form onSubmit={handleSubmit} method="POST" className="space-y-3.5 sm:space-y-4">
+                {/* Full Name field (Register mode) */}
                 {isRegister && (
-                  <div className="relative flex items-center">
-                    <User className="absolute left-4 w-5 h-5 text-gray-600 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Full Name"
-                      className="w-full pl-12 pr-4 py-3 sm:py-3.5 bg-gray-100/90 hover:bg-gray-100 focus:bg-white text-gray-900 text-sm sm:text-base rounded-2xl border border-transparent focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20 transition-all outline-hidden placeholder-gray-500"
-                    />
+                  <div>
+                    <label htmlFor="auth-name" className="sr-only">
+                      Full Name
+                    </label>
+                    <div className="relative flex items-center">
+                      <User className="absolute left-4 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <input
+                        id="auth-name"
+                        name="name"
+                        type="text"
+                        autoComplete="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Full Name"
+                        required
+                        className="w-full pl-11 pr-4 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
+                      />
+                    </div>
                   </div>
                 )}
 
-                {/* Email Address */}
-                <div className="relative flex items-center">
-                  <Mail className="absolute left-4 w-5 h-5 text-gray-600 pointer-events-none" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email Address"
-                    required
-                    className="w-full pl-12 pr-4 py-3 sm:py-3.5 bg-gray-100/90 hover:bg-gray-100 focus:bg-white text-gray-900 text-sm sm:text-base rounded-2xl border border-transparent focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20 transition-all outline-hidden placeholder-gray-500"
-                  />
+                {/* Email or Username */}
+                <div>
+                  <label htmlFor="auth-email" className="sr-only">
+                    Email or Username
+                  </label>
+                  <div className="relative flex items-center">
+                    <User className="absolute left-4 w-5 h-5 text-gray-400 pointer-events-none" />
+                    <input
+                      id="auth-email"
+                      name="email"
+                      type="text"
+                      autoComplete="username"
+                      spellCheck="false"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Email or Username"
+                      required
+                      className="w-full pl-11 pr-4 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
+                    />
+                  </div>
                 </div>
 
                 {/* Password Field */}
-                <div className="relative flex items-center">
-                  <Lock className="absolute left-4 w-5 h-5 text-gray-600 pointer-events-none" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    required
-                    className="w-full pl-12 pr-12 py-3 sm:py-3.5 bg-gray-100/90 hover:bg-gray-100 focus:bg-white text-gray-900 text-sm sm:text-base rounded-2xl border border-transparent focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20 transition-all outline-hidden placeholder-gray-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 text-gray-600 hover:text-gray-900 transition-colors p-1"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-
-                {/* Confirm Password (Only in Register mode) */}
-                {isRegister && (
+                <div>
+                  <label htmlFor="auth-password" className="sr-only">
+                    Password
+                  </label>
                   <div className="relative flex items-center">
-                    <Lock className="absolute left-4 w-5 h-5 text-gray-600 pointer-events-none" />
+                    <Lock className="absolute left-4 w-5 h-5 text-gray-400 pointer-events-none" />
                     <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm Password"
+                      id="auth-password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete={isRegister ? 'new-password' : 'current-password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Password"
                       required
-                      className="w-full pl-12 pr-12 py-3 sm:py-3.5 bg-gray-100/90 hover:bg-gray-100 focus:bg-white text-gray-900 text-sm sm:text-base rounded-2xl border border-transparent focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20 transition-all outline-hidden placeholder-gray-500"
+                      className="w-full pl-11 pr-12 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-4 text-gray-600 hover:text-gray-900 transition-colors p-1"
-                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 text-gray-400 hover:text-gray-700 transition-colors p-1.5 cursor-pointer"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
-                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
+                  </div>
+                </div>
+
+                {/* Confirm Password (Register mode) */}
+                {isRegister && (
+                  <div>
+                    <label htmlFor="auth-confirm-password" className="sr-only">
+                      Confirm Password
+                    </label>
+                    <div className="relative flex items-center">
+                      <Lock className="absolute left-4 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <input
+                        id="auth-confirm-password"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        autoComplete="new-password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm Password"
+                        required
+                        className="w-full pl-11 pr-12 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3.5 text-gray-400 hover:text-gray-700 transition-colors p-1.5 cursor-pointer"
+                        aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
                   </div>
                 )}
 
-                {/* Remember Me & Forgot Password Row (In Login mode) */}
+                {/* Remember Me & Forgot Password */}
                 {!isRegister && (
-                  <div className="flex items-center justify-between text-xs sm:text-sm text-gray-700 pt-1">
+                  <div className="flex items-center justify-between text-xs sm:text-sm text-gray-700 pt-0.5">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="w-4 h-4 rounded-md border-gray-300 text-[#082e23] focus:ring-[#105e49] cursor-pointer"
+                        className="w-4 h-4 rounded-md border-gray-300 text-[#166534] focus:ring-[#166534] cursor-pointer"
                       />
-                      <span>Remember me</span>
+                      <span className="font-medium text-gray-600">Remember me</span>
                     </label>
 
                     <button
                       type="button"
                       onClick={() => {
                         setForgotEmail(email)
+                        setForgotStep('email')
+                        setForgotError('')
+                        setForgotSuccess('')
                         setShowForgotModal(true)
                       }}
-                      className="font-medium text-gray-800 hover:text-[#105e49] transition-colors"
+                      className="font-semibold text-[#166534] hover:underline transition-colors cursor-pointer"
                     >
                       Forgot Password?
                     </button>
                   </div>
                 )}
 
-                {/* Primary Action Button (Login / Sign Up) */}
+                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 sm:py-4 px-6 rounded-2xl bg-[#082e23] hover:bg-[#051c15] active:scale-[0.99] text-white font-semibold text-base sm:text-lg flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed mt-2"
+                  className="w-full py-3.5 px-6 rounded-full bg-[#166534] hover:bg-[#14532d] active:scale-[0.99] text-white font-semibold text-base sm:text-lg flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[48px] mt-2"
                 >
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      <span>{isRegister ? 'Sign Up' : 'Login'}</span>
+                      <span>{isRegister ? 'Register' : 'Login'}</span>
                       <ArrowRight className="w-5 h-5" />
                     </>
                   )}
                 </button>
               </form>
 
-              {/* Divider: "or" */}
+              {/* Divider */}
               <div className="relative my-4 sm:my-5 flex items-center justify-center">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200" />
                 </div>
-                <span className="relative px-3 bg-white text-xs sm:text-sm text-gray-500 font-medium lowercase">
-                  or
+                <span className="relative px-3 bg-white/90 text-xs text-gray-400 font-medium uppercase tracking-wider">
+                  or continue with
                 </span>
               </div>
 
-              {/* Social Login Options (Responsive side-by-side or stacked on tiny screens) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
-                {/* Continue with Google */}
+              {/* Social Login */}
+              <div className="grid grid-cols-2 gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowGoogleModal(true)}
                   disabled={isLoading}
-                  className="w-full py-2.5 sm:py-3 px-2 rounded-xl sm:rounded-2xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium text-gray-700 shadow-2xs group whitespace-nowrap"
+                  className="py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
                 >
                   <GoogleIcon />
-                  <span>
-                    {isRegister ? 'Sign up with Google' : 'Continue with Google'}
-                  </span>
+                  <span>Google</span>
                 </button>
 
-                {/* Continue with Microsoft */}
                 <button
                   type="button"
                   onClick={handleMicrosoftAuth}
                   disabled={isLoading}
-                  className="w-full py-2.5 sm:py-3 px-2 rounded-xl sm:rounded-2xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium text-gray-700 shadow-2xs group whitespace-nowrap"
+                  className="py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
                 >
                   <MicrosoftIcon />
-                  <span>Continue with Microsoft</span>
+                  <span>Microsoft</span>
                 </button>
               </div>
 
               {/* Footer Switcher */}
-              <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600">
+              <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600 font-medium">
                 {isRegister ? (
                   <p>
                     Already have an account?{' '}
                     <button
                       type="button"
                       onClick={() => toggleMode(false)}
-                      className="font-bold text-[#105e49] hover:underline transition-all cursor-pointer ml-1"
+                      className="font-bold text-[#166534] hover:underline cursor-pointer ml-1"
                     >
                       Login
                     </button>
@@ -706,9 +713,9 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                     <button
                       type="button"
                       onClick={() => toggleMode(true)}
-                      className="font-bold text-[#105e49] hover:underline transition-all cursor-pointer ml-1"
+                      className="font-bold text-[#166534] hover:underline cursor-pointer ml-1"
                     >
-                      Register
+                      Register Now
                     </button>
                   </p>
                 )}
@@ -718,62 +725,194 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
         </div>
       </main>
 
-      {/* =========================================================================
-          BOTTOM BANNER: Silhouette Illustrations (Children, Fists, Community Rally)
-          ========================================================================= */}
-      <footer className="relative z-10 w-full overflow-hidden select-none">
-        <div
-          className="w-full h-24 sm:h-28 lg:h-32 bg-contain sm:bg-cover bg-bottom bg-no-repeat pointer-events-none"
-          style={{
-            backgroundImage: `url('/images/login-bottom-banner.png')`,
-          }}
-          aria-hidden="true"
-        />
-      </footer>
+      {/* BOTTOM SPACER: allows the background wave ribbon to be visible */}
+      <footer className="relative z-10 w-full h-10 sm:h-14 lg:h-16 pointer-events-none select-none" aria-hidden="true" />
 
-      {/* =========================================================================
-          INTERACTIVE GOOGLE AUTH / ACCOUNT SELECTION MODAL
-          ========================================================================= */}
-      {showGoogleModal && (
+      {/* MULTI-STEP PASSWORD RECOVERY MODAL */}
+      {showForgotModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
           <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-7 border border-gray-200">
-            {/* Close Button */}
             <button
-              onClick={() => setShowGoogleModal(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-full text-gray-600 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              onClick={() => {
+                setShowForgotModal(false)
+                setForgotStep('email')
+                setForgotError('')
+                setForgotSuccess('')
+              }}
+              className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+              aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* Google Brand Header */}
+            <div className="text-center mb-5">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 text-[#105e49] flex items-center justify-center mx-auto mb-3">
+                <KeyRound className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">
+                {forgotStep === 'email' && 'Reset Password'}
+                {forgotStep === 'otp' && 'Verify 6-Digit Code'}
+                {forgotStep === 'new_password' && 'Enter New Password'}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                {forgotStep === 'email' && 'Enter your registered email to receive a verification code.'}
+                {forgotStep === 'otp' && `Enter the 6-digit code sent to ${forgotEmail}.`}
+                {forgotStep === 'new_password' && 'Create a strong new password for your account.'}
+              </p>
+            </div>
+
+            {forgotError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{forgotError}</span>
+              </div>
+            )}
+
+            {forgotSuccess && (
+              <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{forgotSuccess}</span>
+              </div>
+            )}
+
+            {/* Step 1: Email */}
+            {forgotStep === 'email' && (
+              <form onSubmit={handleRequestResetOtp} className="space-y-4">
+                <div className="relative flex items-center">
+                  <Mail className="absolute left-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <input
+                    type="email"
+                    required
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="Enter registered email"
+                    className="w-full pl-11 pr-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:outline-hidden focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full py-3 rounded-xl bg-[#082e23] hover:bg-[#105e49] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {forgotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Send Reset Code</span>}
+                </button>
+              </form>
+            )}
+
+            {/* Step 2: OTP Verification */}
+            {forgotStep === 'otp' && (
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <div>
+                  <p id="otp-hint" className="text-xs text-gray-500 mb-2 text-center">
+                    Enter the 6-digit code delivered to your email.
+                  </p>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    pattern="\d{6}"
+                    maxLength={6}
+                    required
+                    value={forgotOtp}
+                    onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="000000"
+                    aria-describedby="otp-hint"
+                    className="w-full py-3 px-4 text-center text-2xl font-mono tracking-[0.35em] bg-gray-50 rounded-xl border border-gray-200 focus:outline-hidden focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full py-3 rounded-xl bg-[#082e23] hover:bg-[#105e49] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {forgotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Verify Code</span>}
+                </button>
+
+                <div className="flex items-center justify-between text-xs text-gray-500 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep('email')}
+                    className="text-gray-600 hover:underline cursor-pointer"
+                  >
+                    Change email
+                  </button>
+                  <button
+                    type="button"
+                    disabled={cooldown > 0 || forgotLoading}
+                    onClick={handleRequestResetOtp}
+                    className="text-[#105e49] font-semibold hover:underline disabled:opacity-50 cursor-pointer"
+                  >
+                    {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend Code'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Step 3: New Password */}
+            {forgotStep === 'new_password' && (
+              <form onSubmit={handleSetNewPassword} className="space-y-4">
+                <div className="relative flex items-center">
+                  <Lock className="absolute left-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <input
+                    type="password"
+                    required
+                    autoComplete="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password (min. 6 chars)"
+                    className="w-full pl-11 pr-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:outline-hidden focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full py-3 rounded-xl bg-[#082e23] hover:bg-[#105e49] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {forgotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Update Password</span>}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* GOOGLE SIMULATION / SELECTOR MODAL */}
+      {showGoogleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
+          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-7 border border-gray-200">
+            <button
+              onClick={() => setShowGoogleModal(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
             <div className="flex flex-col items-center text-center mb-6">
               <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-200 mb-3 shadow-2xs">
                 <GoogleIcon />
               </div>
-              <h4 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-bold text-gray-900">
                 {isRegister ? 'Sign up with Google' : 'Sign in with Google'}
-              </h4>
+              </h3>
               <p className="text-xs text-gray-500 mt-1">to continue to SCNSWF — Suresh Chandra Nayak Foundation</p>
             </div>
 
-            {/* Account List */}
             <div className="space-y-2 mb-4">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                 Choose an account
               </p>
 
-              {/* Demo Account 1 */}
               <button
                 type="button"
                 onClick={() =>
                   handleGoogleAuth({
                     email: 'suresh.nayak@gmail.com',
                     name: 'Suresh Nayak',
-                    avatar:
-                      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+                    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
                   })
                 }
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 transition-all text-left group"
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 transition-all text-left group cursor-pointer"
               >
                 <div className="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm">
                   SN
@@ -787,18 +926,16 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                 <Check className="w-4 h-4 text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
 
-              {/* Demo Account 2 */}
               <button
                 type="button"
                 onClick={() =>
                   handleGoogleAuth({
                     email: 'volunteer.partner@gmail.com',
                     name: 'Volunteer Advocate',
-                    avatar:
-                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+                    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
                   })
                 }
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 transition-all text-left group"
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 transition-all text-left group cursor-pointer"
               >
                 <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
                   VA
@@ -813,7 +950,6 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               </button>
             </div>
 
-            {/* Custom Google Account Input */}
             <div className="pt-3 border-t border-gray-100">
               <p className="text-xs text-gray-500 mb-2">Or enter your own Google account details:</p>
               <div className="space-y-2">
@@ -841,7 +977,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                     })
                   }}
                   disabled={!customGoogleEmail.trim()}
-                  className="w-full py-2.5 rounded-xl bg-[#105e49] hover:bg-[#082e23] disabled:opacity-50 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-xl bg-[#105e49] hover:bg-[#082e23] disabled:opacity-50 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Continue with this account</span>
@@ -852,72 +988,17 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
         </div>
       )}
 
-      {/* =========================================================================
-          FORGOT PASSWORD MODAL
-          ========================================================================= */}
-      {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-7 border border-gray-200">
-            <button
-              onClick={() => {
-                setShowForgotModal(false)
-                setForgotSent(false)
-              }}
-              className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="text-center mb-5">
-              <div className="w-12 h-12 rounded-full bg-emerald-50 text-[#105e49] flex items-center justify-center mx-auto mb-3">
-                <Lock className="w-6 h-6" />
-              </div>
-              <h4 className="text-xl font-bold text-gray-900">Reset your password</h4>
-              <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                Enter your registered email address and we'll send you instructions to reset your password.
-              </p>
-            </div>
-
-            {forgotSent ? (
-              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm text-center flex flex-col items-center gap-2">
-                <Check className="w-6 h-6 text-emerald-600" />
-                <p className="font-semibold">Reset instructions sent!</p>
-                <p className="text-xs text-emerald-700">Please check your inbox at {forgotEmail}.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleForgotSubmit} className="space-y-4">
-                <div className="relative flex items-center">
-                  <Mail className="absolute left-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
-                  <input
-                    type="email"
-                    required
-                    value={forgotEmail}
-                    onChange={(e) => setForgotEmail(e.target.value)}
-                    placeholder="Enter your registered email"
-                    className="w-full pl-11 pr-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:outline-hidden focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-xl bg-[#082e23] hover:bg-[#051c15] text-white font-semibold text-sm transition-all"
-                >
-                  Send Reset Link
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* =========================================================================
-          SUCCESS TOAST NOTIFICATION
-          ========================================================================= */}
+      {/* SUCCESS TOAST NOTIFICATION */}
       {successToast && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-md bg-[#082e23] text-white px-5 py-4 rounded-2xl shadow-2xl border border-emerald-400/30 flex items-center gap-3 animate-slideUp">
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 max-w-md bg-[#082e23] text-white px-5 py-4 rounded-2xl shadow-2xl border border-emerald-400/30 flex items-center gap-3 animate-slideUp"
+        >
           <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
             <Check className="w-5 h-5" />
           </div>
-          <span className="text-sm font-medium">{successToast}</span>
+          <span className="text-sm font-semibold">{successToast}</span>
         </div>
       )}
     </div>

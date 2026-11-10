@@ -92,17 +92,19 @@ export default function Footer() {
           {/* Brand & Mission column */}
           <div className="lg:col-span-4 flex flex-col">
             <Link to="/" className="flex items-center gap-3 mb-4 group">
-              <img
-                src="/images/about/scnswf-logo.png"
-                alt="SCNSWF Logo"
-                className="w-11 h-11 rounded-xl object-contain bg-white p-1 border border-[#0f4737]"
-              />
+              <div className="w-11 h-11 rounded-xl bg-white p-1.5 border border-[#0f4737] flex items-center justify-center">
+                <img
+                  src="/images/scnswf-lotus-flower.png"
+                  alt="SCNSWF Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <div>
                 <span className="font-heading font-extrabold text-2xl text-white tracking-tight leading-none block">
                   SCNSWF
                 </span>
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mt-0.5">
-                  Suresh Chandra Nayak Social Welfare Foundation
+                <span className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider block mt-0.5">
+                  Healthcare for All
                 </span>
               </div>
             </Link>

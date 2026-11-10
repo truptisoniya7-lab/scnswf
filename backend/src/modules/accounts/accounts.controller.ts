@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { usersRepo, auditRepo, applicationsRepo } from '../../db';
 import {
+  hashPassword,
   verifyPassword,
   generateAccessToken,
   generateRefreshToken,
@@ -12,7 +13,7 @@ import { otpService } from './otp.service';
 const ADMIN_ROLES = ['super_admin', 'admin', 'content_editor', 'applications_reviewer'];
 
 export const accountsController = {
-  // Admin authentication (email + password)
+  // Authentication (email + password)
   login: async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
     const user = usersRepo.findByEmail(email);
@@ -22,8 +23,9 @@ export const accountsController = {
       return;
     }
 
-    // Backend-authoritative verification: ensure account has admin or staff privileges
-    if (!user.isStaff && !ADMIN_ROLES.includes(user.role)) {
+    // Backend-authoritative verification: ensure admin privileges only if requesting admin routes
+    const isAdminPath = req.path.includes('/admin');
+    if (isAdminPath && !user.isStaff && !ADMIN_ROLES.includes(user.role)) {
       sendError(res, 403, 'permission_denied', 'This account is not authorized for administrative access.');
       return;
     }
@@ -46,7 +48,7 @@ export const accountsController = {
     auditRepo.log({
       actor_user_id: user.id,
       actor_email: user.email,
-      action: 'admin_login',
+      action: isAdminPath ? 'admin_login' : 'user_login',
       entity_type: 'User',
       entity_id: user.id,
       details: { ip: req.ip },
@@ -288,6 +290,144 @@ export const accountsController = {
         is_staff: user.isStaff,
         avatar_url: avatar || null,
       },
+    });
+  },
+
+  // User Registration
+  register: async (req: Request, res: Response): Promise<void> => {
+    const { email, password, name, role } = req.body;
+    const normalized = email.toLowerCase().trim();
+    const existing = usersRepo.findByEmail(normalized);
+
+    if (existing) {
+      sendError(res, 409, 'user_already_exists', 'An account with this email address already exists. Please log in.');
+      return;
+    }
+
+    const { hash, salt } = hashPassword(password);
+    const parts = (name || 'Member').trim().split(/\s+/);
+    const firstName = parts[0] || 'Member';
+    const lastName = parts.slice(1).join(' ') || '';
+
+    const newUser = usersRepo.create({
+      email: normalized,
+      passwordHash: hash,
+      salt,
+      firstName,
+      lastName,
+      isStaff: false,
+      isActive: true,
+      role: (role as any) || 'volunteer',
+    });
+
+    const fullName = `${newUser.firstName} ${newUser.lastName}`.trim();
+    const payload = {
+      userId: newUser.id,
+      email: newUser.email,
+      role: newUser.role,
+      name: fullName,
+    };
+    const access = generateAccessToken(payload);
+    const refresh = generateRefreshToken(payload);
+
+    auditRepo.log({
+      actor_user_id: newUser.id,
+      actor_email: newUser.email,
+      action: 'user_register',
+      entity_type: 'User',
+      entity_id: newUser.id,
+      details: { ip: req.ip },
+    });
+
+    sendSuccess(
+      res,
+      {
+        access,
+        refresh,
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          first_name: newUser.firstName,
+          last_name: newUser.lastName,
+          name: fullName,
+          role: newUser.role,
+          is_staff: newUser.isStaff,
+        },
+      },
+      201
+    );
+  },
+
+  // Password Recovery: Request Reset OTP
+  forgotPassword: async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+    const result = await otpService.requestPasswordResetOtp(email);
+
+    if (!result.success) {
+      if (result.errorType === 'cooldown') {
+        sendError(res, 429, 'cooldown_active', result.message, {
+          cooldown_seconds: result.cooldownSeconds,
+        });
+        return;
+      }
+      sendError(res, 500, 'otp_dispatch_failed', result.message);
+      return;
+    }
+
+    sendSuccess(res, {
+      message: result.message,
+      resend_cooldown: result.cooldownSeconds || 60,
+    });
+  },
+
+  // Password Recovery: Verify OTP Code
+  verifyResetOtp: async (req: Request, res: Response): Promise<void> => {
+    const { email, otp } = req.body;
+    const result = otpService.verifyPasswordResetOtp(email, otp);
+
+    if (!result.success) {
+      sendError(res, 400, result.errorType || 'invalid_otp', result.message);
+      return;
+    }
+
+    sendSuccess(res, {
+      message: result.message,
+      email,
+      verified: true,
+    });
+  },
+
+  // Password Recovery: Reset Password
+  resetPassword: async (req: Request, res: Response): Promise<void> => {
+    const { email, otp, newPassword } = req.body;
+    const normalized = email.toLowerCase().trim();
+
+    const consumed = otpService.consumePasswordResetOtp(normalized, otp);
+    if (!consumed) {
+      sendError(res, 400, 'invalid_otp', 'Verification code is invalid or has expired.');
+      return;
+    }
+
+    const user = usersRepo.findByEmail(normalized);
+    if (!user) {
+      sendError(res, 404, 'not_found', 'No user account found for this email address.');
+      return;
+    }
+
+    const { hash, salt } = hashPassword(newPassword);
+    usersRepo.updatePassword(user.id, hash, salt);
+
+    auditRepo.log({
+      actor_user_id: user.id,
+      actor_email: user.email,
+      action: 'password_reset',
+      entity_type: 'User',
+      entity_id: user.id,
+      details: { ip: req.ip },
+    });
+
+    sendSuccess(res, {
+      message: 'Your password has been reset successfully. Please log in with your new password.',
     });
   },
 };

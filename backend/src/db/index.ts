@@ -663,11 +663,28 @@ export const usersRepo = {
       createdAt: now,
       updatedAt: now,
     };
-    dbStore.setState((state) => ({
-      ...state,
-      users: [...state.users, newUser],
-    }));
+    dbStore.update((state) => {
+      state.users.push(newUser);
+    });
+    dbStore.syncDocument('users', newUser.id, newUser);
     return newUser;
+  },
+
+  updatePassword: (id: string, passwordHash: string, salt: string): User | null => {
+    let updated: User | null = null;
+    dbStore.update((state) => {
+      const idx = state.users.findIndex((u) => u.id === id);
+      if (idx !== -1) {
+        state.users[idx].passwordHash = passwordHash;
+        state.users[idx].salt = salt;
+        state.users[idx].updatedAt = new Date().toISOString();
+        updated = state.users[idx];
+      }
+    });
+    if (updated) {
+      dbStore.syncDocument('users', (updated as User).id, updated);
+    }
+    return updated;
   },
 };
 

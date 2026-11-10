@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import {
   Heart, MapPin, ArrowRight, Activity,
   Baby, GraduationCap, Megaphone, Droplets, HandHeart,
-  Stethoscope, CheckCircle2, Search, RefreshCw, AlertCircle, Wifi
+  Stethoscope, CheckCircle2, RefreshCw, AlertCircle, Wifi
 } from "lucide-react"
 import { ImagePlaceholder } from "../components/ui/ImagePlaceholder"
 import { usePrograms } from "../hooks/usePrograms"
@@ -165,13 +165,10 @@ const DEFAULT_PROGRAMS: ProgramDisplayItem[] = [
 ]
 
 export default function Programs() {
-  const [searchQuery, setSearchQuery] = useState("")
   const [selectedTag, setSelectedTag] = useState("all")
 
   // React Query call to backend REST API
-  const { data: apiResponse, isLoading, isError, refetch, isFetching } = usePrograms({
-    search: searchQuery ? searchQuery : undefined,
-  })
+  const { data: apiResponse, isLoading, isError, refetch, isFetching } = usePrograms()
 
   // Normalize and merge live API data with icon/styling metadata
   const programsList: ProgramDisplayItem[] = useMemo(() => {
@@ -208,18 +205,12 @@ export default function Programs() {
     return DEFAULT_PROGRAMS
   }, [apiResponse])
 
-  // Client filtering by search query & tag
+  // Client filtering by category tag
   const filteredPrograms = useMemo(() => {
     return programsList.filter((item) => {
-      const matchesSearch =
-        searchQuery === "" ||
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.coverage.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesTag = selectedTag === "all" || item.tag === selectedTag
-      return matchesSearch && matchesTag
+      return selectedTag === "all" || item.tag === selectedTag
     })
-  }, [programsList, searchQuery, selectedTag])
+  }, [programsList, selectedTag])
 
   const availableTags = useMemo(() => {
     const tags = Array.from(new Set(programsList.map((p) => p.tag)))
@@ -314,35 +305,16 @@ export default function Programs() {
         </div>
       </section>
 
-      {/* ── Search & Filter Bar ── */}
-      <section className="bg-slate-50 border-b border-slate-200 py-6 sticky top-16 z-20 backdrop-blur-md bg-slate-50/90 shadow-xs">
+      {/* ── Category Filter Bar ── */}
+      <section className="bg-slate-50 border-b border-slate-200 py-4 sticky top-16 z-20 backdrop-blur-md bg-slate-50/90 shadow-xs">
         <div className="container-custom">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="relative w-full sm:w-80">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search programs by keyword..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+          <div className="flex items-center justify-between sm:justify-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex items-center gap-2 overflow-x-auto">
               {availableTags.map((tag) => (
                 <button
                   key={tag}
                   onClick={() => setSelectedTag(tag)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     selectedTag === tag
                       ? "bg-teal-700 text-white shadow-xs"
                       : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
@@ -351,16 +323,16 @@ export default function Programs() {
                   {tag === "all" ? "All Programs" : tag}
                 </button>
               ))}
-
-              <button
-                onClick={() => refetch()}
-                disabled={isFetching}
-                title="Sync from server"
-                className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-teal-700 transition-colors ml-auto sm:ml-2"
-              >
-                <RefreshCw size={14} className={isFetching ? "animate-spin text-teal-600" : ""} />
-              </button>
             </div>
+
+            <button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              title="Sync from server"
+              className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-teal-700 transition-colors shrink-0 ml-2 cursor-pointer"
+            >
+              <RefreshCw size={14} className={isFetching ? "animate-spin text-teal-600" : ""} />
+            </button>
           </div>
         </div>
       </section>
@@ -392,16 +364,13 @@ export default function Programs() {
               <AlertCircle size={36} className="mx-auto text-slate-400 mb-3" />
               <h3 className="font-display text-lg font-bold text-slate-800">No programs found</h3>
               <p className="text-sm text-slate-500 max-w-md mx-auto mt-1 mb-4">
-                No active program matched your search criteria "{searchQuery}". Try clearing your filters.
+                No active program found in this category. Try selecting another filter.
               </p>
               <button
-                onClick={() => {
-                  setSearchQuery("")
-                  setSelectedTag("all")
-                }}
-                className="btn btn-secondary text-xs"
+                onClick={() => setSelectedTag("all")}
+                className="btn btn-secondary text-xs cursor-pointer"
               >
-                Reset Search Filters
+                View All Programs
               </button>
             </div>
           )}

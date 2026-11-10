@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { dbStore, applicationsRepo } from '../../db';
+import { dbStore, applicationsRepo, usersRepo } from '../../db';
 import { emailService } from '../../services/email.service';
 
 interface OtpRecord {
@@ -16,6 +16,7 @@ interface OtpRecord {
 class OtpService {
   // In-memory active OTP store with periodic cleanup
   private otpRecords = new Map<string, OtpRecord>();
+  private resetRecords = new Map<string, OtpRecord>();
   private readonly OTP_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
   private readonly RESEND_COOLDOWN_MS = 60 * 1000; // 60 seconds
   private readonly MAX_ATTEMPTS = 5;
@@ -34,6 +35,11 @@ class OtpService {
     for (const [key, record] of this.otpRecords.entries()) {
       if (now > record.expiresAt || record.isUsed) {
         this.otpRecords.delete(key);
+      }
+    }
+    for (const [key, record] of this.resetRecords.entries()) {
+      if (now > record.expiresAt || record.isUsed) {
+        this.resetRecords.delete(key);
       }
     }
   }
@@ -268,6 +274,156 @@ class OtpService {
         role: 'volunteer',
       },
     };
+  }
+
+  /**
+   * Request Password Reset OTP
+   */
+  public async requestPasswordResetOtp(email: string): Promise<{
+    success: boolean;
+    errorType?: 'not_found' | 'cooldown' | 'send_failed';
+    message: string;
+    cooldownSeconds?: number;
+  }> {
+    const normalized = email.toLowerCase().trim();
+    const user = usersRepo.findByEmail(normalized);
+
+    if (!user || !user.isActive) {
+      // Return message without revealing account existence to prevent user enumeration
+      return {
+        success: true,
+        message: 'If an active account exists with this email address, a password reset code has been sent.',
+        cooldownSeconds: 60,
+      };
+    }
+
+    // Check resend cooldown
+    const existing = this.resetRecords.get(normalized);
+    const now = Date.now();
+    if (existing && !existing.isUsed && now < existing.resendAvailableAt) {
+      const waitSeconds = Math.ceil((existing.resendAvailableAt - now) / 1000);
+      return {
+        success: false,
+        errorType: 'cooldown',
+        message: `Please wait ${waitSeconds} seconds before requesting a new reset code.`,
+        cooldownSeconds: waitSeconds,
+      };
+    }
+
+    // Generate 6-digit cryptographically secure OTP
+    const rawOtp = crypto.randomInt(100000, 1000000).toString();
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = this.hashOtp(rawOtp, salt);
+
+    const record: OtpRecord = {
+      email: normalized,
+      hash,
+      salt,
+      expiresAt: now + this.OTP_EXPIRY_MS,
+      resendAvailableAt: now + this.RESEND_COOLDOWN_MS,
+      attempts: 0,
+      isUsed: false,
+      createdAt: now,
+    };
+
+    this.resetRecords.set(normalized, record);
+
+    const emailResult = await emailService.sendPasswordResetOtp({
+      toEmail: normalized,
+      userName: `${user.firstName} ${user.lastName}`.trim(),
+      otp: rawOtp,
+      expiresInMinutes: 10,
+    });
+
+    if (!emailResult.success) {
+      return {
+        success: false,
+        errorType: 'send_failed',
+        message: emailResult.error || 'Failed to dispatch password reset code. Please try again.',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'A 6-digit password reset code has been sent to your email address.',
+      cooldownSeconds: 60,
+    };
+  }
+
+  /**
+   * Verify Password Reset OTP (without consuming yet)
+   */
+  public verifyPasswordResetOtp(
+    email: string,
+    inputOtp: string
+  ): {
+    success: boolean;
+    errorType?: 'not_found' | 'expired' | 'max_attempts' | 'invalid_otp';
+    message: string;
+  } {
+    const normalized = email.toLowerCase().trim();
+    const record = this.resetRecords.get(normalized);
+
+    if (!record) {
+      return {
+        success: false,
+        errorType: 'not_found',
+        message: 'No active password reset request found. Please request a new code.',
+      };
+    }
+
+    const now = Date.now();
+    if (now > record.expiresAt) {
+      this.resetRecords.delete(normalized);
+      return {
+        success: false,
+        errorType: 'expired',
+        message: 'The reset code has expired. Please request a new code.',
+      };
+    }
+
+    if (record.attempts >= this.MAX_ATTEMPTS) {
+      this.resetRecords.delete(normalized);
+      return {
+        success: false,
+        errorType: 'max_attempts',
+        message: 'Maximum verification attempts exceeded. Please request a new reset code.',
+      };
+    }
+
+    const candidateHash = this.hashOtp(inputOtp, record.salt);
+    const candidateBuf = Buffer.from(candidateHash, 'hex');
+    const storedBuf = Buffer.from(record.hash, 'hex');
+
+    const isMatch =
+      candidateBuf.length === storedBuf.length &&
+      crypto.timingSafeEqual(candidateBuf, storedBuf);
+
+    if (!isMatch) {
+      record.attempts += 1;
+      const remaining = this.MAX_ATTEMPTS - record.attempts;
+      return {
+        success: false,
+        errorType: 'invalid_otp',
+        message: `Incorrect code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`,
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Verification code confirmed.',
+    };
+  }
+
+  /**
+   * Consume Password Reset OTP upon successful password reset
+   */
+  public consumePasswordResetOtp(email: string, inputOtp: string): boolean {
+    const check = this.verifyPasswordResetOtp(email, inputOtp);
+    if (!check.success) return false;
+    const normalized = email.toLowerCase().trim();
+    this.resetRecords.delete(normalized);
+    return true;
   }
 }
 
