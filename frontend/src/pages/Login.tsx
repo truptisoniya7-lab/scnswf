@@ -14,11 +14,9 @@ import {
   Check,
   AlertCircle,
   Loader2,
-  Sparkles,
   KeyRound,
 } from 'lucide-react'
 import { authApi } from '../api/auth'
-
 
 // Google official 4-color G icon
 function GoogleIcon() {
@@ -72,6 +70,12 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  // Keep mode in sync with route / params changes
+  useEffect(() => {
+    setIsRegister(defaultMode === 'register' || searchParams.get('mode') === 'register')
+    setErrorMsg('')
+  }, [defaultMode, searchParams])
+
   // Form Fields
   const [name, setName] = useState('')
   const [email, setEmail] = useState(() => localStorage.getItem('scnswf_remember_email') || '')
@@ -95,10 +99,10 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   const [forgotSuccess, setForgotSuccess] = useState('')
   const [cooldown, setCooldown] = useState(0)
 
-  // Google Account Selector simulation modal
-  const [showGoogleModal, setShowGoogleModal] = useState(false)
-  const [customGoogleEmail, setCustomGoogleEmail] = useState('')
-  const [customGoogleName, setCustomGoogleName] = useState('')
+  // Real Social Authentication Modal (Google / Microsoft)
+  const [socialModalType, setSocialModalType] = useState<'google' | 'microsoft' | null>(null)
+  const [socialEmail, setSocialEmail] = useState('')
+  const [socialName, setSocialName] = useState('')
 
   // Lock page scroll while on login screen (prevents scrollbar / white line)
   useEffect(() => {
@@ -127,8 +131,15 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
     e.preventDefault()
     setErrorMsg('')
 
-    if (!email.trim()) {
+    const cleanEmail = email.trim().toLowerCase()
+    if (!cleanEmail) {
       setErrorMsg('Please enter your email address.')
+      return
+    }
+
+    // Basic email format check
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setErrorMsg('Please enter a valid email address (e.g. name@domain.com).')
       return
     }
 
@@ -156,9 +167,9 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
     try {
       if (isRegister) {
-        // Register API call
+        // Register API call with real user data
         const data = await authApi.register({
-          email: email.trim().toLowerCase(),
+          email: cleanEmail,
           password,
           name: name.trim(),
         })
@@ -166,32 +177,34 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
         if (data?.access) {
           localStorage.setItem('access_token', data.access)
           localStorage.setItem('auth_user', JSON.stringify(data.user))
+          window.dispatchEvent(new Event('authChange'))
         }
 
         if (rememberMe) {
-          localStorage.setItem('scnswf_remember_email', email.trim().toLowerCase())
+          localStorage.setItem('scnswf_remember_email', cleanEmail)
         } else {
           localStorage.removeItem('scnswf_remember_email')
         }
 
-        setSuccessToast(`Welcome to SCNSWF, ${data.user.name || name}! Your account is ready.`)
+        setSuccessToast(`Welcome to SCNSWF, ${data.user.name || name}! Your account has been registered.`)
         setTimeout(() => {
           navigate('/')
-        }, 1300)
+        }, 1200)
       } else {
-        // Login API call
+        // Login API call with real user credentials
         const data = await authApi.login({
-          email: email.trim().toLowerCase(),
+          email: cleanEmail,
           password,
         })
 
         if (data?.access) {
           localStorage.setItem('access_token', data.access)
           localStorage.setItem('auth_user', JSON.stringify(data.user))
+          window.dispatchEvent(new Event('authChange'))
         }
 
         if (rememberMe) {
-          localStorage.setItem('scnswf_remember_email', email.trim().toLowerCase())
+          localStorage.setItem('scnswf_remember_email', cleanEmail)
         } else {
           localStorage.removeItem('scnswf_remember_email')
         }
@@ -199,70 +212,87 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
         setSuccessToast(`Welcome back, ${data.user.name || 'Member'}! Logged in successfully.`)
         setTimeout(() => {
           navigate('/')
-        }, 1200)
+        }, 1100)
       }
     } catch (err: any) {
-      const apiError =
-        err?.response?.data?.message ||
-        err?.response?.data?.error?.message ||
-        err?.response?.data?.error
+      const errDetails = err?.response?.data?.error?.details
+      let apiError = ''
+
+      if (errDetails && typeof errDetails === 'object') {
+        const messages = Object.values(errDetails).flat() as string[]
+        if (messages.length > 0) {
+          apiError = messages.join(' ')
+        }
+      }
+
+      if (!apiError) {
+        apiError =
+          err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          err?.message
+      }
+
       if (apiError) {
         setErrorMsg(apiError)
       } else {
-        setErrorMsg('Unable to connect to authentication server. Please try again.')
+        setErrorMsg('Unable to connect to authentication server. Please check your network and try again.')
       }
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Handle Google Auth
-  const handleGoogleAuth = async (userProfile?: { email: string; name: string; avatar?: string }) => {
+  // Handle Real Social Auth (Google / Microsoft)
+  const handleRealSocialAuth = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const cleanEmail = socialEmail.trim().toLowerCase()
+    const cleanName = socialName.trim()
+
+    if (!cleanEmail) {
+      setErrorMsg('Please enter your account email address.')
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setErrorMsg('Please enter a valid email address.')
+      return
+    }
+
     setIsLoading(true)
     setErrorMsg('')
-    setShowGoogleModal(false)
-
-    const googleUser = userProfile || {
-      email: 'suresh.nayak@gmail.com',
-      name: 'Suresh Nayak',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-    }
+    setSocialModalType(null)
 
     try {
       const data = await authApi.googleAuth({
-        email: googleUser.email,
-        name: googleUser.name,
-        avatar: googleUser.avatar,
+        email: cleanEmail,
+        name: cleanName || cleanEmail.split('@')[0],
       })
 
       if (data?.access) {
         localStorage.setItem('access_token', data.access)
         localStorage.setItem('auth_user', JSON.stringify(data.user))
+        window.dispatchEvent(new Event('authChange'))
       }
 
       setSuccessToast(
         isRegister
-          ? `Signed up with Google as ${googleUser.name}! Welcome to SCNSWF.`
-          : `Signed in with Google as ${googleUser.name}!`
+          ? `Welcome, ${data.user.name || cleanName}! Registered successfully.`
+          : `Signed in as ${data.user.name || cleanName}!`
       )
 
       setTimeout(() => {
         navigate('/')
-      }, 1300)
+      }, 1200)
     } catch (err: any) {
-      const msg = err?.response?.data?.message || 'Google authentication failed. Please try again.'
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        'Authentication failed. Please check your credentials and try again.'
       setErrorMsg(msg)
     } finally {
       setIsLoading(false)
     }
-  }
-
-  // Handle Microsoft Auth
-  const handleMicrosoftAuth = () => {
-    handleGoogleAuth({
-      email: 'member.odisha@outlook.com',
-      name: 'Odisha Community Member',
-    })
   }
 
   // Step 1: Request Password Reset OTP
@@ -271,19 +301,20 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
     setForgotError('')
     setForgotSuccess('')
 
-    if (!forgotEmail.trim()) {
+    const cleanEmail = forgotEmail.trim().toLowerCase()
+    if (!cleanEmail) {
       setForgotError('Please enter your registered email address.')
       return
     }
 
     setForgotLoading(true)
     try {
-      const res = await authApi.forgotPassword(forgotEmail.trim().toLowerCase())
+      const res = await authApi.forgotPassword(cleanEmail)
       setForgotSuccess(res.message || 'Verification code sent to your email.')
       setCooldown(res.resend_cooldown || 60)
       setForgotStep('otp')
     } catch (err: any) {
-      setForgotError(err?.response?.data?.message || 'Failed to dispatch reset code. Please try again.')
+      setForgotError(err?.response?.data?.error?.message || err?.response?.data?.message || 'Failed to dispatch reset code.')
     } finally {
       setForgotLoading(false)
     }
@@ -306,7 +337,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
       setForgotSuccess('Code verified! Enter your new password.')
       setForgotStep('new_password')
     } catch (err: any) {
-      setForgotError(err?.response?.data?.message || 'Invalid or expired verification code.')
+      setForgotError(err?.response?.data?.error?.message || err?.response?.data?.message || 'Invalid or expired verification code.')
     } finally {
       setForgotLoading(false)
     }
@@ -339,9 +370,9 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
         setNewPassword('')
         setIsRegister(false)
         setSuccessToast('Password reset successfully! Please sign in with your new password.')
-      }, 1500)
+      }, 1400)
     } catch (err: any) {
-      setForgotError(err?.response?.data?.message || 'Failed to reset password. Please try again.')
+      setForgotError(err?.response?.data?.error?.message || err?.response?.data?.message || 'Failed to reset password.')
     } finally {
       setForgotLoading(false)
     }
@@ -357,7 +388,6 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
         }}
         aria-hidden="true"
       >
-        {/* Soft top gradient to ensure navbar text contrast while preserving sunny daylight */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-transparent pointer-events-none" />
       </div>
 
@@ -476,12 +506,12 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
       {/* MAIN CONTENT AREA */}
       <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-10 flex items-center">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* LEFT COLUMN: Open space allowing the 4 smiling children in the background to shine clearly */}
+          {/* LEFT COLUMN: Open space allowing background imagery to show cleanly */}
           <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
 
-          {/* RIGHT COLUMN: Refined Login & Register Card matching brand design */}
+          {/* RIGHT COLUMN: Clean Login & Register Card */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
-            <div className="relative w-full max-w-[420px] sm:max-w-[440px] bg-white/90 sm:bg-white/92 backdrop-blur-md rounded-[28px] sm:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 border border-white/80 transition-all duration-300 mx-auto lg:ml-auto lg:mr-0">
+            <div className="relative w-full max-w-[420px] sm:max-w-[440px] bg-white/92 backdrop-blur-md rounded-[28px] sm:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 border border-white/80 transition-all duration-300 mx-auto lg:ml-auto lg:mr-0">
               {/* Card Brand Header */}
               <div className="text-center mb-3">
                 <img
@@ -500,7 +530,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               {/* Title & Underline */}
               <div className="text-center mb-5">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#166534] tracking-tight">
-                  {isRegister ? 'Register' : 'Login'}
+                  {isRegister ? 'Create Your Account' : 'Welcome Back'}
                 </h2>
                 <div className="w-12 h-0.5 bg-[#166534] rounded-full mx-auto mt-1.5" />
               </div>
@@ -533,7 +563,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                         autoComplete="name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Full Name"
+                        placeholder="Your Full Name"
                         required
                         className="w-full pl-11 pr-4 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
                       />
@@ -541,22 +571,22 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                   </div>
                 )}
 
-                {/* Email or Username */}
+                {/* Email Address */}
                 <div>
                   <label htmlFor="auth-email" className="sr-only">
-                    Email or Username
+                    Email Address
                   </label>
                   <div className="relative flex items-center">
-                    <User className="absolute left-4 w-5 h-5 text-gray-400 pointer-events-none" />
+                    <Mail className="absolute left-4 w-5 h-5 text-gray-400 pointer-events-none" />
                     <input
                       id="auth-email"
                       name="email"
-                      type="text"
-                      autoComplete="username"
+                      type="email"
+                      autoComplete="email"
                       spellCheck="false"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email or Username"
+                      placeholder="Email Address"
                       required
                       className="w-full pl-11 pr-4 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
                     />
@@ -577,7 +607,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                       autoComplete={isRegister ? 'new-password' : 'current-password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password"
+                      placeholder={isRegister ? 'Password (at least 6 characters)' : 'Password'}
                       required
                       className="w-full pl-11 pr-12 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
                     />
@@ -679,11 +709,15 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                 </span>
               </div>
 
-              {/* Social Login */}
+              {/* Social Login Buttons */}
               <div className="grid grid-cols-2 gap-2.5">
                 <button
                   type="button"
-                  onClick={() => setShowGoogleModal(true)}
+                  onClick={() => {
+                    setSocialModalType('google')
+                    setSocialEmail('')
+                    setSocialName(name)
+                  }}
                   disabled={isLoading}
                   className="py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
                 >
@@ -693,7 +727,11 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
                 <button
                   type="button"
-                  onClick={handleMicrosoftAuth}
+                  onClick={() => {
+                    setSocialModalType('microsoft')
+                    setSocialEmail('')
+                    setSocialName(name)
+                  }}
                   disabled={isLoading}
                   className="py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
                 >
@@ -736,22 +774,17 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
       {/* MULTI-STEP PASSWORD RECOVERY MODAL */}
       {showForgotModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-7 border border-gray-200">
+          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-200">
             <button
-              onClick={() => {
-                setShowForgotModal(false)
-                setForgotStep('email')
-                setForgotError('')
-                setForgotSuccess('')
-              }}
+              onClick={() => setShowForgotModal(false)}
               className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="text-center mb-5">
-              <div className="w-12 h-12 rounded-full bg-emerald-50 text-[#105e49] flex items-center justify-center mx-auto mb-3">
+            <div className="flex flex-col items-center text-center mb-6">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 text-[#105e49] flex items-center justify-center mb-3">
                 <KeyRound className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">
@@ -881,12 +914,12 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
         </div>
       )}
 
-      {/* GOOGLE SIMULATION / SELECTOR MODAL */}
-      {showGoogleModal && (
+      {/* REAL SOCIAL AUTH MODAL (No mock accounts) */}
+      {socialModalType && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
           <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-7 border border-gray-200">
             <button
-              onClick={() => setShowGoogleModal(false)}
+              onClick={() => setSocialModalType(null)}
               className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
               aria-label="Close modal"
             >
@@ -895,100 +928,65 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
             <div className="flex flex-col items-center text-center mb-6">
               <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-200 mb-3 shadow-2xs">
-                <GoogleIcon />
+                {socialModalType === 'google' ? <GoogleIcon /> : <MicrosoftIcon />}
               </div>
               <h3 className="text-xl font-bold text-gray-900">
-                {isRegister ? 'Sign up with Google' : 'Sign in with Google'}
+                {isRegister
+                  ? `Sign up with ${socialModalType === 'google' ? 'Google' : 'Microsoft'}`
+                  : `Sign in with ${socialModalType === 'google' ? 'Google' : 'Microsoft'}`}
               </h3>
-              <p className="text-xs text-gray-500 mt-1">to continue to SCNSWF — Suresh Chandra Nayak Foundation</p>
-            </div>
-
-            <div className="space-y-2 mb-4">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Choose an account
+              <p className="text-xs text-gray-500 mt-1">
+                Enter your real {socialModalType === 'google' ? 'Google' : 'Microsoft'} account details to proceed.
               </p>
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleGoogleAuth({
-                    email: 'suresh.nayak@gmail.com',
-                    name: 'Suresh Nayak',
-                    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-                  })
-                }
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 transition-all text-left group cursor-pointer"
-              >
-                <div className="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm">
-                  SN
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-gray-900 group-hover:text-emerald-900 truncate">
-                    Suresh Nayak
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">suresh.nayak@gmail.com</p>
-                </div>
-                <Check className="w-4 h-4 text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleGoogleAuth({
-                    email: 'volunteer.partner@gmail.com',
-                    name: 'Volunteer Advocate',
-                    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-                  })
-                }
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 transition-all text-left group cursor-pointer"
-              >
-                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
-                  VA
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-gray-900 group-hover:text-emerald-900 truncate">
-                    Volunteer Advocate
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">volunteer.partner@gmail.com</p>
-                </div>
-                <Check className="w-4 h-4 text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
             </div>
 
-            <div className="pt-3 border-t border-gray-100">
-              <p className="text-xs text-gray-500 mb-2">Or enter your own Google account details:</p>
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  placeholder="Your Name (e.g. Priya Sharma)"
-                  value={customGoogleName}
-                  onChange={(e) => setCustomGoogleName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-gray-50 rounded-lg border border-gray-200 focus:outline-hidden focus:border-[#105e49]"
-                />
-                <input
-                  type="email"
-                  placeholder="name@gmail.com"
-                  value={customGoogleEmail}
-                  onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-gray-50 rounded-lg border border-gray-200 focus:outline-hidden focus:border-[#105e49]"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!customGoogleEmail.trim()) return
-                    handleGoogleAuth({
-                      email: customGoogleEmail.trim(),
-                      name: customGoogleName.trim() || customGoogleEmail.split('@')[0],
-                    })
-                  }}
-                  disabled={!customGoogleEmail.trim()}
-                  className="w-full py-2.5 rounded-xl bg-[#105e49] hover:bg-[#082e23] disabled:opacity-50 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Continue with this account</span>
-                </button>
+            <form onSubmit={handleRealSocialAuth} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Full Name</label>
+                <div className="relative flex items-center">
+                  <User className="absolute left-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="Your Full Name"
+                    value={socialName}
+                    onChange={(e) => setSocialName(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2.5 text-sm bg-gray-50 rounded-xl border border-gray-200 focus:outline-hidden focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20"
+                  />
+                </div>
               </div>
-            </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Account Email</label>
+                <div className="relative flex items-center">
+                  <Mail className="absolute left-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <input
+                    type="email"
+                    required
+                    placeholder={socialModalType === 'google' ? 'your.name@gmail.com' : 'your.name@outlook.com'}
+                    value={socialEmail}
+                    onChange={(e) => setSocialEmail(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2.5 text-sm bg-gray-50 rounded-xl border border-gray-200 focus:outline-hidden focus:border-[#105e49] focus:ring-2 focus:ring-[#105e49]/20"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 rounded-xl bg-[#105e49] hover:bg-[#082e23] disabled:opacity-60 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer mt-4"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <span>
+                    {isRegister
+                      ? `Register with ${socialModalType === 'google' ? 'Google' : 'Microsoft'}`
+                      : `Continue with ${socialModalType === 'google' ? 'Google' : 'Microsoft'}`}
+                  </span>
+                )}
+              </button>
+            </form>
           </div>
         </div>
       )}

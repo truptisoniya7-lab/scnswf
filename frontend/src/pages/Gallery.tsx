@@ -210,10 +210,25 @@ export default function Gallery() {
 
   const { data: apiAlbumsResponse } = useGalleryAlbums()
 
-  // Dynamic gallery items list
-  const allGalleryItems = useMemo(() => {
+  // Dynamic gallery items list from live API and official media
+  const allGalleryItems: GalleryItem[] = useMemo(() => {
+    if (apiAlbumsResponse?.data && apiAlbumsResponse.data.length > 0) {
+      const apiItems: GalleryItem[] = apiAlbumsResponse.data.map((album: any) => ({
+        id: album.id,
+        title: album.title,
+        category: (album.category || 'healthcare') as GalleryItem['category'],
+        categoryLabel: album.category || 'Healthcare',
+        src: album.cover_image_url || '/images/login-clean-bg.jpg',
+        alt: album.title,
+        description: album.description || album.title,
+        date: album.created_at ? new Date(album.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : '2026',
+        source: 'Official SCNSWF Media',
+        linkedinUrl: 'https://www.linkedin.com/company/scnswf/',
+      }))
+      return [...apiItems, ...GALLERY_ITEMS]
+    }
     return GALLERY_ITEMS
-  }, [])
+  }, [apiAlbumsResponse])
 
   // Filter items
   const filteredItems = filter === "all"
