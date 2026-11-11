@@ -106,6 +106,11 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   const [socialEmail, setSocialEmail] = useState('')
   const [socialName, setSocialName] = useState('')
 
+  useEffect(() => {
+    document.documentElement.classList.add('login-page')
+    return () => document.documentElement.classList.remove('login-page')
+  }, [])
+
   // Cooldown countdown
   useEffect(() => {
     if (cooldown <= 0) return
@@ -373,62 +378,60 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   }
 
   return (
-    <div className="relative min-h-screen min-h-[100dvh] w-full flex flex-col overflow-x-hidden font-sans bg-[#0a2e1f]">
+    <div className="login-viewport relative h-[100dvh] w-full flex flex-col overflow-hidden font-sans bg-[#f3fbff]">
       {/* Background layer */}
       <div
-        className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-[center_left] lg:bg-center"
+        className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-center"
         style={{
-          backgroundImage: `url('/images/login-clean-bg.jpg')`,
+          backgroundImage: `url('/images/login-background.png')`,
         }}
         aria-hidden="true"
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-transparent pointer-events-none" />
-      </div>
+      />
 
       {/* TOP NAVBAR */}
-      <header className="relative z-20 w-full pt-4 px-4 sm:px-8 lg:px-12">
+      <header className="login-header relative z-20 w-full shrink-0 pt-4 px-4 sm:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Brand Logo & Tagline */}
           <Link to="/" className="flex items-center gap-3 group" aria-label="SCNSWF Home">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/95 p-1.5 flex items-center justify-center shadow-md backdrop-blur-xs group-hover:scale-105 transition-transform border border-white/60 shrink-0">
+            <div className="login-navbar-logo w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <img
                 src="/images/scnswf-lotus-flower.png"
                 alt="SCNSWF Lotus Logo"
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="h-8 w-[1.5px] bg-white/40" />
-            <div className="flex flex-col text-white">
-              <span className="font-heading font-extrabold text-lg sm:text-xl tracking-wider leading-none">
+            <div className="login-navbar-divider h-10 w-px bg-[#165b35]/60" />
+            <div className="flex flex-col text-[#123f29]">
+              <span className="font-heading font-extrabold text-lg sm:text-xl tracking-wide leading-none">
                 SCNSWF
               </span>
-              <span className="text-[11px] sm:text-xs text-emerald-200 tracking-wide font-medium mt-0.5">
+              <span className="text-[11px] sm:text-xs text-[#087a31] tracking-wide font-semibold mt-0.5">
                 Healthcare for All
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-white font-medium text-sm">
-            <Link to="/" className="flex items-center gap-1.5 py-1 text-white hover:text-emerald-200 transition-colors">
+          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-[#172a25] font-semibold text-sm">
+            <Link to="/" className="flex items-center gap-1.5 border-b-2 border-[#18883a] py-2 text-[#087a31] transition-colors">
               <Home className="w-4 h-4" />
               <span>Home</span>
             </Link>
-            <Link to="/about" className="py-1 hover:text-emerald-200 transition-colors">
+            <Link to="/about" className="py-2 hover:text-[#087a31] transition-colors">
               About
             </Link>
-            <Link to="/programs" className="py-1 hover:text-emerald-200 transition-colors">
+            <Link to="/programs" className="py-2 hover:text-[#087a31] transition-colors">
               Our Work
             </Link>
-            <Link to="/get-involved" className="py-1 hover:text-emerald-200 transition-colors">
+            <Link to="/get-involved" className="py-2 hover:text-[#087a31] transition-colors">
               Get Involved
             </Link>
 
             <Link
               to="/donate"
-              className="flex items-center gap-2 px-5 py-2 rounded-full border border-white/80 bg-white/10 hover:bg-white hover:text-[#082e23] transition-all text-white font-semibold text-sm shadow-xs backdrop-blur-xs cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2 rounded-full border border-[#16873c] bg-white/40 hover:bg-white transition-all text-[#087a31] font-semibold text-sm cursor-pointer"
             >
-              <Heart className="w-4 h-4 fill-white hover:fill-[#082e23]" />
+              <Heart className="w-4 h-4 fill-[#087a31]" />
               <span>Donate</span>
             </Link>
           </nav>
@@ -437,14 +440,14 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
           <div className="flex items-center gap-2.5 md:hidden">
             <Link
               to="/donate"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/80 bg-white/15 text-white text-xs font-semibold"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#16873c] bg-white/70 text-[#087a31] text-xs font-semibold"
             >
-              <Heart className="w-3.5 h-3.5 fill-white" />
+              <Heart className="w-3.5 h-3.5 fill-[#087a31]" />
               <span>Donate</span>
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-xl text-white bg-black/25 backdrop-blur-xs border border-white/20 focus:outline-hidden min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
+              className="p-2.5 rounded-xl text-[#123f29] bg-white/70 backdrop-blur-xs border border-[#16873c]/30 focus:outline-hidden min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}
             >
@@ -455,10 +458,10 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-3 p-4 bg-[#082e23]/95 backdrop-blur-md rounded-2xl border border-white/20 text-white space-y-2.5 shadow-2xl animate-fadeIn">
+          <div className="md:hidden mt-3 p-4 bg-white/95 backdrop-blur-md rounded-2xl border border-[#16873c]/20 text-[#123f29] space-y-2.5 shadow-2xl animate-fadeIn">
             <Link
               to="/"
-              className="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-white/10 text-sm font-semibold"
+              className="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
               <Home className="w-4 h-4" />
@@ -466,28 +469,28 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
             </Link>
             <Link
               to="/about"
-              className="block py-2.5 px-3 rounded-xl hover:bg-white/10 text-sm font-semibold"
+              className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
               About
             </Link>
             <Link
               to="/programs"
-              className="block py-2.5 px-3 rounded-xl hover:bg-white/10 text-sm font-semibold"
+              className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
               Our Work
             </Link>
             <Link
               to="/get-involved"
-              className="block py-2.5 px-3 rounded-xl hover:bg-white/10 text-sm font-semibold"
+              className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold"
               onClick={() => setMobileMenuOpen(false)}
             >
               Get Involved
             </Link>
             <Link
               to="/donate"
-              className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-center mt-2"
+              className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#087a31] hover:bg-[#006400] text-white font-semibold text-center mt-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               <Heart className="w-4 h-4 fill-white" />
@@ -498,32 +501,32 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="relative z-10 flex-1 w-full px-0 py-6 sm:py-8 lg:py-10 flex items-center">
+      <main className="login-main relative z-10 flex-1 min-h-0 w-full px-0 py-4 sm:py-6 lg:py-6 flex items-center">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center">
           {/* LEFT COLUMN: photo area */}
           <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
 
           {/* RIGHT COLUMN: flush to the right edge, covering white blur */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
-            <div className="relative w-full max-w-[460px] sm:max-w-[480px] bg-white/92 backdrop-blur-md rounded-l-[32px] rounded-r-none shadow-[0_20px_50px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 lg:pr-10 border border-white/80 border-r-0 transition-all duration-300 mx-auto lg:mx-0">
+            <div className="login-card relative w-full max-w-[430px] bg-[#fffffff0] backdrop-blur-md rounded-[30px] shadow-[0_18px_48px_rgba(13,71,35,0.16)] p-6 border border-white/90 transition-all duration-300 mx-auto lg:mx-8 lg:-translate-y-5">
               {/* Card Brand Header */}
-              <div className="text-center mb-3">
+              <div className="login-brand text-center mb-2">
                 <img
                   src="/images/scnswf-lotus-flower.png"
                   alt="SCNSWF Lotus Logo"
-                  className="h-12 sm:h-14 w-auto mx-auto object-contain drop-shadow-xs"
+                  className="login-card-logo h-16 sm:h-[72px] w-auto mx-auto object-contain drop-shadow-xs"
                 />
-                <h1 className="font-heading font-extrabold text-2xl sm:text-[26px] text-[#166534] tracking-wider leading-none mt-2">
+                <h1 className="login-brand-name font-heading font-extrabold text-2xl sm:text-[28px] text-[#087a31] tracking-wide leading-none mt-1">
                   SCNSWF
                 </h1>
-                <p className="text-xs sm:text-sm font-semibold text-[#166534] tracking-wide mt-1">
+                <p className="login-tagline text-xs sm:text-sm font-semibold text-[#087a31] tracking-wide mt-1">
                   Healthcare for All
                 </p>
               </div>
 
               {/* Title & Underline */}
-              <div className="text-center mb-5">
-                <h2 className="text-xl sm:text-2xl font-bold text-[#166534] tracking-tight">
+              <div className="login-title text-center mb-3">
+                <h2 className="login-title-text text-xl sm:text-[30px] font-bold text-[#087a31] tracking-tight">
                   {isRegister ? 'Create Your Account' : 'Welcome Back'}
                 </h2>
                 <div className="w-12 h-0.5 bg-[#166534] rounded-full mx-auto mt-1.5" />
@@ -541,7 +544,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               )}
 
               {/* Form */}
-              <form onSubmit={handleSubmit} method="POST" className="space-y-3.5 sm:space-y-4">
+              <form onSubmit={handleSubmit} method="POST" className="login-form space-y-3">
                 {/* Full Name field (Register mode) */}
                 {isRegister && (
                   <div>
@@ -559,7 +562,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your Full Name"
                         required
-                        className="w-full pl-11 pr-4 py-3 bg-[#e8f0fe] text-gray-900 text-sm sm:text-base rounded-2xl border border-[#dce5f2] focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
+                        className="login-field w-full pl-11 pr-4 py-3 bg-white text-gray-900 text-sm sm:text-base rounded-full border border-gray-200 focus:border-[#087a31] focus:ring-2 focus:ring-[#087a31]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
                       />
                     </div>
                   </div>
@@ -582,7 +585,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Email Address"
                       required
-                      className="w-full pl-11 pr-4 py-3 bg-[#e8f0fe] text-gray-900 text-sm sm:text-base rounded-2xl border border-[#dce5f2] focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
+                      className="login-field w-full pl-11 pr-4 py-3 bg-white text-gray-900 text-sm sm:text-base rounded-full border border-gray-200 focus:border-[#087a31] focus:ring-2 focus:ring-[#087a31]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
                     />
                   </div>
                 </div>
@@ -603,7 +606,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder={isRegister ? 'Password (at least 6 characters)' : '••••••••'}
                       required
-                      className="w-full pl-11 pr-12 py-3 bg-[#e8f0fe] text-gray-900 text-sm sm:text-base rounded-2xl border border-[#dce5f2] focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
+                      className="login-field w-full pl-11 pr-12 py-3 bg-white text-gray-900 text-sm sm:text-base rounded-full border border-gray-200 focus:border-[#087a31] focus:ring-2 focus:ring-[#087a31]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
                     />
                     <button
                       type="button"
@@ -633,7 +636,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm Password"
                         required
-                        className="w-full pl-11 pr-12 py-3 bg-[#e8f0fe] text-gray-900 text-sm sm:text-base rounded-2xl border border-[#dce5f2] focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
+                        className="login-field w-full pl-11 pr-12 py-3 bg-white text-gray-900 text-sm sm:text-base rounded-full border border-gray-200 focus:border-[#087a31] focus:ring-2 focus:ring-[#087a31]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
                       />
                       <button
                         type="button"
@@ -680,7 +683,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 px-6 rounded-full bg-[#006400] hover:bg-[#005400] active:scale-[0.99] text-white font-semibold text-base sm:text-lg flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[48px] mt-2"
+                  className="login-submit w-full py-3.5 px-6 rounded-full bg-[#087a31] hover:bg-[#006400] active:scale-[0.99] text-white font-semibold text-base sm:text-lg flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[48px] mt-2"
                 >
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -694,7 +697,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               </form>
 
               {/* Divider */}
-              <div className="relative my-4 sm:my-5 flex items-center justify-center">
+              <div className="login-divider relative my-3 flex items-center justify-center">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200" />
                 </div>
@@ -713,7 +716,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                     setSocialName(name)
                   }}
                   disabled={isLoading}
-                  className="py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
+                  className="login-social-button py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
                 >
                   <GoogleIcon />
                   <span>Google</span>
@@ -727,7 +730,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                     setSocialName(name)
                   }}
                   disabled={isLoading}
-                  className="py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
+                  className="login-social-button py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
                 >
                   <MicrosoftIcon />
                   <span>Microsoft</span>
@@ -735,7 +738,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               </div>
 
               {/* Footer Switcher */}
-              <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600 font-medium">
+              <div className="login-footer text-center mt-3 text-xs sm:text-sm text-gray-600 font-medium">
                 {isRegister ? (
                   <p>
                     Already have an account?{' '}
