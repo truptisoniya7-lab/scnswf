@@ -145,13 +145,6 @@ html {
   text-size-adjust: 100%;
 }
 
-/* Lock scroll on the login page – applied via body class set by Login.tsx */
-html.login-page,
-html.login-page body {
-  overflow: hidden;
-  height: 100%;
-}
-
 @layer base {
   body {
     font-family: var(--font-sans);

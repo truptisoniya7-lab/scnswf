@@ -78,7 +78,9 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
   // Form Fields
   const [name, setName] = useState('')
-  const [email, setEmail] = useState(() => localStorage.getItem('scnswf_remember_email') || '')
+  const [email, setEmail] = useState(
+    () => localStorage.getItem('scnswf_remember_email') || 'adityahota03@gmail.com'
+  )
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem('scnswf_remember_email')))
@@ -103,14 +105,6 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   const [socialModalType, setSocialModalType] = useState<'google' | 'microsoft' | null>(null)
   const [socialEmail, setSocialEmail] = useState('')
   const [socialName, setSocialName] = useState('')
-
-  // Lock page scroll while on login screen (prevents scrollbar / white line)
-  useEffect(() => {
-    document.documentElement.classList.add('login-page')
-    return () => {
-      document.documentElement.classList.remove('login-page')
-    }
-  }, [])
 
   // Cooldown countdown
   useEffect(() => {
@@ -379,7 +373,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   }
 
   return (
-    <div className="relative h-screen w-full flex flex-col justify-between overflow-hidden font-sans select-none bg-[#0a2e1f]">
+    <div className="relative min-h-screen min-h-[100dvh] w-full flex flex-col overflow-x-hidden font-sans bg-[#0a2e1f]">
       {/* Background layer */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-[center_left] lg:bg-center"
@@ -565,7 +559,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your Full Name"
                         required
-                        className="w-full pl-11 pr-4 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
+                        className="w-full pl-11 pr-4 py-3 bg-[#e8f0fe] text-gray-900 text-sm sm:text-base rounded-2xl border border-[#dce5f2] focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
                       />
                     </div>
                   </div>
@@ -588,7 +582,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Email Address"
                       required
-                      className="w-full pl-11 pr-4 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
+                      className="w-full pl-11 pr-4 py-3 bg-[#e8f0fe] text-gray-900 text-sm sm:text-base rounded-2xl border border-[#dce5f2] focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
                     />
                   </div>
                 </div>
@@ -607,9 +601,9 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                       autoComplete={isRegister ? 'new-password' : 'current-password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder={isRegister ? 'Password (at least 6 characters)' : 'Password'}
+                      placeholder={isRegister ? 'Password (at least 6 characters)' : '••••••••'}
                       required
-                      className="w-full pl-11 pr-12 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
+                      className="w-full pl-11 pr-12 py-3 bg-[#e8f0fe] text-gray-900 text-sm sm:text-base rounded-2xl border border-[#dce5f2] focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
                     />
                     <button
                       type="button"
@@ -639,7 +633,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm Password"
                         required
-                        className="w-full pl-11 pr-12 py-3 bg-white/95 text-gray-900 text-sm sm:text-base rounded-2xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[48px] shadow-xs"
+                        className="w-full pl-11 pr-12 py-3 bg-[#e8f0fe] text-gray-900 text-sm sm:text-base rounded-2xl border border-[#dce5f2] focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
                       />
                       <button
                         type="button"
@@ -686,7 +680,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 px-6 rounded-full bg-[#166534] hover:bg-[#14532d] active:scale-[0.99] text-white font-semibold text-base sm:text-lg flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[48px] mt-2"
+                  className="w-full py-3.5 px-6 rounded-full bg-[#006400] hover:bg-[#005400] active:scale-[0.99] text-white font-semibold text-base sm:text-lg flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[48px] mt-2"
                 >
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
