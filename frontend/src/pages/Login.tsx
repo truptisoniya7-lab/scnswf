@@ -504,13 +504,13 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 flex items-center">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          {/* LEFT COLUMN: Open space letting the children photo breathe */}
-          <div className="hidden lg:block lg:col-span-5" aria-hidden="true" />
+      <main className="relative z-10 flex-1 w-full px-4 sm:px-6 lg:px-0 py-6 sm:py-8 lg:py-10 flex items-center">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center">
+          {/* LEFT COLUMN: photo area */}
+          <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
 
-          {/* RIGHT COLUMN: Wider column so card sits more centrally, covering white blur */}
-          <div className="lg:col-span-7 flex justify-center lg:justify-start w-full lg:pl-4">
+          {/* RIGHT COLUMN: card pushed flush to the right to cover the white blur */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end w-full lg:pr-8">
             <div className="relative w-full max-w-[420px] bg-white/92 backdrop-blur-md rounded-[28px] sm:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 border border-white/80 transition-all duration-300 mx-auto lg:mx-0">
               {/* Card Brand Header */}
               <div className="text-center mb-3">
