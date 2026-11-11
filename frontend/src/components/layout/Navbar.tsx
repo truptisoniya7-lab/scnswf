@@ -36,7 +36,7 @@ export default function Navbar() {
     }
   })
 
-  // Listen to storage events for cross-tab or logout sync
+  // Listen to storage and authChange events for immediate session sync
   useEffect(() => {
     const syncAuth = () => {
       try {
@@ -47,9 +47,14 @@ export default function Navbar() {
         setAuthUser(null)
       }
     }
+    syncAuth()
     window.addEventListener('storage', syncAuth)
-    return () => window.removeEventListener('storage', syncAuth)
-  }, [])
+    window.addEventListener('authChange', syncAuth)
+    return () => {
+      window.removeEventListener('storage', syncAuth)
+      window.removeEventListener('authChange', syncAuth)
+    }
+  }, [location.pathname])
 
   // Helper to determine if link is active (including nested sub-routes)
   const isLinkActive = (to: string) => {
@@ -96,7 +101,10 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await authApi.logout()
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('auth_user')
     setAuthUser(null)
+    window.dispatchEvent(new Event('authChange'))
     setOpen(false)
     navigate('/')
   }
@@ -249,11 +257,10 @@ export default function Navbar() {
                     <Link
                       key={link.to}
                       to={link.to}
-                      onClick={() => setOpen(false)}
-                      className={`block px-4 py-3 rounded-xl text-base font-semibold transition-colors min-h-[48px] flex items-center ${
+                      className={`px-3.5 py-2.5 rounded-xl text-base font-semibold transition-colors ${
                         active
-                          ? 'bg-[#f0fbf7] text-[#105e49] border border-[#d1f4eb]'
-                          : 'text-slate-800 hover:bg-[#f8faf7]'
+                          ? 'text-[#105e49] bg-[#f0fbf7] font-bold'
+                          : 'text-slate-700 hover:bg-[#f8faf7]'
                       }`}
                       aria-current={active ? 'page' : undefined}
                     >
@@ -262,8 +269,7 @@ export default function Navbar() {
                   )
                 })}
 
-                {/* Mobile Auth & CTA Buttons */}
-                <div className="pt-4 mt-2 border-t border-slate-100 flex flex-col gap-2.5">
+                <div className="pt-4 mt-2 border-t border-slate-100 flex flex-col gap-3">
                   <Button
                     variant="primary"
                     size="lg"

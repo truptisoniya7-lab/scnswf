@@ -417,7 +417,7 @@ export default function Volunteer() {
                             required
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            placeholder="anita@example.com"
+                            placeholder="your.email@domain.com"
                             className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
                               fieldErrors.email
                                 ? "border-rose-400 focus:ring-rose-200"

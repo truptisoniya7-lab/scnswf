@@ -374,7 +374,7 @@ export default function DesignSystem() {
                 id="email"
                 type="email"
                 label="Email Address"
-                placeholder="satyajit@example.com"
+                placeholder="satyajit@domain.com"
                 icon={Mail}
                 required
               />
@@ -483,7 +483,7 @@ export default function DesignSystem() {
             <FormInput
               id="modal-email"
               label="Your Contact Email"
-              placeholder="volunteer@example.com"
+              placeholder="volunteer@domain.com"
               icon={Mail}
               required
             />

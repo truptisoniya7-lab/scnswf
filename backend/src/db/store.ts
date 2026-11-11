@@ -56,16 +56,13 @@ class UnifiedStore {
           }
         }
 
-        // Ensure initial seed volunteer applications are loaded if missing
-        if (!state.volunteerApplications || state.volunteerApplications.length === 0) {
-          state.volunteerApplications = initial.volunteerApplications;
-        } else {
-          for (const seedVol of initial.volunteerApplications) {
-            if (!state.volunteerApplications.some((v) => v.email.toLowerCase() === seedVol.email.toLowerCase())) {
-              state.volunteerApplications.push(seedVol);
-            }
-          }
-        }
+        // Initialize application arrays if missing (do not inject mock volunteer applications)
+        state.volunteerApplications = state.volunteerApplications || [];
+        state.internshipApplications = state.internshipApplications || [];
+        state.partnershipRequests = state.partnershipRequests || [];
+        state.contactMessages = state.contactMessages || [];
+        state.donations = state.donations || [];
+        state.donationTransactions = state.donationTransactions || [];
 
         return state;
       }
@@ -73,6 +70,12 @@ class UnifiedStore {
       console.warn('Error reading db.json, initializing fresh store:', err);
     }
     const seed = getInitialSeedData();
+    seed.volunteerApplications = [];
+    seed.internshipApplications = [];
+    seed.partnershipRequests = [];
+    seed.contactMessages = [];
+    seed.donations = [];
+    seed.donationTransactions = [];
     this.saveData(seed);
     return seed;
   }
