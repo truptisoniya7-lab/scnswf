@@ -100,6 +100,14 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   const [customGoogleEmail, setCustomGoogleEmail] = useState('')
   const [customGoogleName, setCustomGoogleName] = useState('')
 
+  // Lock page scroll while on login screen (prevents scrollbar / white line)
+  useEffect(() => {
+    document.documentElement.classList.add('login-page')
+    return () => {
+      document.documentElement.classList.remove('login-page')
+    }
+  }, [])
+
   // Cooldown countdown
   useEffect(() => {
     if (cooldown <= 0) return
@@ -340,7 +348,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   }
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden font-sans select-none bg-[#0a2e1f]">
+    <div className="relative h-screen w-full flex flex-col justify-between overflow-hidden font-sans select-none bg-[#0a2e1f]">
       {/* Background layer */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-[center_left] lg:bg-center"
@@ -724,9 +732,6 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
           </div>
         </div>
       </main>
-
-      {/* BOTTOM SPACER: allows the background wave ribbon to be visible */}
-      <footer className="relative z-10 w-full h-10 sm:h-14 lg:h-16 pointer-events-none select-none" aria-hidden="true" />
 
       {/* MULTI-STEP PASSWORD RECOVERY MODAL */}
       {showForgotModal && (
