@@ -504,14 +504,14 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-10 flex items-center">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* LEFT COLUMN: Open space allowing background imagery to show cleanly */}
+      <main className="relative z-10 flex-1 w-full px-0 py-6 sm:py-8 lg:py-10 flex items-center">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center">
+          {/* LEFT COLUMN: photo area */}
           <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
 
-          {/* RIGHT COLUMN: Clean Login & Register Card */}
+          {/* RIGHT COLUMN: flush to the right edge, covering white blur */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
-            <div className="relative w-full max-w-[420px] sm:max-w-[440px] bg-white/92 backdrop-blur-md rounded-[28px] sm:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 border border-white/80 transition-all duration-300 mx-auto lg:ml-auto lg:mr-0">
+            <div className="relative w-full max-w-[460px] sm:max-w-[480px] bg-white/92 backdrop-blur-md rounded-l-[32px] rounded-r-none shadow-[0_20px_50px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 lg:pr-10 border border-white/80 border-r-0 transition-all duration-300 mx-auto lg:mx-0">
               {/* Card Brand Header */}
               <div className="text-center mb-3">
                 <img
