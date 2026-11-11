@@ -380,15 +380,16 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
   return (
     <div className="relative h-screen w-full flex flex-col justify-between overflow-hidden font-sans select-none bg-[#0a2e1f]">
-      {/* Background layer — full bleed photo, no overlays */}
+      {/* Background layer */}
       <div
-        className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-center"
-        style={{ backgroundImage: `url('/images/login-clean-bg.jpg')` }}
+        className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-[center_left] lg:bg-center"
+        style={{
+          backgroundImage: `url('/images/login-clean-bg.jpg')`,
+        }}
         aria-hidden="true"
-      />
-
-      {/* Solid white panel on the right that the card sits on — no blur */}
-      <div className="absolute inset-y-0 right-0 z-0 w-[42%] bg-white hidden lg:block" aria-hidden="true" />
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-transparent pointer-events-none" />
+      </div>
 
       {/* TOP NAVBAR */}
       <header className="relative z-20 w-full pt-4 px-4 sm:px-8 lg:px-12">
@@ -503,14 +504,14 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="relative z-10 flex-1 w-full px-4 sm:px-6 lg:px-0 py-6 sm:py-8 lg:py-10 flex items-center">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center">
-          {/* LEFT COLUMN: photo area */}
+      <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-10 flex items-center">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* LEFT COLUMN: Open space allowing background imagery to show cleanly */}
           <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
 
-          {/* RIGHT COLUMN: card pushed flush to the right to cover the white blur */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end w-full lg:pr-8">
-            <div className="relative w-full max-w-[420px] bg-white rounded-[28px] sm:rounded-[32px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6 sm:p-7 md:p-8 border border-gray-100 transition-all duration-300 mx-auto lg:mx-0">
+          {/* RIGHT COLUMN: Clean Login & Register Card */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
+            <div className="relative w-full max-w-[420px] sm:max-w-[440px] bg-white/92 backdrop-blur-md rounded-[28px] sm:rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.18)] p-6 sm:p-7 md:p-8 border border-white/80 transition-all duration-300 mx-auto lg:ml-auto lg:mr-0">
               {/* Card Brand Header */}
               <div className="text-center mb-3">
                 <img
