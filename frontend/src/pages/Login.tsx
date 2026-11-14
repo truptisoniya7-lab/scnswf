@@ -391,9 +391,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
         <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
       </div>
 
-      {/* Green leaf decorations — bottom corners */}
-      <img src="/images/login-leaf-left.png"  alt="" aria-hidden="true" className="absolute bottom-0 left-0 z-10 w-20 sm:w-32 lg:w-44 pointer-events-none select-none opacity-90" />
-      <img src="/images/login-leaf-right.png" alt="" aria-hidden="true" className="absolute bottom-0 right-0 z-10 w-20 sm:w-32 lg:w-44 pointer-events-none select-none opacity-90" />
+
 
       {/* TOP NAVBAR */}
       <header className="login-header relative z-20 w-full shrink-0 py-3 px-4 sm:px-8 lg:px-10">
