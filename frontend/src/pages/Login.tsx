@@ -379,19 +379,21 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
   return (
     <div className="login-viewport relative h-[100dvh] w-full flex flex-col overflow-hidden font-sans bg-[#1a3a24]">
-      {/* Background — new women's event photo, full bleed */}
+      {/* Background — women's event photo, focus left side where people are */}
       <div
-        className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-center"
-        style={{ backgroundImage: `url('/images/login-women-event.jpg')` }}
+        className="absolute inset-0 z-0 bg-cover bg-no-repeat"
+        style={{ backgroundImage: `url('/images/login-women-event.jpg')`, backgroundPosition: 'left center' }}
         aria-hidden="true"
       >
-        {/* subtle dark scrim so navbar text stays readable */}
-        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+        {/* gradient scrim: darker on right so white card pops, lighter on left */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/5 to-black/30 pointer-events-none" />
+        {/* top scrim for navbar readability */}
+        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
       </div>
 
       {/* Green leaf decorations — bottom corners */}
-      <img src="/images/login-leaf-left.png"  alt="" aria-hidden="true" className="absolute bottom-0 left-0 z-10 w-32 sm:w-44 lg:w-56 pointer-events-none select-none" />
-      <img src="/images/login-leaf-right.png" alt="" aria-hidden="true" className="absolute bottom-0 right-0 z-10 w-32 sm:w-44 lg:w-56 pointer-events-none select-none" />
+      <img src="/images/login-leaf-left.png"  alt="" aria-hidden="true" className="absolute bottom-0 left-0 z-10 w-20 sm:w-32 lg:w-44 pointer-events-none select-none opacity-90" />
+      <img src="/images/login-leaf-right.png" alt="" aria-hidden="true" className="absolute bottom-0 right-0 z-10 w-20 sm:w-32 lg:w-44 pointer-events-none select-none opacity-90" />
 
       {/* TOP NAVBAR */}
       <header className="login-header relative z-20 w-full shrink-0 py-3 px-4 sm:px-8 lg:px-10">
@@ -460,37 +462,33 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="login-main relative z-20 flex-1 min-h-0 w-full flex items-center px-4 sm:px-6 lg:px-10 py-4">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
-          {/* LEFT: empty — shows the photo */}
-          <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
-
-          {/* RIGHT: login card */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
-            <div className="login-card relative w-full max-w-[400px] bg-white rounded-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.18)] p-6 sm:p-7 border border-gray-100 mx-auto lg:mx-0">
+      <main className="login-main relative z-20 flex-1 min-h-0 w-full flex items-center justify-center sm:justify-end px-4 sm:px-6 lg:px-12 py-3 sm:py-4">
+        {/* Card wrapper — right-aligned on sm+, centered on mobile */}
+        <div className="w-full max-w-[360px] sm:max-w-[390px] lg:max-w-[420px] sm:mr-2 lg:mr-6">
+            <div className="login-card relative w-full bg-white rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.22)] border border-gray-100 overflow-y-auto max-h-[calc(100dvh-90px)] p-5 sm:p-6 lg:p-7">
               {/* Card Brand Header */}
               <div className="text-center mb-2">
                 <img
                   src="/images/scnswf-lotus-flower.png"
                   alt="SCNSWF Lotus Logo"
-                  className="h-12 w-auto mx-auto object-contain"
+                  className="h-10 sm:h-12 w-auto mx-auto object-contain"
                 />
-                <h1 className="font-heading font-extrabold text-[22px] text-[#166534] tracking-wide leading-none mt-1">
+                <h1 className="font-heading font-extrabold text-xl sm:text-[22px] text-[#166534] tracking-wide leading-none mt-1">
                   SCNSWF
                 </h1>
-                <p className="text-xs font-semibold text-[#166534] tracking-wide mt-0.5">
+                <p className="text-[10px] sm:text-xs font-semibold text-[#166534] tracking-wide mt-0.5">
                   Healthcare for All
                 </p>
               </div>
 
               {/* Title + subtitle matching mockup */}
-              <div className="text-center mb-4">
-                <h2 className="text-[22px] font-bold text-[#166534] tracking-tight">
+              <div className="text-center mb-3 sm:mb-4">
+                <h2 className="text-lg sm:text-[22px] font-bold text-[#166534] tracking-tight">
                   {isRegister ? 'Create Your Account' : 'Welcome Back'}
                 </h2>
                 <div className="w-10 h-0.5 bg-[#166534] rounded-full mx-auto mt-1" />
                 {!isRegister && (
-                  <p className="text-xs text-gray-500 mt-1.5">Together for a healthier and greener planet</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 mt-1.5">Together for a healthier and greener planet</p>
                 )}
               </div>
 
@@ -506,7 +504,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               )}
 
               {/* Form */}
-              <form onSubmit={handleSubmit} method="POST" className="login-form space-y-3">
+              <form onSubmit={handleSubmit} method="POST" className="login-form space-y-2.5">
                 {/* Full Name field (Register mode) */}
                 {isRegister && (
                   <div>
@@ -524,7 +522,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your Full Name"
                         required
-                        className="login-field w-full pl-11 pr-4 py-3 bg-white text-gray-900 text-sm sm:text-base rounded-full border border-gray-200 focus:border-[#087a31] focus:ring-2 focus:ring-[#087a31]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
+                        className="login-field w-full pl-11 pr-4 py-2.5 bg-white text-gray-900 text-sm rounded-xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[44px]"
                       />
                     </div>
                   </div>
@@ -598,7 +596,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm Password"
                         required
-                        className="login-field w-full pl-11 pr-12 py-3 bg-white text-gray-900 text-sm sm:text-base rounded-full border border-gray-200 focus:border-[#087a31] focus:ring-2 focus:ring-[#087a31]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
+                        className="login-field w-full pl-11 pr-12 py-2.5 bg-white text-gray-900 text-sm rounded-xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[44px]"
                       />
                       <button
                         type="button"
@@ -645,7 +643,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="login-submit w-full py-3.5 px-6 rounded-full bg-[#166534] hover:bg-[#14532d] active:scale-[0.99] text-white font-semibold text-base flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[48px] mt-1"
+                  className="login-submit w-full py-3 px-6 rounded-full bg-[#166534] hover:bg-[#14532d] active:scale-[0.99] text-white font-semibold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[46px] mt-1"
                 >
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -659,17 +657,17 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               </form>
 
               {/* Divider */}
-              <div className="login-divider relative my-3 flex items-center justify-center">
+              <div className="login-divider relative my-2.5 flex items-center justify-center">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200" />
                 </div>
-                <span className="relative px-3 bg-white/90 text-xs text-gray-400 font-medium uppercase tracking-wider">
+                <span className="relative px-3 bg-white text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-wider">
                   or continue with
                 </span>
               </div>
 
               {/* Social Login Buttons */}
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -678,7 +676,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                     setSocialName(name)
                   }}
                   disabled={isLoading}
-                  className="login-social-button py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
+                  className="login-social-button py-2 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold text-gray-700 min-h-[40px] cursor-pointer"
                 >
                   <GoogleIcon />
                   <span>Google</span>
@@ -692,7 +690,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                     setSocialName(name)
                   }}
                   disabled={isLoading}
-                  className="login-social-button py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white active:bg-gray-100 transition-colors flex items-center justify-center gap-2 text-xs sm:text-[13px] font-semibold text-gray-700 min-h-[44px] cursor-pointer"
+                  className="login-social-button py-2 px-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold text-gray-700 min-h-[40px] cursor-pointer"
                 >
                   <MicrosoftIcon />
                   <span>Microsoft</span>
@@ -700,7 +698,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               </div>
 
               {/* Footer Switcher */}
-              <div className="login-footer text-center mt-3 text-xs sm:text-sm text-gray-600 font-medium">
+              <div className="login-footer text-center mt-2.5 text-xs text-gray-600 font-medium">
                 {isRegister ? (
                   <p>
                     Already have an account?{' '}
@@ -727,7 +725,6 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
               </div>
             </div>
           </div>
-        </div>
       </main>
 
       {/* MULTI-STEP PASSWORD RECOVERY MODAL */}
