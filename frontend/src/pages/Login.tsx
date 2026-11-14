@@ -378,76 +378,63 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
   }
 
   return (
-    <div className="login-viewport relative h-[100dvh] w-full flex flex-col overflow-hidden font-sans bg-[#f3fbff]">
-      {/* Background layer */}
+    <div className="login-viewport relative h-[100dvh] w-full flex flex-col overflow-hidden font-sans bg-[#1a3a24]">
+      {/* Background — new women's event photo, full bleed */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-no-repeat bg-center"
-        style={{
-          backgroundImage: `url('/images/login-background.png')`,
-        }}
+        style={{ backgroundImage: `url('/images/login-women-event.jpg')` }}
         aria-hidden="true"
-      />
+      >
+        {/* subtle dark scrim so navbar text stays readable */}
+        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+      </div>
+
+      {/* Green leaf decorations — bottom corners */}
+      <img src="/images/login-leaf-left.png"  alt="" aria-hidden="true" className="absolute bottom-0 left-0 z-10 w-32 sm:w-44 lg:w-56 pointer-events-none select-none" />
+      <img src="/images/login-leaf-right.png" alt="" aria-hidden="true" className="absolute bottom-0 right-0 z-10 w-32 sm:w-44 lg:w-56 pointer-events-none select-none" />
 
       {/* TOP NAVBAR */}
-      <header className="login-header relative z-20 w-full shrink-0 pt-4 px-4 sm:px-8 lg:px-12">
+      <header className="login-header relative z-20 w-full shrink-0 py-3 px-4 sm:px-8 lg:px-10">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Brand Logo & Tagline */}
-          <Link to="/" className="flex items-center gap-3 group" aria-label="SCNSWF Home">
-            <div className="login-navbar-logo w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-              <img
-                src="/images/scnswf-lotus-flower.png"
-                alt="SCNSWF Lotus Logo"
-                className="w-full h-full object-contain"
-              />
+          {/* Brand Logo — white background box like the mockup */}
+          <Link to="/" className="flex items-center gap-3 group bg-white/90 backdrop-blur-sm rounded-xl px-3 py-2 shadow-sm border border-white/80" aria-label="SCNSWF Home">
+            <div className="w-9 h-9 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <img src="/images/scnswf-lotus-flower.png" alt="SCNSWF Lotus Logo" className="w-full h-full object-contain" />
             </div>
-            <div className="login-navbar-divider h-10 w-px bg-[#165b35]/60" />
-            <div className="flex flex-col text-[#123f29]">
-              <span className="font-heading font-extrabold text-lg sm:text-xl tracking-wide leading-none">
-                SCNSWF
-              </span>
-              <span className="text-[11px] sm:text-xs text-[#087a31] tracking-wide font-semibold mt-0.5">
-                Healthcare for All
-              </span>
+            <div className="h-8 w-px bg-gray-300" />
+            <div className="flex flex-col text-[#166534]">
+              <span className="font-heading font-extrabold text-base tracking-wide leading-none">SCNSWF</span>
+              <span className="text-[10px] text-[#166534]/80 tracking-wide font-medium mt-0.5">Healthcare for All</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-[#172a25] font-semibold text-sm">
-            <Link to="/" className="flex items-center gap-1.5 border-b-2 border-[#18883a] py-2 text-[#087a31] transition-colors">
+          <nav className="hidden md:flex items-center gap-5 lg:gap-7 font-semibold text-sm text-white">
+            <Link to="/" className="flex items-center gap-1.5 border-b-2 border-white py-1 transition-colors">
               <Home className="w-4 h-4" />
               <span>Home</span>
             </Link>
-            <Link to="/about" className="py-2 hover:text-[#087a31] transition-colors">
-              About
-            </Link>
-            <Link to="/programs" className="py-2 hover:text-[#087a31] transition-colors">
-              Our Work
-            </Link>
-            <Link to="/get-involved" className="py-2 hover:text-[#087a31] transition-colors">
-              Get Involved
-            </Link>
-
+            <Link to="/about" className="py-1 hover:text-green-200 transition-colors">About</Link>
+            <Link to="/programs" className="py-1 hover:text-green-200 transition-colors">Our Work</Link>
+            <Link to="/get-involved" className="py-1 hover:text-green-200 transition-colors">Get Involved</Link>
             <Link
               to="/donate"
-              className="flex items-center gap-2 px-5 py-2 rounded-full border border-[#16873c] bg-white/40 hover:bg-white transition-all text-[#087a31] font-semibold text-sm cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2 rounded-full bg-[#166534] hover:bg-[#14532d] text-white font-semibold text-sm shadow cursor-pointer transition-all"
             >
-              <Heart className="w-4 h-4 fill-[#087a31]" />
+              <Heart className="w-4 h-4 fill-white" />
               <span>Donate</span>
             </Link>
           </nav>
 
-          {/* Mobile Right: Donate + Hamburger */}
+          {/* Mobile Right */}
           <div className="flex items-center gap-2.5 md:hidden">
-            <Link
-              to="/donate"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#16873c] bg-white/70 text-[#087a31] text-xs font-semibold"
-            >
-              <Heart className="w-3.5 h-3.5 fill-[#087a31]" />
+            <Link to="/donate" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#166534] text-white text-xs font-semibold">
+              <Heart className="w-3.5 h-3.5 fill-white" />
               <span>Donate</span>
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-xl text-[#123f29] bg-white/70 backdrop-blur-xs border border-[#16873c]/30 focus:outline-hidden min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
+              className="p-2.5 rounded-xl text-white bg-black/30 backdrop-blur-xs border border-white/20 focus:outline-hidden min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}
             >
@@ -458,78 +445,53 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-3 p-4 bg-white/95 backdrop-blur-md rounded-2xl border border-[#16873c]/20 text-[#123f29] space-y-2.5 shadow-2xl animate-fadeIn">
-            <Link
-              to="/"
-              className="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Home className="w-4 h-4" />
-              <span>Home</span>
+          <div className="md:hidden mt-3 p-4 bg-white/95 backdrop-blur-md rounded-2xl border border-gray-200 text-[#166534] space-y-2.5 shadow-2xl">
+            <Link to="/" className="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold" onClick={() => setMobileMenuOpen(false)}>
+              <Home className="w-4 h-4" /><span>Home</span>
             </Link>
-            <Link
-              to="/about"
-              className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              to="/programs"
-              className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Our Work
-            </Link>
-            <Link
-              to="/get-involved"
-              className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Get Involved
-            </Link>
-            <Link
-              to="/donate"
-              className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#087a31] hover:bg-[#006400] text-white font-semibold text-center mt-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Heart className="w-4 h-4 fill-white" />
-              <span>Donate to SCNSWF</span>
+            <Link to="/about" className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold" onClick={() => setMobileMenuOpen(false)}>About</Link>
+            <Link to="/programs" className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold" onClick={() => setMobileMenuOpen(false)}>Our Work</Link>
+            <Link to="/get-involved" className="block py-2.5 px-3 rounded-xl hover:bg-green-50 text-sm font-semibold" onClick={() => setMobileMenuOpen(false)}>Get Involved</Link>
+            <Link to="/donate" className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#166534] text-white font-semibold mt-2" onClick={() => setMobileMenuOpen(false)}>
+              <Heart className="w-4 h-4 fill-white" /><span>Donate to SCNSWF</span>
             </Link>
           </div>
         )}
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="login-main relative z-10 flex-1 min-h-0 w-full px-0 py-4 sm:py-6 lg:py-6 flex items-center">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center">
-          {/* LEFT COLUMN: photo area */}
+      <main className="login-main relative z-20 flex-1 min-h-0 w-full flex items-center px-4 sm:px-6 lg:px-10 py-4">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
+          {/* LEFT: empty — shows the photo */}
           <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
 
-          {/* RIGHT COLUMN: flush to the right edge, covering white blur */}
+          {/* RIGHT: login card */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
-            <div className="login-card relative w-full max-w-[430px] bg-[#fffffff0] backdrop-blur-md rounded-[30px] shadow-[0_18px_48px_rgba(13,71,35,0.16)] p-6 border border-white/90 transition-all duration-300 mx-auto lg:mx-8 lg:-translate-y-5">
+            <div className="login-card relative w-full max-w-[400px] bg-white rounded-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.18)] p-6 sm:p-7 border border-gray-100 mx-auto lg:mx-0">
               {/* Card Brand Header */}
-              <div className="login-brand text-center mb-2">
+              <div className="text-center mb-2">
                 <img
                   src="/images/scnswf-lotus-flower.png"
                   alt="SCNSWF Lotus Logo"
-                  className="login-card-logo h-16 sm:h-[72px] w-auto mx-auto object-contain drop-shadow-xs"
+                  className="h-12 w-auto mx-auto object-contain"
                 />
-                <h1 className="login-brand-name font-heading font-extrabold text-2xl sm:text-[28px] text-[#087a31] tracking-wide leading-none mt-1">
+                <h1 className="font-heading font-extrabold text-[22px] text-[#166534] tracking-wide leading-none mt-1">
                   SCNSWF
                 </h1>
-                <p className="login-tagline text-xs sm:text-sm font-semibold text-[#087a31] tracking-wide mt-1">
+                <p className="text-xs font-semibold text-[#166534] tracking-wide mt-0.5">
                   Healthcare for All
                 </p>
               </div>
 
-              {/* Title & Underline */}
-              <div className="login-title text-center mb-3">
-                <h2 className="login-title-text text-xl sm:text-[30px] font-bold text-[#087a31] tracking-tight">
+              {/* Title + subtitle matching mockup */}
+              <div className="text-center mb-4">
+                <h2 className="text-[22px] font-bold text-[#166534] tracking-tight">
                   {isRegister ? 'Create Your Account' : 'Welcome Back'}
                 </h2>
-                <div className="w-12 h-0.5 bg-[#166534] rounded-full mx-auto mt-1.5" />
+                <div className="w-10 h-0.5 bg-[#166534] rounded-full mx-auto mt-1" />
+                {!isRegister && (
+                  <p className="text-xs text-gray-500 mt-1.5">Together for a healthier and greener planet</p>
+                )}
               </div>
 
               {/* Error Alert */}
@@ -583,9 +545,9 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                       spellCheck="false"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email Address"
+                      placeholder="Enter your email address"
                       required
-                      className="login-field w-full pl-11 pr-4 py-3 bg-white text-gray-900 text-sm sm:text-base rounded-full border border-gray-200 focus:border-[#087a31] focus:ring-2 focus:ring-[#087a31]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
+                      className="login-field w-full pl-11 pr-4 py-3 bg-white text-gray-900 text-sm rounded-xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[46px]"
                     />
                   </div>
                 </div>
@@ -604,9 +566,9 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                       autoComplete={isRegister ? 'new-password' : 'current-password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder={isRegister ? 'Password (at least 6 characters)' : '••••••••'}
+                      placeholder="Enter your password"
                       required
-                      className="login-field w-full pl-11 pr-12 py-3 bg-white text-gray-900 text-sm sm:text-base rounded-full border border-gray-200 focus:border-[#087a31] focus:ring-2 focus:ring-[#087a31]/20 transition-all outline-hidden placeholder-gray-500 min-h-[48px] shadow-xs"
+                      className="login-field w-full pl-11 pr-12 py-3 bg-white text-gray-900 text-sm rounded-xl border border-gray-200 focus:border-[#166534] focus:ring-2 focus:ring-[#166534]/20 transition-all outline-hidden placeholder-gray-400 min-h-[46px]"
                     />
                     <button
                       type="button"
@@ -683,7 +645,7 @@ export default function Login({ defaultMode = 'login' }: LoginProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="login-submit w-full py-3.5 px-6 rounded-full bg-[#087a31] hover:bg-[#006400] active:scale-[0.99] text-white font-semibold text-base sm:text-lg flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[48px] mt-2"
+                  className="login-submit w-full py-3.5 px-6 rounded-full bg-[#166534] hover:bg-[#14532d] active:scale-[0.99] text-white font-semibold text-base flex items-center justify-center gap-2 shadow-md transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer min-h-[48px] mt-1"
                 >
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
