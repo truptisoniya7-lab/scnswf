@@ -1,6 +1,19 @@
 {
   "users": [
     {
+      "id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "createdAt": "2026-11-16T08:33:53.836Z",
+      "firstName": "Aditya",
+      "lastName": "Hota",
+      "role": "volunteer",
+      "salt": "9ad559945569b259d9dbf768e360c477",
+      "isStaff": false,
+      "isActive": true,
+      "email": "adityahota03@gmail.com",
+      "passwordHash": "a9faad4fe1533e356ce4433230538104f42990cd3e1112d97a2cf861bfe09515a1ed9a97a48a39ecaafe382f12b68967814b83bef614e730c27fe1a3b33bcb15",
+      "updatedAt": "2026-11-16T08:33:53.836Z"
+    },
+    {
       "id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
       "createdAt": "2026-10-22T06:01:32.965Z",
       "firstName": "System",
@@ -348,5 +361,18 @@
     }
   ],
   "newsletterSubscribers": [],
-  "auditLogs": []
+  "auditLogs": [
+    {
+      "id": "0863d375-695b-4af5-a090-e250c7eb1362",
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "entity_type": "User",
+      "action": "user_register",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "timestamp": "2026-11-16T08:33:53.849Z"
+    }
+  ]
 }

@@ -218,7 +218,7 @@ export default function Gallery() {
         title: album.title,
         category: (album.category || 'healthcare') as GalleryItem['category'],
         categoryLabel: album.category || 'Healthcare',
-        src: album.cover_image_url || '/images/login-clean-bg.jpg',
+        src: album.cover_image_url || '/images/gallery/together-rising-womens-health.jpg',
         alt: album.title,
         description: album.description || album.title,
         date: album.created_at ? new Date(album.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : '2026',
