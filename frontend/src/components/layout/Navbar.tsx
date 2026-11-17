@@ -185,14 +185,7 @@ export default function Navbar() {
                   <LogOut className="w-4 h-4" />
                 </button>
               </div>
-            ) : (
-              <Link
-                to="/login"
-                className="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-[#105e49] hover:bg-[#f0fbf7] transition-all cursor-pointer"
-              >
-                Log In
-              </Link>
-            )}
+            ) : null}
 
             <Button
               variant="primary"
@@ -300,24 +293,7 @@ export default function Navbar() {
                         <span>Log Out</span>
                       </button>
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2">
-                      <Link
-                        to="/login"
-                        onClick={() => setOpen(false)}
-                        className="flex items-center justify-center py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-                      >
-                        Log In
-                      </Link>
-                      <Link
-                        to="/register"
-                        onClick={() => setOpen(false)}
-                        className="flex items-center justify-center py-2.5 rounded-xl bg-[#082e23] text-white text-sm font-semibold hover:bg-[#105e49] transition-colors"
-                      >
-                        Register
-                      </Link>
-                    </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </motion.div>
