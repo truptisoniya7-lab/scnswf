@@ -294,6 +294,13 @@ class EmailService {
         return { success: true };
       } catch (err: any) {
         console.error('❌ Failed to send login OTP via SMTP:', err.message || err);
+        if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+          console.log(`\n======================================================`);
+          console.log(`[DEV FALLBACK LOGIN OTP] Recipient: ${userName} <${toEmail}>`);
+          console.log(`[DEV FALLBACK LOGIN OTP] Verification Code: ${otp}`);
+          console.log(`[DEV FALLBACK LOGIN OTP] Reason: SMTP failed (${err.message})`);
+          console.log(`======================================================\n`);
+        }
         return { success: false, error: 'Failed to dispatch email. Please verify SMTP configuration.' };
       }
     }
@@ -386,6 +393,13 @@ class EmailService {
         return { success: true };
       } catch (err: any) {
         console.error('❌ Failed to send registration OTP via SMTP:', err.message || err);
+        if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+          console.log(`\n======================================================`);
+          console.log(`[DEV FALLBACK REGISTRATION OTP] Recipient: ${userName} <${toEmail}>`);
+          console.log(`[DEV FALLBACK REGISTRATION OTP] Verification Code: ${otp}`);
+          console.log(`[DEV FALLBACK REGISTRATION OTP] Reason: SMTP failed (${err.message})`);
+          console.log(`======================================================\n`);
+        }
         return { success: false, error: 'Failed to dispatch email. Please verify SMTP configuration.' };
       }
     }

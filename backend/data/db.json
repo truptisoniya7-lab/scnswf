@@ -1,6 +1,21 @@
 {
   "users": [
     {
+      "id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "lastName": "Soniya",
+      "role": "volunteer",
+      "salt": "",
+      "isStaff": false,
+      "isActive": true,
+      "passwordHash": "",
+      "createdAt": "2026-11-20T05:56:16.253Z",
+      "emailVerified": true,
+      "firstName": "Trupti",
+      "phone": "7377348406",
+      "email": "truptisoniya7@gmail.com",
+      "updatedAt": "2026-11-20T05:56:16.253Z"
+    },
+    {
       "id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "createdAt": "2026-11-16T08:33:53.836Z",
       "firstName": "Aditya",
@@ -373,6 +388,148 @@
       },
       "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "timestamp": "2026-11-16T08:33:53.849Z"
+    },
+    {
+      "id": "1c763499-d3ed-472d-8869-662aa8f0e6b8",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "User",
+      "action": "user_register_completed",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "role": "volunteer",
+        "ip": "::1"
+      },
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "timestamp": "2026-11-20T05:56:16.255Z"
+    },
+    {
+      "id": "2c869f08-a43d-429b-a161-ba33d3e61f68",
+      "actor_user_id": "anonymous",
+      "entity_type": "Registration",
+      "action": "register_start_otp_requested",
+      "actor_email": "soubhagya45r@gmail.com",
+      "details": {
+        "ip": "::1",
+        "registrationId": "d296a139-f542-4c7d-94b8-1f04e95f4e8e"
+      },
+      "entity_id": "d296a139-f542-4c7d-94b8-1f04e95f4e8e",
+      "timestamp": "2026-11-20T05:07:20.828Z"
+    },
+    {
+      "id": "5ecdc286-ee72-4613-bdf9-27aa6e1502e2",
+      "actor_user_id": "anonymous",
+      "entity_type": "Registration",
+      "action": "register_start_otp_requested",
+      "actor_email": "adityahota77@gmail.com",
+      "details": {
+        "ip": "::1",
+        "registrationId": "ae6a9b14-6ae8-4a93-a83a-81c6c0200d33"
+      },
+      "entity_id": "ae6a9b14-6ae8-4a93-a83a-81c6c0200d33",
+      "timestamp": "2026-11-20T04:18:18.753Z"
+    },
+    {
+      "id": "778ffc8c-ac89-4eb6-9fb6-614db792801f",
+      "actor_user_id": "anonymous",
+      "entity_type": "Registration",
+      "action": "register_start_otp_requested",
+      "actor_email": "soubhagya45r@gmail.com",
+      "details": {
+        "ip": "::1",
+        "registrationId": "286007ef-02e7-48a5-81a3-9491f7c73b06"
+      },
+      "entity_id": "286007ef-02e7-48a5-81a3-9491f7c73b06",
+      "timestamp": "2026-11-20T05:08:07.036Z"
+    },
+    {
+      "id": "7b2d2757-7d4b-4f88-a2e6-4b7b6d559892",
+      "actor_user_id": "anonymous",
+      "entity_type": "Registration",
+      "action": "register_start_otp_requested",
+      "actor_email": "soubhagya45r@gmail.com",
+      "details": {
+        "ip": "::1",
+        "registrationId": "dccd305c-1c39-424e-84ea-efb3c23fb381"
+      },
+      "entity_id": "dccd305c-1c39-424e-84ea-efb3c23fb381",
+      "timestamp": "2026-11-20T05:41:28.311Z"
+    },
+    {
+      "id": "b2b39ee1-4ef8-4e36-879f-e798f90cc2ee",
+      "actor_user_id": "anonymous",
+      "entity_type": "Registration",
+      "action": "register_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "ip": "::1",
+        "registrationId": "029fbbb5-5f05-4da7-a3ab-70baa5d6cc74"
+      },
+      "entity_id": "029fbbb5-5f05-4da7-a3ab-70baa5d6cc74",
+      "timestamp": "2026-11-20T05:55:10.672Z"
+    },
+    {
+      "id": "bc834844-8da0-45c6-8a86-7e9760e4bca1",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "23848766-70f8-4b33-bea0-100135b8b985",
+        "ip": "::1"
+      },
+      "entity_id": "23848766-70f8-4b33-bea0-100135b8b985",
+      "timestamp": "2026-11-20T04:15:13.990Z"
+    },
+    {
+      "id": "c24e14bb-0fa4-4351-8e34-7d4ecc029349",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "cd34a1d2-fbb5-4b50-91b0-669676a061de",
+        "ip": "::1"
+      },
+      "entity_id": "cd34a1d2-fbb5-4b50-91b0-669676a061de",
+      "timestamp": "2026-11-20T05:52:30.210Z"
+    },
+    {
+      "id": "dc2fc9e2-a7d7-4efc-abcd-fbcecf2c8f16",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "a46d7e4c-a8ee-4ad5-bb51-5b690c1e7166",
+        "ip": "::1"
+      },
+      "entity_id": "a46d7e4c-a8ee-4ad5-bb51-5b690c1e7166",
+      "timestamp": "2026-11-20T05:42:06.257Z"
+    },
+    {
+      "id": "f30b4ac4-2b38-4dab-be80-ad139ca262e5",
+      "actor_user_id": "anonymous",
+      "entity_type": "Registration",
+      "action": "register_start_otp_requested",
+      "actor_email": "adityahota77@gmail.com",
+      "details": {
+        "ip": "::1",
+        "registrationId": "9d0435a2-34ee-4ea3-9962-4f1835a7723b"
+      },
+      "entity_id": "9d0435a2-34ee-4ea3-9962-4f1835a7723b",
+      "timestamp": "2026-11-20T04:56:20.747Z"
+    },
+    {
+      "id": "f78b780d-a94a-415d-805a-dfe61c0ed390",
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "timestamp": "2026-11-20T05:52:44.506Z"
     }
   ]
 }

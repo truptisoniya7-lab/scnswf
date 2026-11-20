@@ -27,7 +27,7 @@ const envSchema = z.object({
   SMTP_SECURE: z.coerce.boolean().default(true),
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
-  SMTP_FROM: z.string().default('SCNSWF Foundation <auth@scnswf.org>'),
+  SMTP_FROM: z.string().default('adityahota03@gmail.com'),
 });
 
 const parseEnv = () => {
