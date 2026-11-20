@@ -171,10 +171,14 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2.5">
             {authUser ? (
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition-colors"
+                  title="View Profile"
+                >
                   <User className="w-3.5 h-3.5 text-emerald-600" />
                   <span className="max-w-[120px] truncate">{authUser.name || authUser.email}</span>
-                </div>
+                </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -185,7 +189,14 @@ export default function Navbar() {
                   <LogOut className="w-4 h-4" />
                 </button>
               </div>
-            ) : null}
+            ) : (
+              <Link
+                to="/login"
+                className="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-[#105e49] hover:bg-[#f0fbf7] transition-all cursor-pointer"
+              >
+                Log In
+              </Link>
+            )}
 
             <Button
               variant="primary"
@@ -275,7 +286,11 @@ export default function Navbar() {
 
                   {authUser ? (
                     <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <div className="flex items-center gap-2">
+                      <Link
+                        to="/profile"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                      >
                         <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">
                           {authUser.name ? authUser.name.charAt(0).toUpperCase() : 'U'}
                         </div>
@@ -283,7 +298,7 @@ export default function Navbar() {
                           <span className="text-xs font-bold text-slate-900">{authUser.name || 'Member'}</span>
                           <span className="text-[11px] text-slate-500 truncate max-w-[180px]">{authUser.email}</span>
                         </div>
-                      </div>
+                      </Link>
                       <button
                         type="button"
                         onClick={handleLogout}
@@ -293,7 +308,24 @@ export default function Navbar() {
                         <span>Log Out</span>
                       </button>
                     </div>
-                  ) : null}
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link
+                        to="/login"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-center py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                      >
+                        Log In
+                      </Link>
+                      <Link
+                        to="/register"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-center py-2.5 rounded-xl bg-[#082e23] text-white text-sm font-semibold hover:bg-[#105e49] transition-colors"
+                      >
+                        Register
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

@@ -71,3 +71,6 @@ export const authApi = {
   },
 }
 
+export { passwordlessAuthApi } from '../lib/api/auth'
+export type { User, Role } from '../lib/api/auth'
+

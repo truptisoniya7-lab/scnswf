@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import PublicLayout from './layouts/PublicLayout'
 import ScrollToTop from './components/ScrollToTop'
+import { RequireAuth } from './routes/RequireAuth'
 
 // Pages — lazy loaded
 import { lazy, Suspense } from 'react'
@@ -24,6 +25,9 @@ const Terms          = lazy(() => import('./pages/legal/Terms'))
 const RefundPolicy   = lazy(() => import('./pages/legal/RefundPolicy'))
 const Disclaimer     = lazy(() => import('./pages/legal/Disclaimer'))
 const DesignSystem   = lazy(() => import('./pages/DesignSystem'))
+const LoginPage      = lazy(() => import('./pages/Login/LoginPage'))
+const RegisterPage   = lazy(() => import('./pages/Register/RegisterPage'))
+const Profile        = lazy(() => import('./pages/Profile'))
 const NotFound       = lazy(() => import('./pages/NotFound'))
 
 function PageLoader() {
@@ -44,6 +48,11 @@ export default function App() {
       <ScrollToTop />
       <Suspense fallback={<PageLoader />}>
         <Routes>
+          {/* Standalone passwordless auth routes */}
+          <Route path="/login"    element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/signup"   element={<Navigate to="/register" replace />} />
+
           <Route element={<PublicLayout />}>
             <Route path="/"                index element={<Home />} />
             <Route path="/about"                  element={<About />} />
@@ -68,6 +77,7 @@ export default function App() {
             <Route path="/refund-policy"          element={<RefundPolicy />} />
             <Route path="/disclaimer"             element={<Disclaimer />} />
             <Route path="/design-system"          element={<DesignSystem />} />
+            <Route path="/profile"                element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="*"                       element={<NotFound />} />
           </Route>
         </Routes>

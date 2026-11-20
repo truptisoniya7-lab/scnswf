@@ -430,4 +430,188 @@ export const accountsController = {
       message: 'Your password has been reset successfully. Please log in with your new password.',
     });
   },
+
+  // ==========================================
+  // PASSWORDLESS LOGIN (Spec: login.md)
+  // ==========================================
+
+  loginStart: async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+    const result = await otpService.startPasswordlessLogin(email);
+
+    auditRepo.log({
+      actor_user_id: 'anonymous',
+      actor_email: email,
+      action: 'login_start_otp_requested',
+      entity_type: 'Auth',
+      entity_id: result.loginId,
+      details: { ip: req.ip, loginId: result.loginId },
+    });
+
+    sendSuccess(res, result);
+  },
+
+  loginVerify: async (req: Request, res: Response): Promise<void> => {
+    const { loginId, otp } = req.body;
+    const result = otpService.verifyPasswordlessLogin(loginId, otp);
+
+    if (!result.success || !result.user) {
+      const status = result.errorType === 'OTP_EXPIRED' ? 400 : 400;
+      sendError(res, status, result.errorType || 'OTP_INVALID', result.message);
+      return;
+    }
+
+    const user = result.user;
+    const fullName = user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Supporter';
+    const payload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      name: fullName,
+    };
+    const access = generateAccessToken(payload);
+    const refresh = generateRefreshToken(payload);
+
+    auditRepo.log({
+      actor_user_id: user.id,
+      actor_email: user.email,
+      action: 'passwordless_login_verified',
+      entity_type: 'User',
+      entity_id: user.id,
+      details: { ip: req.ip },
+    });
+
+    sendSuccess(res, {
+      accessToken: access,
+      access,
+      refresh,
+      user: {
+        id: user.id,
+        name: fullName,
+        phone: user.phone || '',
+        email: user.email,
+        emailVerified: true,
+        role: user.role,
+        createdAt: user.createdAt || new Date().toISOString(),
+      },
+    });
+  },
+
+  loginResend: async (req: Request, res: Response): Promise<void> => {
+    const { loginId } = req.body;
+    const result = await otpService.resendPasswordlessLogin(loginId);
+
+    if (!result.success) {
+      const status = result.errorType === 'RATE_LIMITED' ? 429 : 400;
+      sendError(res, status, result.errorType || 'RATE_LIMITED', result.message);
+      return;
+    }
+
+    sendSuccess(res, {
+      otpExpiresInSec: result.otpExpiresInSec,
+      resendAfterSec: result.resendAfterSec,
+    });
+  },
+
+  // ==========================================
+  // PASSWORDLESS REGISTER (Spec: register.md)
+  // ==========================================
+
+  registerStart: async (req: Request, res: Response): Promise<void> => {
+    const { name, phone, email } = req.body;
+    const result = await otpService.startPasswordlessRegister(name, phone, email);
+
+    if (!result.success) {
+      if (result.errorType === 'EMAIL_EXISTS') {
+        sendError(res, 409, 'EMAIL_EXISTS', result.message || 'This email is already registered. Log in instead.');
+        return;
+      }
+      sendError(res, 400, result.errorType || 'INVALID_INPUT', result.message || 'Invalid registration details.');
+      return;
+    }
+
+    auditRepo.log({
+      actor_user_id: 'anonymous',
+      actor_email: email,
+      action: 'register_start_otp_requested',
+      entity_type: 'Registration',
+      entity_id: result.registrationId || 'anonymous',
+      details: { ip: req.ip, registrationId: result.registrationId },
+    });
+
+    sendSuccess(res, {
+      registrationId: result.registrationId,
+      otpExpiresInSec: result.otpExpiresInSec,
+      resendAfterSec: result.resendAfterSec,
+    });
+  },
+
+  registerVerify: async (req: Request, res: Response): Promise<void> => {
+    const { registrationId, otp } = req.body;
+    const result = otpService.verifyPasswordlessRegister(registrationId, otp);
+
+    if (!result.success) {
+      sendError(res, 400, result.errorType || 'OTP_INVALID', result.message);
+      return;
+    }
+
+    sendSuccess(res, { verified: true });
+  },
+
+  registerResend: async (req: Request, res: Response): Promise<void> => {
+    const { registrationId } = req.body;
+    const result = await otpService.resendPasswordlessRegister(registrationId);
+
+    if (!result.success) {
+      const status = result.errorType === 'RATE_LIMITED' ? 429 : 400;
+      sendError(res, status, result.errorType || 'RATE_LIMITED', result.message);
+      return;
+    }
+
+    sendSuccess(res, {
+      otpExpiresInSec: result.otpExpiresInSec,
+      resendAfterSec: result.resendAfterSec,
+    });
+  },
+
+  registerComplete: async (req: Request, res: Response): Promise<void> => {
+    const { registrationId, role } = req.body;
+    const result = otpService.completePasswordlessRegister(registrationId, role);
+
+    if (!result.success || !result.user) {
+      const status = result.errorType === 'EMAIL_EXISTS' ? 409 : 400;
+      sendError(res, status, result.errorType || 'INVALID_INPUT', result.message);
+      return;
+    }
+
+    const newUser = result.user;
+    const payload = {
+      userId: newUser.id,
+      email: newUser.email,
+      role: newUser.role,
+      name: newUser.name,
+    };
+    const access = generateAccessToken(payload);
+    const refresh = generateRefreshToken(payload);
+
+    auditRepo.log({
+      actor_user_id: newUser.id,
+      actor_email: newUser.email,
+      action: 'user_register_completed',
+      entity_type: 'User',
+      entity_id: newUser.id,
+      details: { ip: req.ip, role },
+    });
+
+    sendSuccess(
+      res,
+      {
+        accessToken: access,
+        access,
+        refresh,
+        user: newUser,
+      },
+      201
+    );
+  },
 };

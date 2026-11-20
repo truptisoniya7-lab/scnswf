@@ -1,4 +1,4 @@
-export type Role = 'super_admin' | 'admin' | 'content_editor' | 'applications_reviewer' | 'volunteer';
+export type Role = 'super_admin' | 'admin' | 'content_editor' | 'applications_reviewer' | 'volunteer' | 'internship' | 'donor';
 
 export interface User {
   id: string;
@@ -10,6 +10,8 @@ export interface User {
   isStaff: boolean;
   isActive: boolean;
   role: Role;
+  phone?: string;
+  emailVerified?: boolean;
   createdAt: string;
   updatedAt: string;
 }

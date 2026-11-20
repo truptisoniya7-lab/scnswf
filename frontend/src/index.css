@@ -382,3 +382,71 @@ html {
   }
 }
 
+/* ========================================================
+   Passwordless Auth Tokens & Glassmorphism Animations
+   (Specs: login.md & register.md)
+   ======================================================== */
+:root {
+  --bg-deep: #04140c;
+  --bg-mid: #0a2a1a;
+  --green-500: #1f9d62;
+  --green-400: #34d399;
+  --green-300: #6ee7b7;
+  --glass-bg: rgba(10, 42, 26, 0.45);
+  --glass-border: rgba(110, 231, 183, 0.18);
+  --text: #e8fff3;
+  --text-muted: #9bc9b0;
+  --danger: #f87171;
+  --radius: 20px;
+}
+
+@keyframes authBlobDrift1 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(60px, -50px) scale(1.15); }
+  100% { transform: translate(-40px, 40px) scale(0.9); }
+}
+
+@keyframes authBlobDrift2 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-70px, 60px) scale(1.2); }
+  100% { transform: translate(50px, -40px) scale(0.85); }
+}
+
+@keyframes authBlobDrift3 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(50px, 70px) scale(1.1); }
+  100% { transform: translate(-30px, -50px) scale(1.05); }
+}
+
+@keyframes authShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.auth-blob-1 {
+  animation: authBlobDrift1 22s ease-in-out infinite alternate;
+}
+
+.auth-blob-2 {
+  animation: authBlobDrift2 26s ease-in-out infinite alternate;
+}
+
+.auth-blob-3 {
+  animation: authBlobDrift3 20s ease-in-out infinite alternate;
+}
+
+.auth-shake {
+  animation: authShake 0.4s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-blob-1,
+  .auth-blob-2,
+  .auth-blob-3,
+  .auth-shake {
+    animation: none !important;
+  }
+}
+
+

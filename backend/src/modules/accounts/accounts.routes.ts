@@ -11,11 +11,75 @@ import {
   forgotPasswordSchema,
   verifyResetOtpSchema,
   resetPasswordSchema,
+  loginStartSchema,
+  loginVerifySchema,
+  loginResendSchema,
+  registerStartSchema,
+  registerVerifySchema,
+  registerResendSchema,
+  registerCompleteSchema,
 } from './accounts.schema';
 import { authenticate } from '../../middleware/auth';
 import { authLimiter } from '../../middleware/rateLimiter';
 
 const router = Router();
+
+// ==========================================
+// PASSWORDLESS LOGIN (Spec: login.md)
+// ==========================================
+
+router.post(
+  ['/auth/login/start', '/auth/login/start/', '/login/start', '/login/start/'],
+  authLimiter,
+  validateRequest({ body: loginStartSchema }),
+  accountsController.loginStart
+);
+
+router.post(
+  ['/auth/login/verify', '/auth/login/verify/', '/login/verify', '/login/verify/'],
+  authLimiter,
+  validateRequest({ body: loginVerifySchema }),
+  accountsController.loginVerify
+);
+
+router.post(
+  ['/auth/login/resend', '/auth/login/resend/', '/login/resend', '/login/resend/'],
+  authLimiter,
+  validateRequest({ body: loginResendSchema }),
+  accountsController.loginResend
+);
+
+// ==========================================
+// PASSWORDLESS REGISTER (Spec: register.md)
+// ==========================================
+
+router.post(
+  ['/auth/register/start', '/auth/register/start/', '/register/start', '/register/start/'],
+  authLimiter,
+  validateRequest({ body: registerStartSchema }),
+  accountsController.registerStart
+);
+
+router.post(
+  ['/auth/register/verify', '/auth/register/verify/', '/register/verify', '/register/verify/'],
+  authLimiter,
+  validateRequest({ body: registerVerifySchema }),
+  accountsController.registerVerify
+);
+
+router.post(
+  ['/auth/register/resend', '/auth/register/resend/', '/register/resend', '/register/resend/'],
+  authLimiter,
+  validateRequest({ body: registerResendSchema }),
+  accountsController.registerResend
+);
+
+router.post(
+  ['/auth/register/complete', '/auth/register/complete/', '/register/complete', '/register/complete/'],
+  authLimiter,
+  validateRequest({ body: registerCompleteSchema }),
+  accountsController.registerComplete
+);
 
 // Admin Authentication (POST /api/v1/auth/admin/login or /api/v1/accounts/auth/login)
 router.post(
