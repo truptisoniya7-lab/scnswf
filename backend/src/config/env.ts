@@ -22,7 +22,7 @@ const envSchema = z.object({
   FIREBASE_PRIVATE_KEY: z.string().optional(),
   FIREBASE_DATABASE_URL: z.string().optional(),
   // Zoho Mail / SMTP Configuration
-  SMTP_HOST: z.string().default('smtp.zoho.com'),
+  SMTP_HOST: z.string().default('smtp.gmail.com'),
   SMTP_PORT: z.coerce.number().default(465),
   SMTP_SECURE: z.coerce.boolean().default(true),
   SMTP_USER: z.string().optional(),

@@ -429,6 +429,19 @@
       "timestamp": "2026-11-20T04:18:18.753Z"
     },
     {
+      "id": "73b42e5b-49d3-44aa-889f-08d258d26cee",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "aa6e5c1c-ca61-4ff5-9f48-eb0ace2f4144",
+        "ip": "::1"
+      },
+      "entity_id": "aa6e5c1c-ca61-4ff5-9f48-eb0ace2f4144",
+      "timestamp": "2026-11-20T06:10:43.222Z"
+    },
+    {
       "id": "778ffc8c-ac89-4eb6-9fb6-614db792801f",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -453,6 +466,18 @@
       },
       "entity_id": "dccd305c-1c39-424e-84ea-efb3c23fb381",
       "timestamp": "2026-11-20T05:41:28.311Z"
+    },
+    {
+      "id": "a9140403-a1a2-4551-8040-feda6dd05ecd",
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "timestamp": "2026-11-20T06:10:59.859Z"
     },
     {
       "id": "b2b39ee1-4ef8-4e36-879f-e798f90cc2ee",
