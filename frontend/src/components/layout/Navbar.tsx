@@ -26,7 +26,12 @@ export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const [authUser, setAuthUser] = useState<{ name?: string; email?: string } | null>(() => {
+  const [authUser, setAuthUser] = useState<{
+    name?: string
+    email?: string
+    role?: string
+    systemRole?: string
+  } | null>(() => {
     try {
       const rawUser = localStorage.getItem('auth_user')
       const token = localStorage.getItem('access_token')
@@ -171,6 +176,18 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2.5">
             {authUser ? (
               <div className="flex items-center gap-2">
+                {(authUser.systemRole === 'staff' ||
+                  authUser.systemRole === 'superadmin' ||
+                  authUser.role === 'super_admin' ||
+                  authUser.role === 'admin') && (
+                  <Link
+                    to="/admin"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#04140c] border border-emerald-500/40 text-xs font-semibold text-emerald-400 hover:bg-emerald-950/60 transition-colors shadow-2xs"
+                    title="Open Admin Console"
+                  >
+                    <span>Admin Panel</span>
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition-colors"
@@ -285,28 +302,42 @@ export default function Navbar() {
                   </Button>
 
                   {authUser ? (
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <Link
-                        to="/profile"
-                        onClick={() => setOpen(false)}
-                        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-                      >
-                        <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">
-                          {authUser.name ? authUser.name.charAt(0).toUpperCase() : 'U'}
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-bold text-slate-900">{authUser.name || 'Member'}</span>
-                          <span className="text-[11px] text-slate-500 truncate max-w-[180px]">{authUser.email}</span>
-                        </div>
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer p-1.5"
-                      >
-                        <LogOut className="w-3.5 h-3.5" />
-                        <span>Log Out</span>
-                      </button>
+                    <div className="flex flex-col gap-2">
+                      {(authUser.systemRole === 'staff' ||
+                        authUser.systemRole === 'superadmin' ||
+                        authUser.role === 'super_admin' ||
+                        authUser.role === 'admin') && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setOpen(false)}
+                          className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#04140c] text-emerald-400 font-bold text-xs border border-emerald-500/40"
+                        >
+                          <span>Open Admin Console</span>
+                        </Link>
+                      )}
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <Link
+                          to="/profile"
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">
+                            {authUser.name ? authUser.name.charAt(0).toUpperCase() : 'U'}
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="text-xs font-bold text-slate-900">{authUser.name || 'Member'}</span>
+                            <span className="text-[11px] text-slate-500 truncate max-w-[180px]">{authUser.email}</span>
+                          </div>
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer p-1.5"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          <span>Log Out</span>
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 gap-2">

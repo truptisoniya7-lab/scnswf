@@ -391,6 +391,8 @@ export const getInitialSeedData = (): DatabaseState => {
         isStaff: true,
         isActive: true,
         role: 'super_admin',
+        systemRole: 'superadmin',
+        status: 'active',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },

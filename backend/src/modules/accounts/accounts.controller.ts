@@ -221,6 +221,7 @@ export const accountsController = {
     }
 
     const profile = usersRepo.findProfileByUserId(user.id);
+    const computedSystemRole = user.systemRole || (user.role === 'super_admin' ? 'superadmin' : user.role === 'admin' || user.isStaff ? 'staff' : 'user');
 
     sendSuccess(res, {
       id: user.id,
@@ -229,8 +230,11 @@ export const accountsController = {
       last_name: user.lastName,
       name: `${user.firstName} ${user.lastName}`.trim(),
       role: user.role,
+      systemRole: computedSystemRole,
+      registrationRole: user.registrationRole || (['internship', 'donor', 'volunteer'].includes(user.role) ? user.role : 'volunteer'),
+      status: user.status || (user.isActive ? 'active' : 'suspended'),
       is_staff: user.isStaff,
-      phone: profile?.phone || null,
+      phone: profile?.phone || user.phone || null,
       avatar_url: profile?.avatarUrl || null,
       created_at: user.createdAt,
     });
@@ -463,10 +467,12 @@ export const accountsController = {
 
     const user = result.user;
     const fullName = user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Supporter';
+    const computedSystemRole = user.systemRole || (user.role === 'super_admin' ? 'superadmin' : user.role === 'admin' || user.isStaff ? 'staff' : 'user');
     const payload = {
       userId: user.id,
       email: user.email,
       role: user.role,
+      systemRole: computedSystemRole,
       name: fullName,
     };
     const access = generateAccessToken(payload);
@@ -492,6 +498,9 @@ export const accountsController = {
         email: user.email,
         emailVerified: true,
         role: user.role,
+        systemRole: computedSystemRole,
+        registrationRole: user.registrationRole || (['internship', 'donor', 'volunteer'].includes(user.role) ? user.role : 'volunteer'),
+        status: user.status || (user.isActive ? 'active' : 'suspended'),
         createdAt: user.createdAt || new Date().toISOString(),
       },
     });

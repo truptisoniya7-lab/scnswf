@@ -1,6 +1,7 @@
 import { apiClient } from '../../api/client'
 
 export type Role = 'internship' | 'donor' | 'volunteer' | string
+export type SystemRole = 'user' | 'staff' | 'superadmin'
 
 export interface User {
   id: string
@@ -9,6 +10,9 @@ export interface User {
   email: string
   emailVerified: boolean
   role: Role
+  systemRole?: SystemRole
+  registrationRole?: string
+  status?: string
   createdAt: string
 }
 

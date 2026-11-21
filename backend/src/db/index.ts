@@ -414,6 +414,218 @@ export const applicationsRepo = {
   findAllPartnership: () => {
     return dbStore.getState().partnershipRequests.filter((a) => !a.is_deleted);
   },
+
+  findAllUnified: (options?: {
+    type?: string;
+    status?: string;
+    q?: string;
+    page?: number;
+    pageSize?: number;
+  }) => {
+    const state = dbStore.getState();
+    let unified: any[] = [];
+
+    if (!options?.type || options.type === 'volunteer') {
+      const vol = (state.volunteerApplications || []).filter((a) => !a.is_deleted).map((a) => ({
+        id: a.id,
+        type: 'volunteer' as const,
+        applicantName: a.name,
+        email: a.email,
+        phone: a.phone,
+        status: a.status === 'accepted' ? 'approved' : a.status === 'new' ? 'pending' : a.status === 'in_review' ? 'under_review' : a.status,
+        submittedAt: a.created_at,
+        reviewerId: (a as any).reviewer_id || null,
+        rejectionReason: (a as any).rejection_reason,
+        notes: (a as any).notes || [],
+        statusHistory: (a as any).status_history || [],
+        details: {
+          skills: a.skills,
+          availability: a.availability,
+          experience: a.experience,
+          message: a.message,
+          location: a.location,
+        },
+      }));
+      unified.push(...vol);
+    }
+
+    if (!options?.type || options.type === 'internship') {
+      const intern = (state.internshipApplications || []).filter((a) => !a.is_deleted).map((a) => ({
+        id: a.id,
+        type: 'internship' as const,
+        applicantName: a.name,
+        email: a.email,
+        phone: a.phone,
+        status: a.status === 'accepted' ? 'approved' : a.status === 'new' ? 'pending' : a.status === 'in_review' ? 'under_review' : a.status,
+        submittedAt: a.created_at,
+        reviewerId: (a as any).reviewer_id || null,
+        rejectionReason: (a as any).rejection_reason,
+        notes: (a as any).notes || [],
+        statusHistory: (a as any).status_history || [],
+        details: {
+          education: a.education,
+          area_of_interest: a.area_of_interest,
+          duration: a.duration,
+          resume_url: a.resume_url,
+          message: a.message,
+        },
+      }));
+      unified.push(...intern);
+    }
+
+    if (options?.status) {
+      unified = unified.filter((a) => a.status === options.status);
+    }
+
+    if (options?.q) {
+      const q = options.q.toLowerCase().trim();
+      unified = unified.filter(
+        (a) =>
+          a.applicantName.toLowerCase().includes(q) ||
+          a.email.toLowerCase().includes(q) ||
+          (a.phone && a.phone.includes(q))
+      );
+    }
+
+    unified.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+    return paginate(unified, options?.page, options?.pageSize, '/api/v1/admin/applications');
+  },
+
+  findUnifiedById: (id: string) => {
+    const state = dbStore.getState();
+    const vol = (state.volunteerApplications || []).find((a) => a.id === id);
+    if (vol) {
+      return {
+        id: vol.id,
+        type: 'volunteer' as const,
+        applicantName: vol.name,
+        email: vol.email,
+        phone: vol.phone,
+        status: vol.status === 'accepted' ? 'approved' : vol.status === 'new' ? 'pending' : vol.status === 'in_review' ? 'under_review' : vol.status,
+        submittedAt: vol.created_at,
+        reviewerId: (vol as any).reviewer_id || null,
+        rejectionReason: (vol as any).rejection_reason,
+        notes: (vol as any).notes || [],
+        statusHistory: (vol as any).status_history || [],
+        details: {
+          skills: vol.skills,
+          availability: vol.availability,
+          experience: vol.experience,
+          message: vol.message,
+          location: vol.location,
+        },
+      };
+    }
+
+    const intern = (state.internshipApplications || []).find((a) => a.id === id);
+    if (intern) {
+      return {
+        id: intern.id,
+        type: 'internship' as const,
+        applicantName: intern.name,
+        email: intern.email,
+        phone: intern.phone,
+        status: intern.status === 'accepted' ? 'approved' : intern.status === 'new' ? 'pending' : intern.status === 'in_review' ? 'under_review' : intern.status,
+        submittedAt: intern.created_at,
+        reviewerId: (intern as any).reviewer_id || null,
+        rejectionReason: (intern as any).rejection_reason,
+        notes: (intern as any).notes || [],
+        statusHistory: (intern as any).status_history || [],
+        details: {
+          education: intern.education,
+          area_of_interest: intern.area_of_interest,
+          duration: intern.duration,
+          resume_url: intern.resume_url,
+          message: intern.message,
+        },
+      };
+    }
+    return null;
+  },
+
+  updateUnifiedStatus: (
+    id: string,
+    status: 'pending' | 'under_review' | 'approved' | 'rejected',
+    changedBy: string,
+    reason?: string
+  ) => {
+    let updated: any = null;
+    const historyEntry = {
+      status,
+      changedBy,
+      reason,
+      at: new Date().toISOString(),
+    };
+
+    dbStore.update((state) => {
+      // Check volunteer
+      const vIdx = (state.volunteerApplications || []).findIndex((a) => a.id === id);
+      if (vIdx !== -1) {
+        const item = state.volunteerApplications[vIdx] as any;
+        item.status = status === 'approved' ? 'accepted' : status === 'pending' ? 'new' : status === 'under_review' ? 'in_review' : status;
+        item.rejection_reason = reason || null;
+        item.reviewer_id = changedBy;
+        item.status_history = item.status_history || [];
+        item.status_history.push(historyEntry);
+        item.updated_at = new Date().toISOString();
+        updated = item;
+        return;
+      }
+
+      // Check internship
+      const iIdx = (state.internshipApplications || []).findIndex((a) => a.id === id);
+      if (iIdx !== -1) {
+        const item = state.internshipApplications[iIdx] as any;
+        item.status = status === 'approved' ? 'accepted' : status === 'pending' ? 'new' : status === 'under_review' ? 'in_review' : status;
+        item.rejection_reason = reason || null;
+        item.reviewer_id = changedBy;
+        item.status_history = item.status_history || [];
+        item.status_history.push(historyEntry);
+        item.updated_at = new Date().toISOString();
+        updated = item;
+      }
+    });
+
+    if (updated) {
+      const collection = updated.skills ? 'volunteerApplications' : 'internshipApplications';
+      dbStore.syncDocument(collection, id, updated);
+    }
+    return updated;
+  },
+
+  addUnifiedNote: (id: string, authorId: string, authorName: string, text: string) => {
+    let noteAdded: any = null;
+    const note = {
+      id: crypto.randomUUID(),
+      authorId,
+      authorName,
+      text,
+      createdAt: new Date().toISOString(),
+    };
+
+    dbStore.update((state) => {
+      const vIdx = (state.volunteerApplications || []).findIndex((a) => a.id === id);
+      if (vIdx !== -1) {
+        const item = state.volunteerApplications[vIdx] as any;
+        item.notes = item.notes || [];
+        item.notes.push(note);
+        item.updated_at = new Date().toISOString();
+        noteAdded = note;
+        return;
+      }
+
+      const iIdx = (state.internshipApplications || []).findIndex((a) => a.id === id);
+      if (iIdx !== -1) {
+        const item = state.internshipApplications[iIdx] as any;
+        item.notes = item.notes || [];
+        item.notes.push(note);
+        item.updated_at = new Date().toISOString();
+        noteAdded = note;
+      }
+    });
+
+    return noteAdded;
+  },
 };
 
 export const contactRepo = {
@@ -576,6 +788,81 @@ export const donationsRepo = {
     return dbStore.getState().donations.filter((d) => !d.is_deleted);
   },
 
+  findAllFiltered: (options?: {
+    status?: string;
+    q?: string;
+    startDate?: string;
+    endDate?: string;
+    minAmount?: number;
+    maxAmount?: number;
+    page?: number;
+    pageSize?: number;
+  }) => {
+    let items = dbStore.getState().donations.filter((d) => !d.is_deleted);
+    if (options?.status) {
+      items = items.filter((d) => d.status === options.status);
+    }
+    if (options?.q) {
+      const q = options.q.toLowerCase().trim();
+      items = items.filter(
+        (d) =>
+          (d.donor_name && d.donor_name.toLowerCase().includes(q)) ||
+          (d.donor_email && d.donor_email.toLowerCase().includes(q)) ||
+          (d.receipt_number && d.receipt_number.toLowerCase().includes(q)) ||
+          (d.id && d.id.toLowerCase().includes(q))
+      );
+    }
+    if (options?.startDate) {
+      items = items.filter((d) => new Date(d.created_at) >= new Date(options.startDate!));
+    }
+    if (options?.endDate) {
+      items = items.filter((d) => new Date(d.created_at) <= new Date(options.endDate!));
+    }
+    if (options?.minAmount !== undefined) {
+      items = items.filter((d) => d.amount >= options.minAmount!);
+    }
+    if (options?.maxAmount !== undefined) {
+      items = items.filter((d) => d.amount <= options.maxAmount!);
+    }
+    items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return paginate(items, options?.page, options?.pageSize, '/api/v1/admin/donations');
+  },
+
+  createManual: (data: {
+    donor_name: string;
+    donor_email: string;
+    donor_phone?: string;
+    amount: number;
+    currency?: string;
+    method: 'cash' | 'bank_transfer' | 'cheque' | 'online';
+    notes?: string;
+    program_id?: string | null;
+  }) => {
+    const donationId = crypto.randomUUID();
+    const receiptNo = `SCNSWF-MAN-${Date.now().toString().slice(-6)}`;
+    const newDonation: Donation = {
+      id: donationId,
+      program_id: data.program_id || null,
+      donor_name: data.donor_name,
+      donor_email: data.donor_email,
+      donor_phone: data.donor_phone || null,
+      is_anonymous: false,
+      amount: data.amount,
+      currency: data.currency || 'INR',
+      status: 'succeeded',
+      receipt_number: receiptNo,
+      is_deleted: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    dbStore.update((state) => {
+      state.donations.push(newDonation);
+    });
+    dbStore.syncDocument('donations', newDonation.id, newDonation);
+    return newDonation;
+  },
+
   updateStatus: (id: string, status: Donation['status']): Donation | null => {
     let updated: Donation | null = null;
     dbStore.update((state) => {
@@ -686,6 +973,101 @@ export const usersRepo = {
     }
     return updated;
   },
+
+  findAll: (options?: {
+    q?: string;
+    role?: string;
+    systemRole?: string;
+    status?: string;
+    verified?: boolean;
+    page?: number;
+    pageSize?: number;
+  }) => {
+    let users = [...dbStore.getState().users];
+    if (options?.q) {
+      const q = options.q.toLowerCase().trim();
+      users = users.filter((u) => {
+        const fullName = `${u.firstName || ''} ${u.lastName || ''}`.toLowerCase();
+        return (
+          fullName.includes(q) ||
+          u.email.toLowerCase().includes(q) ||
+          (u.phone && u.phone.includes(q))
+        );
+      });
+    }
+    if (options?.role) {
+      users = users.filter(
+        (u) => u.role === options.role || u.registrationRole === options.role
+      );
+    }
+    if (options?.systemRole) {
+      users = users.filter((u) => {
+        const sr =
+          u.systemRole ||
+          (u.role === 'super_admin' ? 'superadmin' : u.isStaff ? 'staff' : 'user');
+        return sr === options.systemRole;
+      });
+    }
+    if (options?.status) {
+      users = users.filter((u) => {
+        const st = u.status || (u.isActive ? 'active' : 'suspended');
+        return st === options.status;
+      });
+    }
+    if (options?.verified !== undefined) {
+      users = users.filter((u) => Boolean(u.emailVerified) === options.verified);
+    }
+    users.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return paginate(users, options?.page, options?.pageSize, '/api/v1/admin/users');
+  },
+
+  update: (id: string, data: Partial<User>): User | null => {
+    let updated: User | null = null;
+    dbStore.update((state) => {
+      const idx = state.users.findIndex((u) => u.id === id);
+      if (idx !== -1) {
+        state.users[idx] = {
+          ...state.users[idx],
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+        updated = state.users[idx];
+      }
+    });
+    if (updated) {
+      dbStore.syncDocument('users', id, updated);
+    }
+    return updated;
+  },
+
+  suspend: (id: string): User | null => {
+    return usersRepo.update(id, { status: 'suspended', isActive: false });
+  },
+
+  reactivate: (id: string): User | null => {
+    return usersRepo.update(id, { status: 'active', isActive: true });
+  },
+
+  delete: (id: string): boolean => {
+    let deleted = false;
+    dbStore.update((state) => {
+      const idx = state.users.findIndex((u) => u.id === id);
+      if (idx !== -1) {
+        state.users.splice(idx, 1);
+        deleted = true;
+      }
+    });
+    if (deleted) {
+      dbStore.deleteDocument('users', id);
+    }
+    return deleted;
+  },
+
+  changeSystemRole: (id: string, systemRole: 'user' | 'staff' | 'superadmin'): User | null => {
+    const isStaff = systemRole === 'staff' || systemRole === 'superadmin';
+    const role = systemRole === 'superadmin' ? 'super_admin' : systemRole === 'staff' ? 'admin' : 'volunteer';
+    return usersRepo.update(id, { systemRole, isStaff, role });
+  },
 };
 
 export const auditRepo = {
@@ -702,5 +1084,30 @@ export const auditRepo = {
 
   findAll: () => {
     return dbStore.getState().auditLogs;
+  },
+
+  findAllFiltered: (options?: {
+    actorId?: string;
+    action?: string;
+    entityType?: string;
+    page?: number;
+    pageSize?: number;
+  }) => {
+    let logs = [...dbStore.getState().auditLogs];
+    if (options?.actorId) {
+      logs = logs.filter((l) => l.actor_user_id === options.actorId || l.actor_email === options.actorId);
+    }
+    if (options?.action) {
+      logs = logs.filter((l) => l.action.toLowerCase().includes(options.action!.toLowerCase()));
+    }
+    if (options?.entityType) {
+      logs = logs.filter((l) => l.entity_type.toLowerCase() === options.entityType!.toLowerCase());
+    }
+    logs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return paginate(logs, options?.page, options?.pageSize, '/api/v1/admin/audit');
+  },
+
+  findById: (id: string) => {
+    return dbStore.getState().auditLogs.find((l) => l.id === id) || null;
   },
 };

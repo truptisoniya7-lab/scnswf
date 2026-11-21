@@ -53,6 +53,9 @@ class UnifiedStore {
             state.users[adminIdx].passwordHash = defaultAdmin.passwordHash;
             state.users[adminIdx].salt = defaultAdmin.salt;
             state.users[adminIdx].isActive = true;
+            state.users[adminIdx].role = 'super_admin';
+            state.users[adminIdx].systemRole = 'superadmin';
+            state.users[adminIdx].status = 'active';
           }
         }
 

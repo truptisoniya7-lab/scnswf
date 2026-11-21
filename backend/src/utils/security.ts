@@ -1,12 +1,13 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
-import { Role } from '../types';
+import { Role, SystemRole } from '../types';
 
 export interface TokenPayload {
   userId: string;
   email: string;
   role: Role;
+  systemRole?: SystemRole;
   name?: string;
 }
 

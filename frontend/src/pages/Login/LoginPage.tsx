@@ -65,14 +65,28 @@ export default function LoginPage() {
     setIsLoading(true)
     setErrorMsg(null)
     try {
-      await passwordlessAuthApi.loginVerify({
+      const res = await passwordlessAuthApi.loginVerify({
         loginId,
         otp,
       })
       // Show 600ms green check animation before redirect
       setIsSuccess(true)
+      const user = res.user
+      const isStaffOrAdmin =
+        user.systemRole === 'staff' ||
+        user.systemRole === 'superadmin' ||
+        user.role === 'super_admin' ||
+        user.role === 'admin'
+
+      const destination =
+        safeNextUrl && safeNextUrl !== '/profile'
+          ? safeNextUrl
+          : isStaffOrAdmin
+          ? '/admin'
+          : '/profile'
+
       setTimeout(() => {
-        navigate(safeNextUrl, { replace: true })
+        navigate(destination, { replace: true })
       }, 600)
     } catch (err: any) {
       const msg =
