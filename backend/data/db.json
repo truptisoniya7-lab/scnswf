@@ -20,13 +20,14 @@
       "createdAt": "2026-11-16T08:33:53.836Z",
       "firstName": "Aditya",
       "lastName": "Hota",
-      "role": "volunteer",
+      "role": "super_admin",
+      "systemRole": "superadmin",
       "salt": "9ad559945569b259d9dbf768e360c477",
-      "isStaff": false,
+      "isStaff": true,
       "isActive": true,
       "email": "adityahota03@gmail.com",
       "passwordHash": "a9faad4fe1533e356ce4433230538104f42990cd3e1112d97a2cf861bfe09515a1ed9a97a48a39ecaafe382f12b68967814b83bef614e730c27fe1a3b33bcb15",
-      "updatedAt": "2026-11-16T08:33:53.836Z"
+      "updatedAt": "2026-11-21T16:40:00.000Z"
     },
     {
       "id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
@@ -34,6 +35,7 @@
       "firstName": "System",
       "lastName": "Administrator",
       "role": "super_admin",
+      "systemRole": "superadmin",
       "salt": "fc529d063c1163101bd0bfb116019d6c",
       "isStaff": true,
       "isActive": true,
