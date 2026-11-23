@@ -429,6 +429,19 @@
       "timestamp": "2026-11-23T13:52:56.761Z"
     },
     {
+      "id": "575cc3a8-54d7-4966-8eee-cce9ba667956",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "loginId": "f2cb393c-7994-4334-94c7-b38904eb4425",
+        "ip": "::1"
+      },
+      "entity_id": "f2cb393c-7994-4334-94c7-b38904eb4425",
+      "timestamp": "2026-11-23T14:28:37.522Z"
+    },
+    {
       "id": "5ecdc286-ee72-4613-bdf9-27aa6e1502e2",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -504,6 +517,19 @@
       },
       "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "timestamp": "2026-11-20T06:10:59.859Z"
+    },
+    {
+      "id": "aa8c4145-8dbd-4073-b67c-456cb73c455b",
+      "actor_user_id": "anonymous",
+      "entity_type": "Registration",
+      "action": "register_start_otp_requested",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "::1",
+        "registrationId": "9c8f54ad-d7c3-4d32-a56a-8ae3438b3f08"
+      },
+      "entity_id": "9c8f54ad-d7c3-4d32-a56a-8ae3438b3f08",
+      "timestamp": "2026-11-23T14:32:32.229Z"
     },
     {
       "id": "b247aa0b-0f6b-4d8a-9442-4a28a33d965b",
@@ -593,6 +619,19 @@
       },
       "entity_id": "a46d7e4c-a8ee-4ad5-bb51-5b690c1e7166",
       "timestamp": "2026-11-20T05:42:06.257Z"
+    },
+    {
+      "id": "de1bbc3f-87e8-4a0f-be3c-0f44caf4430e",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "loginId": "782b7e98-7706-40da-a7bf-1a6e09f5f859",
+        "ip": "::1"
+      },
+      "entity_id": "782b7e98-7706-40da-a7bf-1a6e09f5f859",
+      "timestamp": "2026-11-23T14:33:03.880Z"
     },
     {
       "id": "f30b4ac4-2b38-4dab-be80-ad139ca262e5",

@@ -25,7 +25,7 @@ export type LoginVerifyRes = { user: User; accessToken: string }
 export type LoginResendReq = { loginId: string }
 export type LoginResendRes = { otpExpiresInSec: number; resendAfterSec: number }
 
-export type StartReq = { name: string; phone: string; email: string }
+export type StartReq = { name: string; phone: string; email: string; password?: string }
 export type StartRes = { registrationId: string; otpExpiresInSec: number; resendAfterSec: number }
 
 export type VerifyReq = { registrationId: string; otp: string }
@@ -85,6 +85,36 @@ export const passwordlessAuthApi = {
       window.dispatchEvent(new Event('authChange'))
     }
     return result
+  },
+
+  // Password login flow
+  loginWithPassword: async (credentials: { email: string; password: string }): Promise<LoginVerifyRes> => {
+    const res = await apiClient.post<any>('/auth/login', credentials)
+    const data = res.data?.data ?? res.data
+    const token = data.accessToken || data.access
+    const user = data.user
+    if (token) {
+      localStorage.setItem('access_token', token)
+      localStorage.setItem('auth_user', JSON.stringify(user))
+      window.dispatchEvent(new Event('authChange'))
+    }
+    return { user, accessToken: token }
+  },
+
+  // Password reset flow
+  forgotPassword: async (email: string): Promise<{ message: string; resend_cooldown?: number }> => {
+    const res = await apiClient.post<any>('/auth/forgot-password', { email })
+    return res.data?.data ?? res.data
+  },
+
+  verifyResetOtp: async (email: string, otp: string): Promise<{ message: string; verified: boolean }> => {
+    const res = await apiClient.post<any>('/auth/verify-reset-otp', { email, otp })
+    return res.data?.data ?? res.data
+  },
+
+  resetPassword: async (payload: { email: string; otp: string; newPassword: string }): Promise<{ message: string }> => {
+    const res = await apiClient.post<any>('/auth/reset-password', payload)
+    return res.data?.data ?? res.data
   },
 
   // Current session & logout

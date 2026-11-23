@@ -54,7 +54,9 @@ export const accountsController = {
       details: { ip: req.ip },
     });
 
+    const computedSystemRole = user.systemRole || (user.role === 'super_admin' ? 'superadmin' : user.role === 'admin' || user.isStaff ? 'staff' : 'user');
     sendSuccess(res, {
+      accessToken: access,
       access,
       refresh,
       user: {
@@ -64,7 +66,11 @@ export const accountsController = {
         last_name: user.lastName,
         name: `${user.firstName} ${user.lastName}`.trim(),
         role: user.role,
+        systemRole: computedSystemRole,
         is_staff: user.isStaff,
+        phone: user.phone || '',
+        status: user.status || (user.isActive ? 'active' : 'suspended'),
+        createdAt: user.createdAt || new Date().toISOString(),
       },
     });
   },
@@ -527,8 +533,8 @@ export const accountsController = {
   // ==========================================
 
   registerStart: async (req: Request, res: Response): Promise<void> => {
-    const { name, phone, email } = req.body;
-    const result = await otpService.startPasswordlessRegister(name, phone, email);
+    const { name, phone, email, password } = req.body;
+    const result = await otpService.startPasswordlessRegister(name, phone, email, password);
 
     if (!result.success) {
       if (result.errorType === 'EMAIL_EXISTS') {

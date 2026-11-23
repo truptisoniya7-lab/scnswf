@@ -73,6 +73,7 @@ export const registerStartSchema = z.object({
     .transform((v) => v.trim()),
   phone: z.string().regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian mobile number.'),
   email: z.string().email('Please enter a valid email address.').transform((v) => v.toLowerCase().trim()),
+  password: z.string().min(6, 'Password must be at least 6 characters.').optional(),
 });
 
 export const registerVerifySchema = z.object({

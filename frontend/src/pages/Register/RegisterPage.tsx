@@ -28,6 +28,8 @@ export default function RegisterPage() {
     name: '',
     phone: '',
     email: '',
+    password: '',
+    confirmPassword: '',
   })
   const [registrationId, setRegistrationId] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
@@ -41,7 +43,12 @@ export default function RegisterPage() {
     setErrorMsg(null)
     try {
       setFormData(values)
-      const res = await passwordlessAuthApi.registerStart(values)
+      const res = await passwordlessAuthApi.registerStart({
+        name: values.name,
+        phone: values.phone,
+        email: values.email,
+        password: values.password,
+      })
       setRegistrationId(res.registrationId)
       setDirection(1)
       setStep(2)

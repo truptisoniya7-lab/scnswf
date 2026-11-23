@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { dbStore, applicationsRepo, usersRepo } from '../../db';
 import { emailService } from '../../services/email.service';
 import { env } from '../../config/env';
+import { hashPassword } from '../../utils/security';
 
 interface OtpRecord {
   email: string;
@@ -34,6 +35,8 @@ export interface RegisterSession {
   email: string;
   hash: string;
   salt: string;
+  passwordHash?: string;
+  passwordSalt?: string;
   expiresAt: number;
   resendAvailableAt: number;
   attempts: number;
@@ -661,7 +664,7 @@ class OtpService {
   // PASSWORDLESS REGISTER (Spec: register.md)
   // ==========================================
 
-  public async startPasswordlessRegister(name: string, phone: string, email: string): Promise<{
+  public async startPasswordlessRegister(name: string, phone: string, email: string, password?: string): Promise<{
     success: boolean;
     errorType?: 'EMAIL_EXISTS' | 'INVALID_INPUT';
     message?: string;
@@ -687,6 +690,14 @@ class OtpService {
     const salt = crypto.randomBytes(16).toString('hex');
     const hash = this.hashOtp(rawOtp, salt);
 
+    let passwordHash = '';
+    let passwordSalt = '';
+    if (password) {
+      const hashed = hashPassword(password);
+      passwordHash = hashed.hash;
+      passwordSalt = hashed.salt;
+    }
+
     this.registerSessions.set(registrationId, {
       registrationId,
       name: name.trim(),
@@ -694,6 +705,8 @@ class OtpService {
       email: normalized,
       hash,
       salt,
+      passwordHash,
+      passwordSalt,
       expiresAt: now + this.AUTH_OTP_EXPIRY_MS,
       resendAvailableAt: now + this.AUTH_RESEND_COOLDOWN_MS,
       attempts: 0,
@@ -868,8 +881,8 @@ class OtpService {
 
     const newUser = usersRepo.create({
       email: session.email,
-      passwordHash: '',
-      salt: '',
+      passwordHash: session.passwordHash || '',
+      salt: session.passwordSalt || '',
       firstName,
       lastName,
       phone: session.phone,
