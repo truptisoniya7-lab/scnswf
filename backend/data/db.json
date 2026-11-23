@@ -31,15 +31,17 @@
     {
       "id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
       "createdAt": "2026-10-22T06:01:32.965Z",
-      "firstName": "System",
-      "lastName": "Administrator",
+      "firstName": "Aditya",
+      "lastName": "Hota",
       "role": "super_admin",
-      "salt": "fc529d063c1163101bd0bfb116019d6c",
+      "salt": "ea8d1a10ecaea59009e26ae928be8c2c",
       "isStaff": true,
       "isActive": true,
-      "email": "admin@scnswf.org",
-      "passwordHash": "491f95314a072ee3e2518bb636579af9eaf65e7003205ccda18db750cc00a87b3ad5dcd08134e5c69a34154eefea3af2a78ccad835da09e7c5e362cc1b09be2f",
-      "updatedAt": "2026-10-22T06:01:32.965Z"
+      "email": "adityahota777@gmail.com",
+      "passwordHash": "a2a5a97bee237fe523f4f861e04f75892e99772af1605849df67aea443f6c1a96a372ca5a9fb2cc339af00e89b62a79a49dcc7f552ce42cb7de1d62fe139bbc1",
+      "updatedAt": "2026-10-22T06:01:32.965Z",
+      "systemRole": "superadmin",
+      "status": "active"
     }
   ],
   "adminProfiles": [
@@ -468,6 +470,19 @@
       "timestamp": "2026-11-20T06:10:43.222Z"
     },
     {
+      "id": "76ea82fc-e6af-457a-a059-e5a201b94fa7",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "loginId": "4d5084f0-456e-41db-84bd-ea263d124a89",
+        "ip": "::1"
+      },
+      "entity_id": "4d5084f0-456e-41db-84bd-ea263d124a89",
+      "timestamp": "2026-11-23T15:40:06.454Z"
+    },
+    {
       "id": "778ffc8c-ac89-4eb6-9fb6-614db792801f",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -492,6 +507,18 @@
       },
       "entity_id": "dccd305c-1c39-424e-84ea-efb3c23fb381",
       "timestamp": "2026-11-20T05:41:28.311Z"
+    },
+    {
+      "id": "8c3da965-0538-43f4-a917-fafeccaa4ded",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "admin@scnswf.org",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-23T15:44:34.908Z"
     },
     {
       "id": "8dc9c4e9-769f-4744-b85d-cac544dacccb",
@@ -657,6 +684,30 @@
       },
       "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "timestamp": "2026-11-20T05:52:44.506Z"
+    },
+    {
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "actor_email": "adityahota777@gmail.com",
+      "action": "user_login",
+      "entity_type": "User",
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "details": {
+        "ip": "::1"
+      },
+      "id": "b97fd90e-8606-4df3-bdb2-f6298aa452ca",
+      "timestamp": "2026-11-23T15:47:43.891Z"
+    },
+    {
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "actor_email": "adityahota777@gmail.com",
+      "action": "user_login",
+      "entity_type": "User",
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "details": {
+        "ip": "::1"
+      },
+      "id": "24154470-efa3-4184-9d41-e7ef250deaa0",
+      "timestamp": "2026-11-23T15:48:24.970Z"
     }
   ]
 }
