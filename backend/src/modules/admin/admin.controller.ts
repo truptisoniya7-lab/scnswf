@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { env } from '../../config/env';
 import {
   usersRepo,
   applicationsRepo,
@@ -209,7 +210,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: 'user.update',
       entity_type: 'User',
       entity_id: id,
@@ -235,7 +236,7 @@ export const adminController = {
     const updated = usersRepo.suspend(id);
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: 'user.suspend',
       entity_type: 'User',
       entity_id: id,
@@ -256,7 +257,7 @@ export const adminController = {
     const updated = usersRepo.reactivate(id);
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: 'user.reactivate',
       entity_type: 'User',
       entity_id: id,
@@ -282,7 +283,7 @@ export const adminController = {
     usersRepo.delete(id);
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: 'user.delete',
       entity_type: 'User',
       entity_id: id,
@@ -305,7 +306,7 @@ export const adminController = {
     const updated = usersRepo.changeSystemRole(id, systemRole);
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: 'user.change_system_role',
       entity_type: 'User',
       entity_id: id,
@@ -364,7 +365,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: `application.${status}`,
       entity_type: 'Application',
       entity_id: id,
@@ -403,7 +404,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: authorId,
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: 'application.add_note',
       entity_type: 'Application',
       entity_id: id,
@@ -424,7 +425,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: `application.bulk_${action}`,
       entity_type: 'Application',
       entity_id: 'multiple',
@@ -495,7 +496,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: 'donation.create_manual',
       entity_type: 'Donation',
       entity_id: donation.id,
@@ -524,7 +525,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: `donation.status_${status}`,
       entity_type: 'Donation',
       entity_id: id,
@@ -555,7 +556,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: 'donation.resend_receipt',
       entity_type: 'Donation',
       entity_id: id,
@@ -610,7 +611,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: `content.create_${type}`,
       entity_type: type,
       entity_id: created.id,
@@ -640,7 +641,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: `content.delete_${type}`,
       entity_type: type,
       entity_id: id,
@@ -779,7 +780,7 @@ export const adminController = {
 
     auditRepo.log({
       actor_user_id: req.user?.userId || 'admin',
-      actor_email: req.user?.email || 'admin@scnswf.org',
+      actor_email: req.user?.email || env.DEFAULT_ADMIN_EMAIL,
       action: `export.csv_${entity}`,
       entity_type: entity,
       entity_id: 'export',

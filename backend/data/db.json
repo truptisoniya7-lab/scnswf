@@ -20,14 +20,13 @@
       "createdAt": "2026-11-16T08:33:53.836Z",
       "firstName": "Aditya",
       "lastName": "Hota",
-      "role": "super_admin",
-      "systemRole": "superadmin",
+      "role": "volunteer",
       "salt": "9ad559945569b259d9dbf768e360c477",
-      "isStaff": true,
+      "isStaff": false,
       "isActive": true,
       "email": "adityahota03@gmail.com",
       "passwordHash": "a9faad4fe1533e356ce4433230538104f42990cd3e1112d97a2cf861bfe09515a1ed9a97a48a39ecaafe382f12b68967814b83bef614e730c27fe1a3b33bcb15",
-      "updatedAt": "2026-11-21T16:40:00.000Z"
+      "updatedAt": "2026-11-16T08:33:53.836Z"
     },
     {
       "id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
@@ -35,7 +34,6 @@
       "firstName": "System",
       "lastName": "Administrator",
       "role": "super_admin",
-      "systemRole": "superadmin",
       "salt": "fc529d063c1163101bd0bfb116019d6c",
       "isStaff": true,
       "isActive": true,
@@ -418,6 +416,19 @@
       "timestamp": "2026-11-20T05:07:20.828Z"
     },
     {
+      "id": "4cbe5511-03a2-407b-ac1a-97cca184bca5",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "8c80102e-cb47-4dbb-8f38-b0975c57d4f0",
+        "ip": "::1"
+      },
+      "entity_id": "8c80102e-cb47-4dbb-8f38-b0975c57d4f0",
+      "timestamp": "2026-11-23T13:52:56.761Z"
+    },
+    {
       "id": "5ecdc286-ee72-4613-bdf9-27aa6e1502e2",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -470,6 +481,19 @@
       "timestamp": "2026-11-20T05:41:28.311Z"
     },
     {
+      "id": "8dc9c4e9-769f-4744-b85d-cac544dacccb",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "admin@scnswf.org",
+      "details": {
+        "loginId": "cfed7f6d-d4de-42aa-b494-e14c29daa62e",
+        "ip": "::1"
+      },
+      "entity_id": "cfed7f6d-d4de-42aa-b494-e14c29daa62e",
+      "timestamp": "2026-11-23T13:51:44.313Z"
+    },
+    {
       "id": "a9140403-a1a2-4551-8040-feda6dd05ecd",
       "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "entity_type": "User",
@@ -480,6 +504,18 @@
       },
       "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "timestamp": "2026-11-20T06:10:59.859Z"
+    },
+    {
+      "id": "b247aa0b-0f6b-4d8a-9442-4a28a33d965b",
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "timestamp": "2026-11-23T13:48:50.770Z"
     },
     {
       "id": "b2b39ee1-4ef8-4e36-879f-e798f90cc2ee",
@@ -493,6 +529,18 @@
       },
       "entity_id": "029fbbb5-5f05-4da7-a3ab-70baa5d6cc74",
       "timestamp": "2026-11-20T05:55:10.672Z"
+    },
+    {
+      "id": "b98f1bd5-6e72-419d-9975-d6034fd63aa5",
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "timestamp": "2026-11-23T13:53:46.901Z"
     },
     {
       "id": "bc834844-8da0-45c6-8a86-7e9760e4bca1",
@@ -519,6 +567,19 @@
       },
       "entity_id": "cd34a1d2-fbb5-4b50-91b0-669676a061de",
       "timestamp": "2026-11-20T05:52:30.210Z"
+    },
+    {
+      "id": "d289ac61-959a-4474-a722-525d66e2f8d7",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "2dd2b371-3fc6-4631-bb83-1c2760b6a139",
+        "ip": "::1"
+      },
+      "entity_id": "2dd2b371-3fc6-4631-bb83-1c2760b6a139",
+      "timestamp": "2026-11-23T13:48:37.635Z"
     },
     {
       "id": "dc2fc9e2-a7d7-4efc-abcd-fbcecf2c8f16",

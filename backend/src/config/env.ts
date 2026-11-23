@@ -13,7 +13,7 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().default('scnswf-jwt-refresh-secret-key-development-2026-secure'),
   JWT_ACCESS_EXPIRES_IN: z.string().default('1h'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  DEFAULT_ADMIN_EMAIL: z.string().email().default('admin@scnswf.org'),
+  DEFAULT_ADMIN_EMAIL: z.string().email().default('adityahota777@gmail.com'),
   DEFAULT_ADMIN_PASSWORD: z.string().default('AdminSecure@2026'),
   DATA_STORE: z.enum(['local', 'firebase']).default('local'),
   FIREBASE_PROJECT_ID: z.string().default('project-ngo-scnswf'),

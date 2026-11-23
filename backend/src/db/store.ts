@@ -50,6 +50,8 @@ class UnifiedStore {
             state.users.push(defaultAdmin);
           } else {
             state.users[adminIdx].email = defaultAdmin.email;
+            state.users[adminIdx].firstName = defaultAdmin.firstName;
+            state.users[adminIdx].lastName = defaultAdmin.lastName;
             state.users[adminIdx].passwordHash = defaultAdmin.passwordHash;
             state.users[adminIdx].salt = defaultAdmin.salt;
             state.users[adminIdx].isActive = true;
