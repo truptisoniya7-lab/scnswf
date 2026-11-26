@@ -933,10 +933,117 @@
       },
       "id": "9070a9b0-abba-4fa1-be7b-04587ba1c28a",
       "timestamp": "2026-11-26T10:03:56.636Z"
+    },
+    {
+      "actor_user_id": "anonymous",
+      "actor_email": "adityahota03@gmail.com",
+      "action": "login_start_otp_requested",
+      "entity_type": "Auth",
+      "entity_id": "e41c0b74-e39a-4ee5-acc6-d015c3667fc2",
+      "details": {
+        "ip": "::1",
+        "loginId": "e41c0b74-e39a-4ee5-acc6-d015c3667fc2"
+      },
+      "id": "2c12b621-0d36-4bcf-be8a-33337ebe3f67",
+      "timestamp": "2026-11-26T10:26:40.843Z"
+    },
+    {
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "actor_email": "adityahota03@gmail.com",
+      "action": "passwordless_login_verified",
+      "entity_type": "User",
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "details": {
+        "ip": "::1"
+      },
+      "id": "65096cc3-34e6-45f8-8ea8-a089051570dd",
+      "timestamp": "2026-11-26T10:27:05.384Z"
+    },
+    {
+      "actor_user_id": "anonymous",
+      "actor_email": "truptisoniya7@gmail.com",
+      "action": "login_start_otp_requested",
+      "entity_type": "Auth",
+      "entity_id": "99c7190e-0d21-494d-995d-7de458d7ddfe",
+      "details": {
+        "ip": "::1",
+        "loginId": "99c7190e-0d21-494d-995d-7de458d7ddfe"
+      },
+      "id": "76b9143f-9216-410d-b149-48bcf260b346",
+      "timestamp": "2026-11-26T10:28:44.285Z"
+    },
+    {
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "actor_email": "truptisoniya7@gmail.com",
+      "action": "passwordless_login_verified",
+      "entity_type": "User",
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "details": {
+        "ip": "::1"
+      },
+      "id": "47bb0750-69d9-4204-bc59-ae8357f9bd75",
+      "timestamp": "2026-11-26T10:29:03.739Z"
+    },
+    {
+      "actor_user_id": "anonymous",
+      "actor_email": "adityahota777@gmail.com",
+      "action": "login_start_otp_requested",
+      "entity_type": "Auth",
+      "entity_id": "f609415b-94e8-4534-afb2-12fb09b7cecc",
+      "details": {
+        "ip": "::1",
+        "loginId": "f609415b-94e8-4534-afb2-12fb09b7cecc"
+      },
+      "id": "58cab9f0-1575-4b74-8682-90cdf09d0c8f",
+      "timestamp": "2026-11-26T10:30:41.208Z"
+    },
+    {
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "actor_email": "adityahota777@gmail.com",
+      "action": "passwordless_login_verified",
+      "entity_type": "User",
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "details": {
+        "ip": "::1"
+      },
+      "id": "1016ae71-e6a7-4d92-b1fb-a11ac5e666ab",
+      "timestamp": "2026-11-26T10:31:01.488Z"
     }
   ],
   "userPortalData": {
     "0dbfdf9b-e6e1-4daa-ad43-09ad61814170": {
+      "eventsJoined": 5,
+      "volunteerHours": 48,
+      "campsSupported": 2,
+      "certificatesEarned": 1,
+      "joinedEventIds": [
+        "e3333333-3333-3333-3333-333333333333",
+        "e1111111-1111-1111-1111-111111111111"
+      ],
+      "activities": [
+        {
+          "id": "act-1",
+          "text": "You joined the Free Health Check-up Camp",
+          "timestamp": "2 days ago"
+        },
+        {
+          "id": "act-2",
+          "text": "You completed your volunteer hours",
+          "timestamp": "5 days ago"
+        },
+        {
+          "id": "act-3",
+          "text": "Certificate for Community Health Drive awarded",
+          "timestamp": "1 week ago"
+        },
+        {
+          "id": "act-4",
+          "text": "Account registered and email verified",
+          "timestamp": "2 weeks ago"
+        }
+      ]
+    },
+    "c49e3f02-3924-40be-a595-5177457ed3f3": {
       "eventsJoined": 5,
       "volunteerHours": 48,
       "campsSupported": 2,
