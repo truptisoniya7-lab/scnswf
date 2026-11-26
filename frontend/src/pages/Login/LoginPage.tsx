@@ -54,8 +54,8 @@ export default function LoginPage() {
       safeNextUrl && safeNextUrl !== '/profile'
         ? safeNextUrl
         : isStaffOrAdmin
-        ? '/admin'
-        : '/profile'
+          ? '/admin'
+          : '/profile'
 
     setTimeout(() => {
       navigate(destination, { replace: true })
@@ -153,14 +153,29 @@ export default function LoginPage() {
       shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: dir > 0 ? -30 : 30 },
   }
 
+  // Show Back button in shell on step 2 (OTP) or forgot flow
+  const showBack = mode === 'forgot' || (mode === 'otp' && step === 2)
+  const handleShellBack = () => {
+    if (mode === 'forgot') {
+      setErrorMsg(null)
+      setMode('password')
+    } else if (mode === 'otp' && step === 2) {
+      setDirection(-1)
+      setErrorMsg(null)
+      setStep(1)
+    }
+  }
+
   return (
     <AuthShell
+      showBack={showBack}
+      onBack={handleShellBack}
       footerLink={
         <p>
           New here?{' '}
           <Link
             to="/register"
-            className="font-bold text-[var(--green-300,#6ee7b7)] hover:text-[var(--green-400,#34d399)] transition-colors hover:underline"
+            className="font-bold text-[#1a5c3c] hover:text-[#2d7a56] transition-colors hover:underline"
           >
             Create an account
           </Link>
@@ -169,162 +184,102 @@ export default function LoginPage() {
     >
       {/* Success Animation */}
       {isSuccess ? (
-        <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 animate-fadeIn">
-          <div className="w-16 h-16 rounded-full bg-[var(--green-400,#34d399)] text-[var(--bg-deep,#04140c)] flex items-center justify-center shadow-[0_0_24px_rgba(52,211,153,0.6)] animate-bounce">
-            <Check className="w-10 h-10 stroke-[3]" />
-          </div>
-          <h2 className="text-xl font-bold font-heading text-[var(--text,#e8fff3)]">
-            Verified!
-          </h2>
-          <p className="text-xs text-[var(--text-muted,#9bc9b0)]">
-            Redirecting you now...
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {/* Mode Switcher Tabs (Only shown when not in forgot-password or in step 2 of OTP) */}
-          {mode !== 'forgot' && step === 1 && (
-            <div className="flex items-center justify-center p-1 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[var(--glass-border,rgba(110,231,183,0.15))] mb-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setErrorMsg(null)
-                  setMode('otp')
-                }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                  mode === 'otp'
-                    ? 'bg-[var(--green-500,#1f9d62)] text-[var(--bg-deep,#04140c)] shadow-sm'
-                    : 'text-[var(--text-muted,#9bc9b0)] hover:text-[var(--text,#e8fff3)]'
-                }`}
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>Login with OTP</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setErrorMsg(null)
-                  setMode('password')
-                }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                  mode === 'password'
-                    ? 'bg-[var(--green-500,#1f9d62)] text-[var(--bg-deep,#04140c)] shadow-sm'
-                    : 'text-[var(--text-muted,#9bc9b0)] hover:text-[var(--text,#e8fff3)]'
-                }`}
-              >
-                <KeyRound className="w-3.5 h-3.5" />
-                <span>Login with Password</span>
-              </button>
+            <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-[#1a5c3c] text-white flex items-center justify-center shadow-[0_0_24px_rgba(26,92,60,0.5)] animate-bounce">
+                <Check className="w-10 h-10 stroke-[3]" />
+              </div>
+              <h2 className="text-xl font-bold font-heading text-[#1a2e1e]">Verified!</h2>
+              <p className="text-xs text-[#5a7a6a]">Redirecting you now...</p>
             </div>
+            ) : (
+            <div className="space-y-4">
+              {/* Mode Switcher Tabs */}
+              {mode !== 'forgot' && step === 1 && (
+                  <div className="flex items-center justify-center p-1 rounded-xl bg-[#f0f7f4] border border-[#c8e6d8] mb-2">
+                    <button
+                      type="button"
+                      onClick={() => { setErrorMsg(null); setMode('otp') }}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${mode === 'otp'
+                            ? 'bg-[#1a5c3c] text-white shadow-sm'
+                            : 'text-[#5a7a6a] hover:text-[#1a5c3c]'
+                        }`}
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      <span>Login with OTP</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setErrorMsg(null); setMode('password') }}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${mode === 'password'
+                            ? 'bg-[#1a5c3c] text-white shadow-sm'
+                            : 'text-[#5a7a6a] hover:text-[#1a5c3c]'
+                        }`}
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Login with Password</span>
+                    </button>
+                  </div>
           )}
 
-          <AnimatePresence mode="wait" custom={direction}>
-            {/* OPTION 1: OTP FLOW */}
-            {mode === 'otp' && (
+                  <AnimatePresence mode="wait" custom={direction}>
+                    {/* OTP FLOW */}
+                    {mode === 'otp' && (
               <>
-                {step === 1 && (
-                  <motion.div
-                    key="step-1"
-                    custom={direction}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
-                  >
-                    <EmailStep
-                      initialEmail={email}
-                      onSubmit={handleEmailSubmit}
-                      isLoading={isLoading}
-                      serverError={errorMsg}
-                      onClearServerError={() => setErrorMsg(null)}
-                    />
-                  </motion.div>
+                        {step === 1 && (
+                            <motion.div key="step-1" custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25, ease: 'easeInOut' }}>
+                              <EmailStep
+                                initialEmail={email}
+                                onSubmit={handleEmailSubmit}
+                                isLoading={isLoading}
+                                serverError={errorMsg}
+                                onClearServerError={() => setErrorMsg(null)}
+                              />
+                            </motion.div>
                 )}
-
-                {step === 2 && (
-                  <motion.div
-                    key="step-2"
-                    custom={direction}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
-                  >
-                    <OtpStep
-                      email={email}
-                      onSubmitOtp={handleOtpSubmit}
-                      onResendOtp={handleResendOtp}
-                      onBackToEmail={() => {
-                        setDirection(-1)
-                        setErrorMsg(null)
-                        setStep(1)
-                      }}
-                      isLoading={isLoading}
-                      isResending={isResending}
-                      errorMsg={errorMsg}
-                      onClearError={() => setErrorMsg(null)}
-                    />
-                  </motion.div>
+                            {step === 2 && (
+                                <motion.div key="step-2" custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25, ease: 'easeInOut' }}>
+                                  <OtpStep
+                                    email={email}
+                                    onSubmitOtp={handleOtpSubmit}
+                                    onResendOtp={handleResendOtp}
+                                    onBackToEmail={() => { setDirection(-1); setErrorMsg(null); setStep(1) }}
+                                    isLoading={isLoading}
+                                    isResending={isResending}
+                                    errorMsg={errorMsg}
+                                    onClearError={() => setErrorMsg(null)}
+                                  />
+                                </motion.div>
                 )}
-              </>
+                              </>
+                            )}
+
+                            {/* PASSWORD LOGIN FLOW */}
+                            {mode === 'password' && (
+                                <motion.div key="password-login" custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25, ease: 'easeInOut' }}>
+                                  <PasswordStep
+                                    initialEmail={email}
+                                    onSubmit={handlePasswordSubmit}
+                                    onForgotPassword={() => { setErrorMsg(null); setMode('forgot') }}
+                                    isLoading={isLoading}
+                                    serverError={errorMsg}
+                                    onClearServerError={() => setErrorMsg(null)}
+                                  />
+                                </motion.div>
             )}
 
-            {/* OPTION 2: PASSWORD LOGIN FLOW */}
-            {mode === 'password' && (
-              <motion.div
-                key="password-login"
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25, ease: 'easeInOut' }}
-              >
-                <PasswordStep
-                  initialEmail={email}
-                  onSubmit={handlePasswordSubmit}
-                  onForgotPassword={() => {
-                    setErrorMsg(null)
-                    setMode('forgot')
-                  }}
-                  isLoading={isLoading}
-                  serverError={errorMsg}
-                  onClearServerError={() => setErrorMsg(null)}
-                />
-              </motion.div>
+                                {/* FORGOT PASSWORD FLOW */}
+                                {mode === 'forgot' && (
+                                    <motion.div key="forgot-password" custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25, ease: 'easeInOut' }}>
+                                      <ForgotPasswordStep
+                                        initialEmail={email}
+                                        onBack={() => { setErrorMsg(null); setMode('password') }}
+                                        onSuccess={(updatedEmail) => { setEmail(updatedEmail); setErrorMsg(null); setMode('password') }}
+                                      />
+                                    </motion.div>
             )}
-
-            {/* OPTION 3: FORGOT PASSWORD FLOW */}
-            {mode === 'forgot' && (
-              <motion.div
-                key="forgot-password"
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25, ease: 'easeInOut' }}
-              >
-                <ForgotPasswordStep
-                  initialEmail={email}
-                  onBack={() => {
-                    setErrorMsg(null)
-                    setMode('password')
-                  }}
-                  onSuccess={(updatedEmail) => {
-                    setEmail(updatedEmail)
-                    setErrorMsg(null)
-                    setMode('password')
-                  }}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+                                  </AnimatePresence>
         </div>
-      )}
-    </AuthShell>
-  )
-}
+                            )}
+                          </AuthShell>
+                        )
+                        }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { emailStepSchema, type EmailStepForm } from '../../../lib/validation'
-import { Loader2, AlertCircle } from 'lucide-react'
+import { Loader2, AlertCircle, Mail } from 'lucide-react'
 
 interface EmailStepProps {
   initialEmail: string
@@ -24,7 +24,6 @@ export function EmailStep({
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<EmailStepForm>({
     resolver: zodResolver(emailStepSchema),
@@ -32,50 +31,48 @@ export function EmailStep({
     defaultValues: { email: initialEmail },
   })
 
-  const emailValue = watch('email')
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-      <div className="text-center mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold font-heading text-[var(--text,#e8fff3)] tracking-tight">
-          Welcome back
-        </h2>
-        <p className="text-xs sm:text-sm text-[var(--text-muted,#9bc9b0)] mt-1.5">
-          Enter your email address to receive a secure login code
-        </p>
-      </div>
+          {/* Heading */}
+          <div className="text-center mb-5">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1a2e1e] tracking-tight">
+              Welcome Back
+            </h2>
+              <p className="text-xs sm:text-sm text-[#5a7a6a] mt-1.5">
+                Sign in to continue to SCNSWF
+              </p>
+          </div>
 
-      {/* Server error banner */}
-      {serverError && (
-        <div
-          role="alert"
-          aria-live="polite"
-          className="p-3 rounded-xl bg-red-950/60 border border-[var(--danger,#f87171)]/50 text-[var(--text,#e8fff3)] text-xs flex items-start gap-2.5 animate-fadeIn"
-        >
-          <AlertCircle className="w-4 h-4 shrink-0 text-[var(--danger,#f87171)] mt-0.5" />
-          <span className="flex-1 leading-snug">{serverError}</span>
-          <button
-            type="button"
-            onClick={onClearServerError}
-            className="text-[var(--text-muted,#9bc9b0)] hover:text-white text-xs px-1"
-            aria-label="Dismiss error"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+          {/* Server error */}
+          {serverError && (
+            <div
+              role="alert"
+              aria-live="polite"
+              className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5"
+            >
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span className="flex-1 leading-snug">{serverError}</span>
+              <button
+                type="button"
+                onClick={onClearServerError}
+                className="text-red-400 hover:text-red-600 text-xs px-1 cursor-pointer"
+                aria-label="Dismiss error"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
-      {/* Floating label Email Input */}
-      <div className="relative">
-        <div
-          className={`relative rounded-xl border transition-all h-12 flex items-center px-3.5 bg-[rgba(255,255,255,0.04)] ${
-            errors.email
-              ? 'border-[var(--danger,#f87171)] shadow-[0_0_0_3px_rgba(248,113,113,0.15)]'
-              : isFocused
-              ? 'border-[var(--green-400,#34d399)] shadow-[0_0_0_4px_rgba(52,211,153,0.15)]'
-              : 'border-[var(--glass-border,rgba(110,231,183,0.18))] hover:border-[var(--green-300,#6ee7b7)]/40'
+          {/* Email Input */}
+          <div className="relative">
+            <div
+                      ? 'border-red-400 shadow-[0_0_0_3px_rgba(248,113,113,0.12)]'
+                      : isFocused
+                          ? 'border-[#1a5c3c] shadow-[0_0_0_3px_rgba(26,92,60,0.1)]'
+                          : 'border-[#c8e6d8] hover:border-[#2d7a56]/50'
           }`}
         >
+          <Mail className="w-4 h-4 text-[#2d7a56] shrink-0 mr-2.5" />
           <input
             id="login-email"
             type="email"
@@ -91,47 +88,71 @@ export function EmailStep({
               register('email').onBlur(e)
               setIsFocused(false)
             }}
-            placeholder=" "
-            className="peer w-full bg-transparent text-[var(--text,#e8fff3)] text-sm outline-hidden pt-3.5 pb-1 placeholder-transparent disabled:opacity-50"
+            placeholder="Email Address"
+            className="w-full bg-transparent text-[#1a2e1e] text-sm outline-none placeholder-[#8aab98] disabled:opacity-50"
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'login-email-error' : undefined}
           />
-          <label
-            htmlFor="login-email"
-            className={`absolute left-3.5 transition-all pointer-events-none text-xs ${
-              isFocused || emailValue
-                ? 'top-1.5 text-[10px] text-[var(--green-300,#6ee7b7)] font-medium'
-                : 'top-3.5 text-sm text-[var(--text-muted,#9bc9b0)]'
-            }`}
-          >
-            Email Address
-          </label>
-        </div>
-        {errors.email && (
-          <p id="login-email-error" role="alert" className="text-[11px] text-[var(--danger,#f87171)] mt-1 ml-1 font-medium">
+      </div>
+      {errors.email && (
+          <p id="login-email-error" role="alert" className="text-[11px] text-red-500 mt-1 ml-1 font-medium">
             {errors.email.message}
           </p>
         )}
-      </div>
+        </div>
 
       {/* Submit Button */}
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full h-12 rounded-xl text-[var(--bg-deep,#04140c)] font-heading font-bold text-sm tracking-wide transition-all duration-200 mt-2 flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(31,157,98,0.3)] hover:shadow-[0_6px_22px_rgba(52,211,153,0.45)] hover:-translate-y-0.5 active:translate-y-0"
-        style={{
-          background: 'linear-gradient(135deg, var(--green-500, #1f9d62), var(--green-400, #34d399))',
-        }}
+        className="w-full h-12 rounded-xl text-white font-bold text-sm tracking-wide transition-all duration-200 mt-1 flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_14px_rgba(26,92,60,0.35)] hover:shadow-[0_6px_20px_rgba(26,92,60,0.5)] hover:-translate-y-0.5 active:translate-y-0"
+        style={{ background: 'linear-gradient(135deg, #1a5c3c, #2d7a56)' }}
       >
         {isLoading ? (
           <div className="flex items-center gap-2">
-            <Loader2 className="w-4 h-4 animate-spin text-[var(--bg-deep,#04140c)]" />
-            <span>Sending verification code...</span>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Sending code...</span>
           </div>
         ) : (
-          <span>Send OTP &rarr;</span>
+          <span>Send OTP →</span>
         )}
       </button>
+
+      {/* Divider + Social */}
+      <div className="relative my-1">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-[#ddeee6]" />
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-white px-3 text-[#8aab98]">or</span>
+        </div>
+      </div>
+
+      <div className="flex gap-3">
+        {/* Google */}
+        <button
+          type="button"
+          className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl border border-[#c8e6d8] bg-white text-[#1a2e1e] text-xs font-semibold hover:bg-[#f0f7f4] transition-colors cursor-pointer shadow-sm"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+          </svg>
+          Continue with Google
+        </button>
+        {/* Facebook */}
+        <button
+          type="button"
+          className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl border border-[#c8e6d8] bg-white text-[#1a2e1e] text-xs font-semibold hover:bg-[#f0f7f4] transition-colors cursor-pointer shadow-sm"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2" />
+          </svg>
+          Continue with Facebook
+        </button>
+      </div>
     </form>
   )
 }
