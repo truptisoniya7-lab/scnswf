@@ -153,47 +153,47 @@
   "impactMetrics": [
     {
       "id": "m1111111-1111-1111-1111-111111111111",
-      "period_end": "2026-01-01",
-      "unit": "people",
-      "updated_at": "2026-01-01T00:00:00.000Z",
+      "period_end": "2026-11-26",
+      "unit": "beneficiaries",
+      "updated_at": "2026-11-26T00:00:00.000Z",
       "period_start": "2024-01-01",
       "program_id": null,
-      "created_at": "2026-01-01T00:00:00.000Z",
-      "label": "Lives Impacted",
-      "value": 65000
+      "created_at": "2026-11-26T00:00:00.000Z",
+      "label": "Women & Children Served",
+      "value": 500
     },
     {
       "id": "m2222222-2222-2222-2222-222222222222",
-      "period_end": "2026-01-01",
-      "unit": "camps",
-      "updated_at": "2026-01-01T00:00:00.000Z",
+      "period_end": "2026-11-26",
+      "unit": "consultations",
+      "updated_at": "2026-11-26T00:00:00.000Z",
       "period_start": "2024-01-01",
       "program_id": "p1111111-1111-1111-1111-111111111111",
-      "created_at": "2026-01-01T00:00:00.000Z",
-      "label": "Free Medical Camps Conducted",
-      "value": 145
+      "created_at": "2026-11-26T00:00:00.000Z",
+      "label": "Medical Consultations",
+      "value": 1000
     },
     {
       "id": "m3333333-3333-3333-3333-333333333333",
-      "period_end": "2026-01-01",
-      "unit": "students",
-      "updated_at": "2026-01-01T00:00:00.000Z",
+      "period_end": "2026-11-26",
+      "unit": "patients",
+      "updated_at": "2026-11-26T00:00:00.000Z",
       "period_start": "2024-01-01",
-      "program_id": "p2222222-2222-2222-2222-222222222222",
-      "created_at": "2026-01-01T00:00:00.000Z",
-      "label": "Students Supported with Scholarships",
-      "value": 3200
+      "program_id": "p1111111-1111-1111-1111-111111111111",
+      "created_at": "2026-11-26T00:00:00.000Z",
+      "label": "Elderly Diabetes Care Patients",
+      "value": 200
     },
     {
       "id": "m4444444-4444-4444-4444-444444444444",
-      "period_end": "2026-01-01",
-      "unit": "women",
-      "updated_at": "2026-01-01T00:00:00.000Z",
+      "period_end": "2026-11-26",
+      "unit": "district areas",
+      "updated_at": "2026-11-26T00:00:00.000Z",
       "period_start": "2024-01-01",
-      "program_id": "p3333333-3333-3333-3333-333333333333",
-      "created_at": "2026-01-01T00:00:00.000Z",
-      "label": "Women Micro-Entrepreneurs Graduated",
-      "value": 1850
+      "program_id": null,
+      "created_at": "2026-11-26T00:00:00.000Z",
+      "label": "Districts Reached",
+      "value": 5
     }
   ],
   "impactStories": [
