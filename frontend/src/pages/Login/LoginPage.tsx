@@ -35,7 +35,7 @@ export default function LoginPage() {
   const [mode, setMode] = useState<AuthMode>('otp')
   const [step, setStep] = useState<1 | 2>(1)
   const [direction, setDirection] = useState<1 | -1>(1)
-  const [email, setEmail] = useState(() => localStorage.getItem('scnswf_last_email') || 'adityahota777@gmail.com')
+  const [email, setEmail] = useState('')
   const [loginId, setLoginId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isResending, setIsResending] = useState(false)

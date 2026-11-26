@@ -31,17 +31,17 @@
     {
       "id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
       "createdAt": "2026-10-22T06:01:32.965Z",
-      "firstName": "Aditya",
-      "lastName": "Hota",
       "role": "super_admin",
-      "salt": "ea8d1a10ecaea59009e26ae928be8c2c",
       "isStaff": true,
       "isActive": true,
-      "email": "adityahota777@gmail.com",
-      "passwordHash": "a2a5a97bee237fe523f4f861e04f75892e99772af1605849df67aea443f6c1a96a372ca5a9fb2cc339af00e89b62a79a49dcc7f552ce42cb7de1d62fe139bbc1",
       "updatedAt": "2026-10-22T06:01:32.965Z",
+      "lastName": "Hota",
+      "firstName": "Aditya",
       "systemRole": "superadmin",
-      "status": "active"
+      "email": "adityahota777@gmail.com",
+      "status": "active",
+      "salt": "7677510e4a8ff1844fcd404ae7b9cb18",
+      "passwordHash": "248ff3dab62f0c3a4ff606f553274af4ede758965877bbfb6e43f863ab1771c7a31db75e6b7aec6144f9e69a034df6d2f5b72cc2af2d5dd29a55637ecf29e766"
     }
   ],
   "adminProfiles": [
@@ -405,6 +405,18 @@
       "timestamp": "2026-11-20T05:56:16.255Z"
     },
     {
+      "id": "24154470-efa3-4184-9d41-e7ef250deaa0",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-23T15:48:24.970Z"
+    },
+    {
       "id": "2c869f08-a43d-429b-a161-ba33d3e61f68",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -584,6 +596,18 @@
       "timestamp": "2026-11-20T05:55:10.672Z"
     },
     {
+      "id": "b97fd90e-8606-4df3-bdb2-f6298aa452ca",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-23T15:47:43.891Z"
+    },
+    {
       "id": "b98f1bd5-6e72-419d-9975-d6034fd63aa5",
       "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "entity_type": "User",
@@ -620,6 +644,18 @@
       },
       "entity_id": "cd34a1d2-fbb5-4b50-91b0-669676a061de",
       "timestamp": "2026-11-20T05:52:30.210Z"
+    },
+    {
+      "id": "cd253061-40cd-4980-b969-1f423fde8834",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-23T15:52:13.452Z"
     },
     {
       "id": "d289ac61-959a-4474-a722-525d66e2f8d7",
@@ -686,28 +722,17 @@
       "timestamp": "2026-11-20T05:52:44.506Z"
     },
     {
-      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
-      "actor_email": "adityahota777@gmail.com",
-      "action": "user_login",
-      "entity_type": "User",
-      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "actor_user_id": "anonymous",
+      "actor_email": "truptisoniya7@gmail.com",
+      "action": "login_start_otp_requested",
+      "entity_type": "Auth",
+      "entity_id": "aa59fa33-e2a8-46de-917f-a59388573d0e",
       "details": {
-        "ip": "::1"
+        "ip": "::1",
+        "loginId": "aa59fa33-e2a8-46de-917f-a59388573d0e"
       },
-      "id": "b97fd90e-8606-4df3-bdb2-f6298aa452ca",
-      "timestamp": "2026-11-23T15:47:43.891Z"
-    },
-    {
-      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
-      "actor_email": "adityahota777@gmail.com",
-      "action": "user_login",
-      "entity_type": "User",
-      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
-      "details": {
-        "ip": "::1"
-      },
-      "id": "24154470-efa3-4184-9d41-e7ef250deaa0",
-      "timestamp": "2026-11-23T15:48:24.970Z"
+      "id": "b4b52979-8689-4b5e-91fc-2acd79e77f7a",
+      "timestamp": "2026-11-26T05:49:34.788Z"
     }
   ]
 }
