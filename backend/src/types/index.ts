@@ -1,5 +1,8 @@
 export type Role = 'super_admin' | 'admin' | 'content_editor' | 'applications_reviewer' | 'volunteer' | 'internship' | 'donor';
 
+export type SystemRole = 'user' | 'staff' | 'superadmin';
+export type RegistrationRole = 'internship' | 'donor' | 'volunteer';
+
 export interface User {
   id: string;
   email: string;
@@ -7,9 +10,13 @@ export interface User {
   salt: string;
   firstName: string;
   lastName: string;
+  name?: string;
   isStaff: boolean;
   isActive: boolean;
   role: Role;
+  systemRole?: SystemRole;
+  registrationRole?: RegistrationRole;
+  status?: 'active' | 'suspended';
   phone?: string;
   emailVerified?: boolean;
   createdAt: string;
@@ -104,6 +111,7 @@ export interface Event {
   location: string;
   start_datetime: string;
   end_datetime: string;
+  cover_image_url?: string | null;
   status: 'draft' | 'published' | 'cancelled';
   created_at: string;
   updated_at: string;

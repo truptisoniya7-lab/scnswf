@@ -4,9 +4,13 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { AuthShell } from '../../components/AuthShell'
 import { EmailStep } from './steps/EmailStep'
 import { OtpStep } from './steps/OtpStep'
+import { PasswordStep } from './steps/PasswordStep'
+import { ForgotPasswordStep } from './steps/ForgotPasswordStep'
 import { passwordlessAuthApi } from '../../lib/api/auth'
-import type { EmailStepForm } from '../../lib/validation'
-import { Check } from 'lucide-react'
+import type { EmailStepForm, LoginPasswordForm } from '../../lib/validation'
+import { Check, KeyRound, Mail } from 'lucide-react'
+
+type AuthMode = 'otp' | 'password' | 'forgot'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -28,16 +32,37 @@ export default function LoginPage() {
     }
   }, [navigate])
 
+  const [mode, setMode] = useState<AuthMode>('otp')
   const [step, setStep] = useState<1 | 2>(1)
   const [direction, setDirection] = useState<1 | -1>(1)
-  const [email, setEmail] = useState(() => localStorage.getItem('scnswf_last_email') || 'adityahota03@gmail.com')
+  const [email, setEmail] = useState('')
   const [loginId, setLoginId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [isSuccess, setIsSuccess] = useState(false)
 
-  // Step 1: Submit Email -> calls POST /auth/login/start
+  const handleSuccessfulAuth = (user: any) => {
+    setIsSuccess(true)
+    const isStaffOrAdmin =
+      user.systemRole === 'staff' ||
+      user.systemRole === 'superadmin' ||
+      user.role === 'super_admin' ||
+      user.role === 'admin'
+
+    const destination =
+      safeNextUrl && safeNextUrl !== '/profile'
+        ? safeNextUrl
+        : isStaffOrAdmin
+        ? '/admin'
+        : '/profile'
+
+    setTimeout(() => {
+      navigate(destination, { replace: true })
+    }, 600)
+  }
+
+  // OTP Login: Step 1 Submit Email
   const handleEmailSubmit = async (values: EmailStepForm) => {
     setIsLoading(true)
     setErrorMsg(null)
@@ -59,21 +84,17 @@ export default function LoginPage() {
     }
   }
 
-  // Step 2: Submit OTP -> calls POST /auth/login/verify
+  // OTP Login: Step 2 Submit OTP
   const handleOtpSubmit = async (otp: string) => {
     if (!loginId) return
     setIsLoading(true)
     setErrorMsg(null)
     try {
-      await passwordlessAuthApi.loginVerify({
+      const res = await passwordlessAuthApi.loginVerify({
         loginId,
         otp,
       })
-      // Show 600ms green check animation before redirect
-      setIsSuccess(true)
-      setTimeout(() => {
-        navigate(safeNextUrl, { replace: true })
-      }, 600)
+      handleSuccessfulAuth(res.user)
     } catch (err: any) {
       const msg =
         err?.response?.data?.error?.message ||
@@ -85,7 +106,7 @@ export default function LoginPage() {
     }
   }
 
-  // Step 2: Resend OTP -> calls POST /auth/login/resend
+  // OTP Login: Resend OTP
   const handleResendOtp = async () => {
     if (!loginId) return
     setIsResending(true)
@@ -101,6 +122,26 @@ export default function LoginPage() {
       throw err
     } finally {
       setIsResending(false)
+    }
+  }
+
+  // Password Login: Submit Credentials
+  const handlePasswordSubmit = async (values: LoginPasswordForm) => {
+    setIsLoading(true)
+    setErrorMsg(null)
+    try {
+      setEmail(values.email)
+      localStorage.setItem('scnswf_last_email', values.email)
+      const res = await passwordlessAuthApi.loginWithPassword(values)
+      handleSuccessfulAuth(res.user)
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        'Invalid email or password. Please try again.'
+      setErrorMsg(msg)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -140,54 +181,149 @@ export default function LoginPage() {
           </p>
         </div>
       ) : (
-        <AnimatePresence mode="wait" custom={direction}>
-          {step === 1 && (
-            <motion.div
-              key="step-1"
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              <EmailStep
-                initialEmail={email}
-                onSubmit={handleEmailSubmit}
-                isLoading={isLoading}
-                serverError={errorMsg}
-                onClearServerError={() => setErrorMsg(null)}
-              />
-            </motion.div>
+        <div className="space-y-4">
+          {/* Mode Switcher Tabs (Only shown when not in forgot-password or in step 2 of OTP) */}
+          {mode !== 'forgot' && step === 1 && (
+            <div className="flex items-center justify-center p-1 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[var(--glass-border,rgba(110,231,183,0.15))] mb-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setErrorMsg(null)
+                  setMode('otp')
+                }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                  mode === 'otp'
+                    ? 'bg-[var(--green-500,#1f9d62)] text-[var(--bg-deep,#04140c)] shadow-sm'
+                    : 'text-[var(--text-muted,#9bc9b0)] hover:text-[var(--text,#e8fff3)]'
+                }`}
+              >
+                <Mail className="w-3.5 h-3.5" />
+                <span>Login with OTP</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setErrorMsg(null)
+                  setMode('password')
+                }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                  mode === 'password'
+                    ? 'bg-[var(--green-500,#1f9d62)] text-[var(--bg-deep,#04140c)] shadow-sm'
+                    : 'text-[var(--text-muted,#9bc9b0)] hover:text-[var(--text,#e8fff3)]'
+                }`}
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Login with Password</span>
+              </button>
+            </div>
           )}
 
-          {step === 2 && (
-            <motion.div
-              key="step-2"
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              <OtpStep
-                email={email}
-                onSubmitOtp={handleOtpSubmit}
-                onResendOtp={handleResendOtp}
-                onBackToEmail={() => {
-                  setDirection(-1)
-                  setErrorMsg(null)
-                  setStep(1)
-                }}
-                isLoading={isLoading}
-                isResending={isResending}
-                errorMsg={errorMsg}
-                onClearError={() => setErrorMsg(null)}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <AnimatePresence mode="wait" custom={direction}>
+            {/* OPTION 1: OTP FLOW */}
+            {mode === 'otp' && (
+              <>
+                {step === 1 && (
+                  <motion.div
+                    key="step-1"
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  >
+                    <EmailStep
+                      initialEmail={email}
+                      onSubmit={handleEmailSubmit}
+                      isLoading={isLoading}
+                      serverError={errorMsg}
+                      onClearServerError={() => setErrorMsg(null)}
+                    />
+                  </motion.div>
+                )}
+
+                {step === 2 && (
+                  <motion.div
+                    key="step-2"
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  >
+                    <OtpStep
+                      email={email}
+                      onSubmitOtp={handleOtpSubmit}
+                      onResendOtp={handleResendOtp}
+                      onBackToEmail={() => {
+                        setDirection(-1)
+                        setErrorMsg(null)
+                        setStep(1)
+                      }}
+                      isLoading={isLoading}
+                      isResending={isResending}
+                      errorMsg={errorMsg}
+                      onClearError={() => setErrorMsg(null)}
+                    />
+                  </motion.div>
+                )}
+              </>
+            )}
+
+            {/* OPTION 2: PASSWORD LOGIN FLOW */}
+            {mode === 'password' && (
+              <motion.div
+                key="password-login"
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
+              >
+                <PasswordStep
+                  initialEmail={email}
+                  onSubmit={handlePasswordSubmit}
+                  onForgotPassword={() => {
+                    setErrorMsg(null)
+                    setMode('forgot')
+                  }}
+                  isLoading={isLoading}
+                  serverError={errorMsg}
+                  onClearServerError={() => setErrorMsg(null)}
+                />
+              </motion.div>
+            )}
+
+            {/* OPTION 3: FORGOT PASSWORD FLOW */}
+            {mode === 'forgot' && (
+              <motion.div
+                key="forgot-password"
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
+              >
+                <ForgotPasswordStep
+                  initialEmail={email}
+                  onBack={() => {
+                    setErrorMsg(null)
+                    setMode('password')
+                  }}
+                  onSuccess={(updatedEmail) => {
+                    setEmail(updatedEmail)
+                    setErrorMsg(null)
+                    setMode('password')
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       )}
     </AuthShell>
   )

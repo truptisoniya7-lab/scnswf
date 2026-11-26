@@ -24,6 +24,7 @@ const PROGRAMS_LINKS = [
 const ORG_LINKS = [
   { label: 'About SCNSWF', to: '/about' },
   { label: 'Our Healthcare Impact', to: '/impact' },
+  { label: 'Our Partners & Recognition', to: '/#partners' },
   { label: 'Field Stories & Updates', to: '/stories' },
   { label: 'Media & Photo Gallery', to: '/gallery' },
   { label: 'Annual Reports & Audits', to: '/impact' },
@@ -33,7 +34,7 @@ const GET_INVOLVED_LINKS = [
   { label: 'Make a Tax-Deductible Donation', to: '/donate' },
   { label: 'Volunteer in Odisha', to: '/get-involved/volunteer' },
   { label: 'Medical & Social Internships', to: '/get-involved/internship' },
-  { label: 'CSR Partnerships', to: '/get-involved/partner' },
+  { label: 'Institutional & CSR Partners', to: '/partnerships' },
   { label: 'Contact Our Team', to: '/contact' },
 ]
 
@@ -237,6 +238,34 @@ export default function Footer() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Institutional Partners & Recognition Strip */}
+        <div className="mt-12 pt-6 border-t border-[#0f4737]/35 flex flex-wrap items-center justify-between gap-4 text-xs">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="text-slate-400 font-semibold text-xs tracking-wide">
+              Our Partners &amp; Recognition:
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {['Manipal', 'AIIMS', 'KIIT', 'Saukhyam', 'IADVL', 'Centurion'].map((name) => (
+                <Link
+                  key={name}
+                  to="/#partners"
+                  className="px-2.5 py-1 rounded-lg bg-[#082e23] border border-[#0f4737] text-slate-200 hover:text-emerald-300 hover:border-emerald-500/50 transition-colors font-medium text-[11px]"
+                >
+                  {name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <Link
+            to="/partnerships"
+            className="text-[#55d5b3] hover:text-white transition-colors inline-flex items-center gap-1 font-semibold text-xs"
+          >
+            <span>Collaborate With Us</span>
+            <span>→</span>
+          </Link>
         </div>
 
         {/* Bottom Bar */}

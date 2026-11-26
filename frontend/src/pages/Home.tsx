@@ -163,6 +163,15 @@ const FAQS = [
   },
 ]
 
+const PARTNERS = [
+  { name: "Manipal" },
+  { name: "AIIMS" },
+  { name: "KIIT" },
+  { name: "Saukhyam" },
+  { name: "IADVL" },
+  { name: "Centurion" },
+]
+
 export default function Home() {
   // Newsletter Form State
   const [newsletterEmail, setNewsletterEmail] = useState("")
@@ -945,6 +954,48 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── Section: Our Partners & Recognition ── */}
+      <section
+        id="partners"
+        className="py-16 md:py-20 bg-white border-t border-slate-200/80 scroll-mt-20"
+        aria-label="Our Partners & Recognition"
+      >
+        <Container size="xl">
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0f172a] tracking-tight">
+              Our Partners &amp; Recognition
+            </h2>
+            <p className="text-sm sm:text-base text-slate-500 mt-2 font-sans">
+              Collaborating with leading institutions for greater impact
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5 max-w-4xl mx-auto">
+            {PARTNERS.map((partner) => (
+              <Link
+                key={partner.name}
+                to="/partnerships"
+                className="group px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-[#f8fafc] hover:bg-white border border-slate-200/80 hover:border-emerald-400 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-md hover:-translate-y-0.5 transition-all text-slate-800 font-semibold text-sm sm:text-base inline-flex items-center justify-center"
+              >
+                <span className="transition-colors group-hover:text-emerald-800">
+                  {partner.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center mt-8 pt-1">
+            <Link
+              to="/partnerships"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-emerald-700 hover:text-emerald-900 transition-colors group"
+            >
+              <span>Explore institutional &amp; CSR collaboration opportunities</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </Container>
       </section>

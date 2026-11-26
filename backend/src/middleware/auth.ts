@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken } from '../utils/security';
 import { sendError } from '../utils/response';
-import { Role } from '../types';
+import { Role, SystemRole } from '../types';
 
 export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
@@ -13,21 +13,51 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
   const token = authHeader.split(' ')[1];
   try {
     const payload = verifyAccessToken(token);
-    req.user = payload;
+    // Determine systemRole
+    let systemRole: SystemRole = (payload as any).systemRole;
+    if (!systemRole) {
+      if (payload.role === 'super_admin') {
+        systemRole = 'superadmin';
+      } else if (payload.role === 'admin' || payload.role === 'content_editor' || payload.role === 'applications_reviewer') {
+        systemRole = 'staff';
+      } else {
+        systemRole = 'user';
+      }
+    }
+
+    req.user = {
+      ...payload,
+      systemRole,
+    };
     next();
   } catch (error) {
     sendError(res, 401, 'token_invalid', 'Given token not valid for any token type or expired.');
   }
 };
 
-export const authorize = (allowedRoles: Role[]) => {
+export const authorize = (allowedRoles: (Role | SystemRole | string)[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       sendError(res, 401, 'authentication_required', 'Authentication credentials were not provided.');
       return;
     }
 
-    if (req.user.role === 'super_admin' || allowedRoles.includes(req.user.role)) {
+    const { role, systemRole } = req.user;
+
+    // Superadmin has full access everywhere
+    if (role === 'super_admin' || systemRole === 'superadmin') {
+      next();
+      return;
+    }
+
+    // Check staff role
+    const isStaff = role === 'admin' || role === 'content_editor' || role === 'applications_reviewer' || systemRole === 'staff';
+    if (allowedRoles.includes('staff') && isStaff) {
+      next();
+      return;
+    }
+
+    if (allowedRoles.includes(role) || (systemRole && allowedRoles.includes(systemRole))) {
       next();
       return;
     }

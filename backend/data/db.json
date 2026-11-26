@@ -31,15 +31,17 @@
     {
       "id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
       "createdAt": "2026-10-22T06:01:32.965Z",
-      "firstName": "System",
-      "lastName": "Administrator",
       "role": "super_admin",
-      "salt": "fc529d063c1163101bd0bfb116019d6c",
       "isStaff": true,
       "isActive": true,
-      "email": "admin@scnswf.org",
-      "passwordHash": "491f95314a072ee3e2518bb636579af9eaf65e7003205ccda18db750cc00a87b3ad5dcd08134e5c69a34154eefea3af2a78ccad835da09e7c5e362cc1b09be2f",
-      "updatedAt": "2026-10-22T06:01:32.965Z"
+      "updatedAt": "2026-10-22T06:01:32.965Z",
+      "lastName": "Hota",
+      "firstName": "Aditya",
+      "systemRole": "superadmin",
+      "email": "adityahota777@gmail.com",
+      "status": "active",
+      "salt": "4a71a1eef1a22a4f23152da8dbe7abc2",
+      "passwordHash": "68039000da1d883089f2a5777fe543a21f8c4118591a7258505ac981bcb0a6b0a99ae8fef8b02d0f64e4a361f0b20c961b6bdd64de68104abd2a48d19bd09959"
     }
   ],
   "adminProfiles": [
@@ -390,6 +392,18 @@
       "timestamp": "2026-11-16T08:33:53.849Z"
     },
     {
+      "id": "1c660f49-db8f-4a15-81e6-0800457f3169",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "timestamp": "2026-11-26T05:52:48.491Z"
+    },
+    {
       "id": "1c763499-d3ed-472d-8869-662aa8f0e6b8",
       "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
       "entity_type": "User",
@@ -401,6 +415,18 @@
       },
       "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
       "timestamp": "2026-11-20T05:56:16.255Z"
+    },
+    {
+      "id": "24154470-efa3-4184-9d41-e7ef250deaa0",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-23T15:48:24.970Z"
     },
     {
       "id": "2c869f08-a43d-429b-a161-ba33d3e61f68",
@@ -416,6 +442,58 @@
       "timestamp": "2026-11-20T05:07:20.828Z"
     },
     {
+      "id": "40721cc9-e839-4a06-aeed-36044d4f2846",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "ebece100-7202-463d-b753-c1b3e01c20bc",
+        "ip": "::1"
+      },
+      "entity_id": "ebece100-7202-463d-b753-c1b3e01c20bc",
+      "timestamp": "2026-11-26T07:09:43.237Z"
+    },
+    {
+      "id": "431af8d1-0e2d-4a29-8b4b-744787d39f58",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "c03d7e15-97af-4cff-9bdc-4d9572625ead",
+        "ip": "::1"
+      },
+      "entity_id": "c03d7e15-97af-4cff-9bdc-4d9572625ead",
+      "timestamp": "2026-11-26T05:52:07.399Z"
+    },
+    {
+      "id": "4cbe5511-03a2-407b-ac1a-97cca184bca5",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "8c80102e-cb47-4dbb-8f38-b0975c57d4f0",
+        "ip": "::1"
+      },
+      "entity_id": "8c80102e-cb47-4dbb-8f38-b0975c57d4f0",
+      "timestamp": "2026-11-23T13:52:56.761Z"
+    },
+    {
+      "id": "575cc3a8-54d7-4966-8eee-cce9ba667956",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "loginId": "f2cb393c-7994-4334-94c7-b38904eb4425",
+        "ip": "::1"
+      },
+      "entity_id": "f2cb393c-7994-4334-94c7-b38904eb4425",
+      "timestamp": "2026-11-23T14:28:37.522Z"
+    },
+    {
       "id": "5ecdc286-ee72-4613-bdf9-27aa6e1502e2",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -427,6 +505,32 @@
       },
       "entity_id": "ae6a9b14-6ae8-4a93-a83a-81c6c0200d33",
       "timestamp": "2026-11-20T04:18:18.753Z"
+    },
+    {
+      "id": "73b42e5b-49d3-44aa-889f-08d258d26cee",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "aa6e5c1c-ca61-4ff5-9f48-eb0ace2f4144",
+        "ip": "::1"
+      },
+      "entity_id": "aa6e5c1c-ca61-4ff5-9f48-eb0ace2f4144",
+      "timestamp": "2026-11-20T06:10:43.222Z"
+    },
+    {
+      "id": "76ea82fc-e6af-457a-a059-e5a201b94fa7",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "loginId": "4d5084f0-456e-41db-84bd-ea263d124a89",
+        "ip": "::1"
+      },
+      "entity_id": "4d5084f0-456e-41db-84bd-ea263d124a89",
+      "timestamp": "2026-11-23T15:40:06.454Z"
     },
     {
       "id": "778ffc8c-ac89-4eb6-9fb6-614db792801f",
@@ -442,6 +546,18 @@
       "timestamp": "2026-11-20T05:08:07.036Z"
     },
     {
+      "id": "78392eeb-955f-43e5-b19a-f5212567c624",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "timestamp": "2026-11-26T07:11:16.312Z"
+    },
+    {
       "id": "7b2d2757-7d4b-4f88-a2e6-4b7b6d559892",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -455,6 +571,93 @@
       "timestamp": "2026-11-20T05:41:28.311Z"
     },
     {
+      "id": "7ecb5b50-141b-4640-8223-57dc0df655d2",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "timestamp": "2026-11-26T07:09:43.269Z"
+    },
+    {
+      "id": "8c3da965-0538-43f4-a917-fafeccaa4ded",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "admin@scnswf.org",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-23T15:44:34.908Z"
+    },
+    {
+      "id": "8cee3b8c-e3b1-4563-814a-d90e37038589",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "038e34b8-a319-4b2f-85a7-f8d17dae0fff",
+        "ip": "::1"
+      },
+      "entity_id": "038e34b8-a319-4b2f-85a7-f8d17dae0fff",
+      "timestamp": "2026-11-26T07:03:24.135Z"
+    },
+    {
+      "id": "8dc9c4e9-769f-4744-b85d-cac544dacccb",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "admin@scnswf.org",
+      "details": {
+        "loginId": "cfed7f6d-d4de-42aa-b494-e14c29daa62e",
+        "ip": "::1"
+      },
+      "entity_id": "cfed7f6d-d4de-42aa-b494-e14c29daa62e",
+      "timestamp": "2026-11-23T13:51:44.313Z"
+    },
+    {
+      "id": "a9140403-a1a2-4551-8040-feda6dd05ecd",
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "timestamp": "2026-11-20T06:10:59.859Z"
+    },
+    {
+      "id": "aa8c4145-8dbd-4073-b67c-456cb73c455b",
+      "actor_user_id": "anonymous",
+      "entity_type": "Registration",
+      "action": "register_start_otp_requested",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "::1",
+        "registrationId": "9c8f54ad-d7c3-4d32-a56a-8ae3438b3f08"
+      },
+      "entity_id": "9c8f54ad-d7c3-4d32-a56a-8ae3438b3f08",
+      "timestamp": "2026-11-23T14:32:32.229Z"
+    },
+    {
+      "id": "b247aa0b-0f6b-4d8a-9442-4a28a33d965b",
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "timestamp": "2026-11-23T13:48:50.770Z"
+    },
+    {
       "id": "b2b39ee1-4ef8-4e36-879f-e798f90cc2ee",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -466,6 +669,55 @@
       },
       "entity_id": "029fbbb5-5f05-4da7-a3ab-70baa5d6cc74",
       "timestamp": "2026-11-20T05:55:10.672Z"
+    },
+    {
+      "id": "b36d80d9-c051-4d78-a81b-0fe78afda053",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "Event",
+      "action": "volunteer_joined_event",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "eventTitle": "Mega Health & Eye Checkup Camp"
+      },
+      "entity_id": "e1111111-1111-1111-1111-111111111111",
+      "timestamp": "2026-11-26T07:11:16.324Z"
+    },
+    {
+      "id": "b4b52979-8689-4b5e-91fc-2acd79e77f7a",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "aa59fa33-e2a8-46de-917f-a59388573d0e",
+        "ip": "::1"
+      },
+      "entity_id": "aa59fa33-e2a8-46de-917f-a59388573d0e",
+      "timestamp": "2026-11-26T05:49:34.788Z"
+    },
+    {
+      "id": "b97fd90e-8606-4df3-bdb2-f6298aa452ca",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-23T15:47:43.891Z"
+    },
+    {
+      "id": "b98f1bd5-6e72-419d-9975-d6034fd63aa5",
+      "actor_user_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
+      "timestamp": "2026-11-23T13:53:46.901Z"
     },
     {
       "id": "bc834844-8da0-45c6-8a86-7e9760e4bca1",
@@ -494,6 +746,31 @@
       "timestamp": "2026-11-20T05:52:30.210Z"
     },
     {
+      "id": "cd253061-40cd-4980-b969-1f423fde8834",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-23T15:52:13.452Z"
+    },
+    {
+      "id": "d289ac61-959a-4474-a722-525d66e2f8d7",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota03@gmail.com",
+      "details": {
+        "loginId": "2dd2b371-3fc6-4631-bb83-1c2760b6a139",
+        "ip": "::1"
+      },
+      "entity_id": "2dd2b371-3fc6-4631-bb83-1c2760b6a139",
+      "timestamp": "2026-11-23T13:48:37.635Z"
+    },
+    {
       "id": "dc2fc9e2-a7d7-4efc-abcd-fbcecf2c8f16",
       "actor_user_id": "anonymous",
       "entity_type": "Auth",
@@ -505,6 +782,19 @@
       },
       "entity_id": "a46d7e4c-a8ee-4ad5-bb51-5b690c1e7166",
       "timestamp": "2026-11-20T05:42:06.257Z"
+    },
+    {
+      "id": "de1bbc3f-87e8-4a0f-be3c-0f44caf4430e",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "loginId": "782b7e98-7706-40da-a7bf-1a6e09f5f859",
+        "ip": "::1"
+      },
+      "entity_id": "782b7e98-7706-40da-a7bf-1a6e09f5f859",
+      "timestamp": "2026-11-23T14:33:03.880Z"
     },
     {
       "id": "f30b4ac4-2b38-4dab-be80-ad139ca262e5",
@@ -530,6 +820,53 @@
       },
       "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "timestamp": "2026-11-20T05:52:44.506Z"
+    },
+    {
+      "id": "fe18330a-3096-4241-8324-8ea0ea25b385",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "d02573c5-4e1b-47d7-8146-12f67d02da6d",
+        "ip": "::1"
+      },
+      "entity_id": "d02573c5-4e1b-47d7-8146-12f67d02da6d",
+      "timestamp": "2026-11-26T07:11:16.285Z"
     }
-  ]
+  ],
+  "userPortalData": {
+    "0dbfdf9b-e6e1-4daa-ad43-09ad61814170": {
+      "eventsJoined": 5,
+      "volunteerHours": 48,
+      "campsSupported": 2,
+      "certificatesEarned": 1,
+      "joinedEventIds": [
+        "e3333333-3333-3333-3333-333333333333",
+        "e1111111-1111-1111-1111-111111111111"
+      ],
+      "activities": [
+        {
+          "id": "act-1",
+          "text": "You joined the Free Health Check-up Camp",
+          "timestamp": "2 days ago"
+        },
+        {
+          "id": "act-2",
+          "text": "You completed your volunteer hours",
+          "timestamp": "5 days ago"
+        },
+        {
+          "id": "act-3",
+          "text": "Certificate for Community Health Drive awarded",
+          "timestamp": "1 week ago"
+        },
+        {
+          "id": "act-4",
+          "text": "Account registered and email verified",
+          "timestamp": "2 weeks ago"
+        }
+      ]
+    }
+  }
 }

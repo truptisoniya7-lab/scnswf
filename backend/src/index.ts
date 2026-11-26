@@ -4,9 +4,11 @@ import { initFirebase } from './db/firebase';
 import { dbStore } from './db/store';
 
 const startServer = async () => {
-  // Initialize Firebase service & Cloud Firestore synchronization
+  // Initialize Firebase service & Cloud Firestore synchronization asynchronously
   initFirebase();
-  await dbStore.initFirestore();
+  dbStore.initFirestore().catch((err) => {
+    console.warn('⚠️ Cloud Firestore background sync error:', err.message || err);
+  });
 
   const app = createApp();
 

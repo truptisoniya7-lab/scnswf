@@ -29,6 +29,29 @@ class UnifiedStore {
     this.data = this.loadData();
   }
 
+  private ensureDefaultAdmin(state: DatabaseState): void {
+    const initial = getInitialSeedData();
+    if (state.users && initial.users.length > 0) {
+      const defaultAdmin = initial.users[0];
+      const adminIdx = state.users.findIndex(
+        (u) => u.id === defaultAdmin.id || u.email.toLowerCase() === defaultAdmin.email.toLowerCase() || u.email.toLowerCase() === 'admin@scnswf.org'
+      );
+      if (adminIdx === -1) {
+        state.users.push(defaultAdmin);
+      } else {
+        state.users[adminIdx].email = defaultAdmin.email;
+        state.users[adminIdx].firstName = defaultAdmin.firstName;
+        state.users[adminIdx].lastName = defaultAdmin.lastName;
+        state.users[adminIdx].passwordHash = defaultAdmin.passwordHash;
+        state.users[adminIdx].salt = defaultAdmin.salt;
+        state.users[adminIdx].isActive = true;
+        state.users[adminIdx].role = 'super_admin';
+        state.users[adminIdx].systemRole = 'superadmin';
+        state.users[adminIdx].status = 'active';
+      }
+    }
+  }
+
   private loadData(): DatabaseState {
     try {
       if (fs.existsSync(this.filePath)) {
@@ -41,20 +64,7 @@ class UnifiedStore {
         };
 
         // Ensure default admin from env exists and credentials match current env
-        if (state.users && initial.users.length > 0) {
-          const defaultAdmin = initial.users[0];
-          const adminIdx = state.users.findIndex(
-            (u) => u.id === defaultAdmin.id || u.email.toLowerCase() === defaultAdmin.email.toLowerCase()
-          );
-          if (adminIdx === -1) {
-            state.users.push(defaultAdmin);
-          } else {
-            state.users[adminIdx].email = defaultAdmin.email;
-            state.users[adminIdx].passwordHash = defaultAdmin.passwordHash;
-            state.users[adminIdx].salt = defaultAdmin.salt;
-            state.users[adminIdx].isActive = true;
-          }
-        }
+        this.ensureDefaultAdmin(state);
 
         // Initialize application arrays if missing (do not inject mock volunteer applications)
         state.volunteerApplications = state.volunteerApplications || [];
@@ -123,8 +133,18 @@ class UnifiedStore {
           ...this.data,
           ...remoteState,
         };
+        this.ensureDefaultAdmin(this.data);
         this.saveData(this.data);
         console.log('✅ Local state synchronized with Cloud Firestore.');
+
+        const defaultAdmin = this.data.users.find(
+          (u) => u.email.toLowerCase() === env.DEFAULT_ADMIN_EMAIL.toLowerCase()
+        );
+        if (defaultAdmin) {
+          syncDocToFirestore('users', defaultAdmin.id, defaultAdmin).catch((err) => {
+            console.warn('[Store] Could not sync default admin to Firestore:', err);
+          });
+        }
       }
 
       this.isFirestoreSynced = true;

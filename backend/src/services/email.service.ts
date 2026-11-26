@@ -416,6 +416,36 @@ class EmailService {
 
     return { success: true, simulated: true };
   }
+
+  public async sendGenericEmail({
+    toEmail,
+    subject,
+    bodyText,
+    html,
+  }: {
+    toEmail: string;
+    subject: string;
+    bodyText: string;
+    html?: string;
+  }): Promise<{ success: boolean; error?: string }> {
+    if (this.transporter) {
+      try {
+        await this.transporter.sendMail({
+          from: env.SMTP_FROM,
+          to: toEmail,
+          subject,
+          text: bodyText,
+          html: html || `<p>${bodyText.replace(/\n/g, '<br/>')}</p>`,
+        });
+        return { success: true };
+      } catch (err: any) {
+        console.warn(`[EmailService] Failed to send email to ${toEmail}:`, err.message);
+        return { success: false, error: err.message };
+      }
+    }
+    console.log(`[EmailService DEV] To: ${toEmail} | Subject: ${subject}\n${bodyText}`);
+    return { success: true };
+  }
 }
 
 export const emailService = new EmailService();

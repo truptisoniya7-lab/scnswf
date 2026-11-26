@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { detailsStepSchema, type DetailsStepForm } from '../../../lib/validation'
-import { Loader2, AlertCircle } from 'lucide-react'
+import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react'
 
 interface DetailsStepProps {
   initialValues: DetailsStepForm
@@ -21,6 +21,8 @@ export function DetailsStep({
   onClearServerError,
 }: DetailsStepProps) {
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const {
     register,
@@ -228,6 +230,120 @@ export function DetailsStep({
         {errors.email && (
           <p id="email-error" role="alert" className="text-[11px] text-[var(--danger,#f87171)] mt-1 ml-1 font-medium">
             {errors.email.message}
+          </p>
+        )}
+      </div>
+
+      {/* Password Field */}
+      <div className="relative">
+        <div
+          className={`relative rounded-xl border transition-all h-12 flex items-center px-3.5 bg-[rgba(255,255,255,0.04)] ${
+            errors.password
+              ? 'border-[var(--danger,#f87171)] shadow-[0_0_0_3px_rgba(248,113,113,0.15)]'
+              : focusedField === 'password'
+              ? 'border-[var(--green-400,#34d399)] shadow-[0_0_0_4px_rgba(52,211,153,0.15)]'
+              : 'border-[var(--glass-border,rgba(110,231,183,0.18))] hover:border-[var(--green-300,#6ee7b7)]/40'
+          }`}
+        >
+          <input
+            id="register-password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            disabled={isLoading}
+            {...register('password')}
+            onFocus={() => {
+              setFocusedField('password')
+              if (serverError) onClearServerError()
+            }}
+            onBlur={(e) => {
+              register('password').onBlur(e)
+              setFocusedField(null)
+            }}
+            placeholder=" "
+            className="peer w-full bg-transparent text-[var(--text,#e8fff3)] text-sm outline-hidden pt-3.5 pb-1 pr-8 placeholder-transparent disabled:opacity-50"
+            aria-invalid={Boolean(errors.password)}
+            aria-describedby={errors.password ? 'password-error' : undefined}
+          />
+          <label
+            htmlFor="register-password"
+            className={`absolute left-3.5 transition-all pointer-events-none text-xs ${
+              focusedField === 'password' || values.password
+                ? 'top-1.5 text-[10px] text-[var(--green-300,#6ee7b7)] font-medium'
+                : 'top-3.5 text-sm text-[var(--text-muted,#9bc9b0)]'
+            }`}
+          >
+            Password (min 6 characters)
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+            className="absolute right-3 text-[var(--text-muted,#9bc9b0)] hover:text-white transition-colors"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
+        {errors.password && (
+          <p id="password-error" role="alert" className="text-[11px] text-[var(--danger,#f87171)] mt-1 ml-1 font-medium">
+            {errors.password.message}
+          </p>
+        )}
+      </div>
+
+      {/* Confirm Password Field */}
+      <div className="relative">
+        <div
+          className={`relative rounded-xl border transition-all h-12 flex items-center px-3.5 bg-[rgba(255,255,255,0.04)] ${
+            errors.confirmPassword
+              ? 'border-[var(--danger,#f87171)] shadow-[0_0_0_3px_rgba(248,113,113,0.15)]'
+              : focusedField === 'confirmPassword'
+              ? 'border-[var(--green-400,#34d399)] shadow-[0_0_0_4px_rgba(52,211,153,0.15)]'
+              : 'border-[var(--glass-border,rgba(110,231,183,0.18))] hover:border-[var(--green-300,#6ee7b7)]/40'
+          }`}
+        >
+          <input
+            id="register-confirm-password"
+            type={showConfirmPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            disabled={isLoading}
+            {...register('confirmPassword')}
+            onFocus={() => {
+              setFocusedField('confirmPassword')
+              if (serverError) onClearServerError()
+            }}
+            onBlur={(e) => {
+              register('confirmPassword').onBlur(e)
+              setFocusedField(null)
+            }}
+            placeholder=" "
+            className="peer w-full bg-transparent text-[var(--text,#e8fff3)] text-sm outline-hidden pt-3.5 pb-1 pr-8 placeholder-transparent disabled:opacity-50"
+            aria-invalid={Boolean(errors.confirmPassword)}
+            aria-describedby={errors.confirmPassword ? 'confirm-password-error' : undefined}
+          />
+          <label
+            htmlFor="register-confirm-password"
+            className={`absolute left-3.5 transition-all pointer-events-none text-xs ${
+              focusedField === 'confirmPassword' || values.confirmPassword
+                ? 'top-1.5 text-[10px] text-[var(--green-300,#6ee7b7)] font-medium'
+                : 'top-3.5 text-sm text-[var(--text-muted,#9bc9b0)]'
+            }`}
+          >
+            Confirm Password
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            tabIndex={-1}
+            className="absolute right-3 text-[var(--text-muted,#9bc9b0)] hover:text-white transition-colors"
+            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+          >
+            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
+        {errors.confirmPassword && (
+          <p id="confirm-password-error" role="alert" className="text-[11px] text-[var(--danger,#f87171)] mt-1 ml-1 font-medium">
+            {errors.confirmPassword.message}
           </p>
         )}
       </div>

@@ -20,6 +20,7 @@ import newsletterRouter from './modules/newsletter/newsletter.routes';
 import donationsRouter, { adminDonationsRouter } from './modules/donations/donations.routes';
 import documentsRouter, { adminDocumentsRouter } from './modules/documents/documents.routes';
 import auditRouter from './modules/audit/audit.routes';
+import unifiedAdminRouter from './modules/admin/admin.routes';
 
 export const createApp = () => {
   const app = express();
@@ -136,6 +137,7 @@ export const createApp = () => {
   apiV1.use('/docs', swaggerRouter);
 
   // Public & Domain routes
+  apiV1.use('/portal', accountsRouter);
   apiV1.use('/accounts', accountsRouter);
   apiV1.use('/auth', accountsRouter);
   apiV1.use('/programs', programsRouter);
@@ -151,6 +153,7 @@ export const createApp = () => {
   apiV1.use('/documents', documentsRouter);
 
   // Admin CMS routes
+  apiV1.use('/admin', unifiedAdminRouter);
   apiV1.use('/admin/programs', adminProgramsRouter);
   apiV1.use('/admin/impact', adminImpactRouter);
   apiV1.use('/admin/gallery', adminGalleryRouter);

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import PublicLayout from './layouts/PublicLayout'
 import ScrollToTop from './components/ScrollToTop'
 import { RequireAuth } from './routes/RequireAuth'
+import { RequireRole } from './routes/RequireRole'
 
 // Pages — lazy loaded
 import { lazy, Suspense } from 'react'
@@ -27,8 +28,18 @@ const Disclaimer     = lazy(() => import('./pages/legal/Disclaimer'))
 const DesignSystem   = lazy(() => import('./pages/DesignSystem'))
 const LoginPage      = lazy(() => import('./pages/Login/LoginPage'))
 const RegisterPage   = lazy(() => import('./pages/Register/RegisterPage'))
-const Profile        = lazy(() => import('./pages/Profile'))
+const PortalLayout   = lazy(() => import('./portal/PortalLayout'))
 const NotFound       = lazy(() => import('./pages/NotFound'))
+
+// Admin pages — lazy loaded
+const AdminLayout      = lazy(() => import('./admin/AdminLayout'))
+const DashboardPage    = lazy(() => import('./admin/pages/Dashboard/DashboardPage'))
+const UsersPage        = lazy(() => import('./admin/pages/Users/UsersPage'))
+const ApplicationsPage = lazy(() => import('./admin/pages/Applications/ApplicationsPage'))
+const DonationsPage    = lazy(() => import('./admin/pages/Donations/DonationsPage'))
+const ContentPage      = lazy(() => import('./admin/pages/Content/ContentPage'))
+const AuditLogPage     = lazy(() => import('./admin/pages/AuditLog/AuditLogPage'))
+const SettingsPage     = lazy(() => import('./admin/pages/Settings/SettingsPage'))
 
 function PageLoader() {
   return (
@@ -52,6 +63,43 @@ export default function App() {
           <Route path="/login"    element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/signup"   element={<Navigate to="/register" replace />} />
+
+          {/* User & Volunteer Portal (Standalone layout matching reference design) */}
+          <Route path="/portal"    element={<RequireAuth><PortalLayout /></RequireAuth>} />
+          <Route path="/profile"   element={<RequireAuth><PortalLayout /></RequireAuth>} />
+          <Route path="/dashboard" element={<RequireAuth><PortalLayout /></RequireAuth>} />
+
+          {/* Admin Management Portal (Protected by RequireRole with dark green theme) */}
+          <Route
+            path="/admin"
+            element={
+              <RequireRole allowedRoles={['staff', 'superadmin', 'admin', 'super_admin', 'content_editor', 'applications_reviewer']}>
+                <AdminLayout />
+              </RequireRole>
+            }
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path="users" element={<UsersPage />} />
+            <Route path="applications" element={<ApplicationsPage />} />
+            <Route path="donations" element={<DonationsPage />} />
+            <Route path="content" element={<ContentPage />} />
+            <Route
+              path="audit"
+              element={
+                <RequireRole allowedRoles={['superadmin', 'super_admin']}>
+                  <AuditLogPage />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="settings"
+              element={
+                <RequireRole allowedRoles={['superadmin', 'super_admin']}>
+                  <SettingsPage />
+                </RequireRole>
+              }
+            />
+          </Route>
 
           <Route element={<PublicLayout />}>
             <Route path="/"                index element={<Home />} />
@@ -77,7 +125,6 @@ export default function App() {
             <Route path="/refund-policy"          element={<RefundPolicy />} />
             <Route path="/disclaimer"             element={<Disclaimer />} />
             <Route path="/design-system"          element={<DesignSystem />} />
-            <Route path="/profile"                element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="*"                       element={<NotFound />} />
           </Route>
         </Routes>
