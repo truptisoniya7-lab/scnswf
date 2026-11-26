@@ -2,61 +2,57 @@ import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import {
-  PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend
-} from "recharts"
-import {
   Heart, Users, MapPin, ArrowRight,
   TrendingUp, FileText, ChevronRight,
-  Stethoscope, ShieldCheck, CheckCircle2, Eye, Wifi
+  Stethoscope, ShieldCheck, CheckCircle2, Wifi
 } from "lucide-react"
+import {
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend
+} from "recharts"
 import { ImagePlaceholder, PlaceholderBanner } from "../components/ui/ImagePlaceholder"
 import { useImpactMetrics, useImpactStories } from "../hooks/useImpact"
 import type { ImpactMetric, ImpactStory } from "../types"
 
-/* ── Programmatic Focus Distribution ── */
-const PROGRAM_BREAKDOWN = [
-  { name: "Mobile Primary Healthcare", value: 38, color: "#1b6b68" },
-  { name: "Maternal & Child Health", value: 24, color: "#c94a2e" },
-  { name: "Youth & Women Livelihoods", value: 16, color: "#d97706" },
-  { name: "Preventative Awareness", value: 12, color: "#279490" },
-  { name: "WASH & Sanitation", value: 10, color: "#134a48" },
-]
-
-/* ── Targeted Focus Districts ── */
+/* ── Official Targeted Reach ── */
 const DISTRICT_FOCUS = [
-  { name: "Khurda", focus: "Mobile Health Unit Routes & Specialist Screenings" },
-  { name: "Nayagarh", focus: "Rural Primary Care & Fluoride Risk Awareness" },
-  { name: "Rayagada", focus: "Maternal & Child Health Village Counseling" },
-  { name: "Koraput", focus: "Grassroots Nutrition & Safe Delivery Facilitation" },
-  { name: "Kandhamal", focus: "Tribal Health Outreach & Disability Aid Linkage" },
-  { name: "Ganjam", focus: "Preventative Screening Camps & School Health" },
-  { name: "Cuttack", focus: "Peri-urban Health Camps & Livelihood Workshops" },
-  { name: "Puri", focus: "Community Sanitation & Water Safety Sessions" },
+  { name: "Bhubaneswar", focus: "Urban-focused healthcare services and community health outreach" },
+  { name: "Khordha District", focus: "Mobile medical units and rural health camps" },
+  { name: "Puri Coastal Areas", focus: "Community healthcare across coastal areas" },
+  { name: "Cuttack Region", focus: "Healthcare camps and urban and peri-urban outreach" },
+  { name: "Tribal Hamlets", focus: "Remote-community medical outreach and health support" },
 ]
 
-/* ── Fallback Stories ── */
+/* ── Official Stories ── */
 const DEFAULT_STORIES = [
   {
-    title: "Bringing Lifesaving Healthcare to Kalahandi Villages",
-    summary: "How our mobile medical unit helped save dozens of high-risk pregnancies and provided continuous diabetes and hypertension care.",
-    program: "Healthcare & Relief",
-    district: "Kalahandi",
-    slug: "bringing-lifesaving-care-to-kalahandi",
+    title: "Elderly Diabetes Care",
+    summary: "“Before the health camp, I had no access to a doctor. SCNSWF’s free consultation helped me detect and manage my diabetes early. They gave me hope and guidance for elderly diabetes care in India.”",
+    program: "Healthcare",
+    district: "Bhubaneswar",
+    slug: "elderly-diabetes-care",
   },
   {
-    title: "From Tribal Settlement to State Polytechnic: Sunita’s Journey",
-    summary: "Sunita overcame acute resource constraints through SCNSWF after-school mentoring, learning kits, and full diploma scholarship.",
-    program: "Education & Skills",
-    district: "Koraput",
-    slug: "first-generation-learner-cracks-polytechnic",
+    title: "Menstrual Health Awareness",
+    summary: "A college student shared that the menstrual hygiene session changed how she viewed her health and gave her confidence to discuss and adopt sustainable practices.",
+    program: "Health Awareness",
+    district: "KIIT University",
+    slug: "menstrual-health-awareness",
   },
   {
-    title: "Vocational Independence for Rural Women Weavers",
-    summary: "Market-oriented tailoring, modern loom access, and practical accounting training provided sustainable incomes for rural self-help clusters.",
-    program: "Women Empowerment",
-    district: "Cuttack",
-    slug: "vocational-independence-rural-youth",
+    title: "Maternal Healthcare",
+    summary: "A young mother received prenatal care and nutrition guidance that supported a healthy pregnancy and birth in a rural village.",
+    program: "Maternal Care",
+    district: "Rural Odisha",
+    slug: "maternal-healthcare",
   },
+]
+
+const OFFICIAL_RESOURCE_BREAKDOWN = [
+  { name: "Mobile Healthcare", value: 5000, color: "#1b6b68", count: "5,000+ patients" },
+  { name: "Health Camps", value: 8000, color: "#c94a2e", count: "8,000+ free check-ups" },
+  { name: "Maternal Care", value: 1200, color: "#d97706", count: "1,200+ prenatal check-ups" },
+  { name: "Urban Clinics", value: 2000, color: "#279490", count: "2,000+ urban beneficiaries" },
+  { name: "Women’s Health Awareness", value: 500, color: "#134a48", count: "500+ mothers supported" },
 ]
 
 export default function Impact() {
@@ -70,16 +66,16 @@ export default function Impact() {
       return apiMetrics.map((m: ImpactMetric) => ({
         id: m.id,
         label: m.label,
-        value: Number(m.value).toLocaleString("en-IN"),
+        value: m.label === "Districts Reached" ? String(m.value) : `${Number(m.value).toLocaleString("en-IN")}+`,
         unit: m.unit,
       }))
     }
-    // High-integrity fallback metrics
+    // Figures published on the official SCNSWF impact page
     return [
-      { id: "m1", label: "Lives Impacted Directly", value: "65,000+", unit: "beneficiaries" },
-      { id: "m2", label: "Free Medical Camps Conducted", value: "145+", unit: "field camps" },
-      { id: "m3", label: "Students Supported with Kits", value: "3,200+", unit: "children" },
-      { id: "m4", label: "Women Micro-Entrepreneurs", value: "1,850+", unit: "graduates" },
+      { id: "m1", label: "Women & Children Served", value: "500+", unit: "beneficiaries" },
+      { id: "m2", label: "Medical Consultations", value: "1,000+", unit: "consultations" },
+      { id: "m3", label: "Elderly Diabetes Care", value: "200+", unit: "patients" },
+      { id: "m4", label: "Districts Reached", value: "5", unit: "district areas" },
     ]
   }, [apiMetrics])
 
@@ -186,7 +182,7 @@ export default function Impact() {
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 leading-none">
-          <svg viewBox="0 0 1440 36" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full h-8">
+          <svg viewBox="00 1440 36" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full h-8">
             <path d="M0 36L1440 36L1440 8C1200 32 800 0 480 18C240 32 0 8 0 8L0 36Z" fill="#ffffff" />
           </svg>
         </div>
@@ -262,14 +258,14 @@ export default function Impact() {
         </div>
       </section>
 
-      {/* ── Programmatic Focus Distribution Chart ── */}
+      {/* ── Resource Distribution ── */}
       <section className="py-14 md:py-20 bg-slate-50 border-t border-slate-200">
         <div className="container-custom">
           <div className="max-w-2xl mx-auto text-center mb-12">
             <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-teal-800 bg-teal-100/70 inline-block mb-2">
-              Resource Distribution
+              RESOURCE DISTRIBUTION
             </span>
-            <h2 className="font-display text-3xl font-bold text-slate-900 mb-3">
+            <h2 className="font-display text-3xl font-bold text-slate-900 mb-2">
               Where Our Efforts Are Directed
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -278,7 +274,6 @@ export default function Impact() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
-            {/* Chart */}
             <div className="lg:col-span-6 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
               <h3 className="font-display font-bold text-sm text-slate-800 mb-4 text-center">
                 Program Resource Allocation (%)
@@ -287,7 +282,7 @@ export default function Impact() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={PROGRAM_BREAKDOWN}
+                      data={OFFICIAL_RESOURCE_BREAKDOWN}
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
@@ -295,20 +290,19 @@ export default function Impact() {
                       paddingAngle={4}
                       dataKey="value"
                     >
-                      {PROGRAM_BREAKDOWN.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      {OFFICIAL_RESOURCE_BREAKDOWN.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => [`${value}%`, "Resource Share"]} />
+                    <Tooltip formatter={(value) => [Number(value).toLocaleString("en-IN"), "Published Beneficiaries"]} />
                     <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Program Breakdown List */}
             <div className="lg:col-span-6 space-y-3">
-              {PROGRAM_BREAKDOWN.map((p) => (
+              {OFFICIAL_RESOURCE_BREAKDOWN.map((p) => (
                 <div
                   key={p.name}
                   className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between"
@@ -318,108 +312,11 @@ export default function Impact() {
                     <span className="text-xs sm:text-sm font-bold text-slate-800">{p.name}</span>
                   </div>
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
-                    {p.value}% Share
+                    {p.count}
                   </span>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Ground Documentation (Images) ── */}
-      <section className="py-14 md:py-20 bg-white border-t border-slate-200">
-        <div className="container-custom">
-          <div className="max-w-2xl mx-auto text-center mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-teal-800 bg-teal-50 inline-block mb-2">
-              Visual Documentation
-            </span>
-            <h2 className="font-display text-3xl font-bold text-slate-900 mb-3">
-              Field Work in Reality
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              Photographic proof of community camps, village meetings, and healthcare worker interactions.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 flex flex-col">
-              <ImagePlaceholder
-                src="/images/hero/together-rising-womens-health.jpg"
-                alt="SCNSWF Together Rising - Sustainable menstrual health and women empowerment initiative"
-                label="Together Rising Initiative"
-                aspect="4/3"
-                className="w-full bg-slate-100"
-                objectFit="cover"
-              />
-              <div className="p-4 bg-white flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-bold text-teal-700">Community Health</div>
-                  <div className="text-sm font-bold text-slate-900 mt-0.5">Together Rising Campaign</div>
-                  <p className="text-xs text-slate-600 mt-1">Student volunteer engagement & eco-friendly menstrual hygiene distribution.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 flex flex-col">
-              <ImagePlaceholder
-                src="/images/healthcare/womens-health-hygiene-centurion-auditorium.jpg"
-                alt="Women's Health, Hygiene and Sustainable Living seminar in Centurion University"
-                label="Women's Health Seminar"
-                aspect="4/3"
-                className="w-full bg-slate-100"
-                objectFit="cover"
-              />
-              <div className="p-4 bg-white flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-bold text-rose-700">Campus Education</div>
-                  <div className="text-sm font-bold text-slate-900 mt-0.5">Hygiene & Sustainable Living</div>
-                  <p className="text-xs text-slate-600 mt-1">Large-scale educational session for female university students and peer educators.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 flex flex-col">
-              <ImagePlaceholder
-                src="/images/healthcare/polio-free-india-awareness.jpg"
-                alt="SCNSWF Polio Eradication and Childhood Immunization Drive"
-                label="Routine Immunization"
-                aspect="4/3"
-                className="w-full bg-slate-100"
-                objectFit="cover"
-              />
-              <div className="p-4 bg-white flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-bold text-teal-700">Preventive Healthcare</div>
-                  <div className="text-sm font-bold text-slate-900 mt-0.5">Polio Eradication Drives</div>
-                  <p className="text-xs text-slate-600 mt-1">Sustaining routine polio vaccination awareness and child healthcare drops.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 flex flex-col">
-              <ImagePlaceholder
-                src="/images/education/child-health-handwashing.jpg"
-                alt="SCNSWF Child Health & Hygiene Education Guide"
-                label="Child Health Education"
-                aspect="4/3"
-                className="w-full bg-slate-100"
-                objectFit="cover"
-              />
-              <div className="p-4 bg-white flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-bold text-coral-700" style={{ color: "#c94a2e" }}>Child Hygiene</div>
-                  <div className="text-sm font-bold text-slate-900 mt-0.5">Handwashing & Sanitation</div>
-                  <p className="text-xs text-slate-600 mt-1">School-level demonstrations on hand hygiene to prevent disease transmission.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <Link to="/gallery" className="btn btn-secondary inline-flex items-center gap-2 text-xs sm:text-sm">
-              <Eye size={16} /> View Foundation Photo Gallery
-            </Link>
           </div>
         </div>
       </section>

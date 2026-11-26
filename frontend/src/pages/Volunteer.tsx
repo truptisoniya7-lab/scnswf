@@ -200,8 +200,8 @@ export default function Volunteer() {
                 <Users size={20} />
               </div>
               <div>
-                <p className="font-display font-extrabold text-slate-900 text-lg leading-tight">1,200+</p>
-                <p className="text-xs text-slate-500">Active Volunteers</p>
+                <p className="font-display font-extrabold text-slate-900 text-lg leading-tight">100+</p>
+                <p className="text-xs text-slate-500">Villages Reached</p>
               </div>
             </div>
 
@@ -210,8 +210,8 @@ export default function Volunteer() {
                 <HeartHandshake size={20} />
               </div>
               <div>
-                <p className="font-display font-extrabold text-slate-900 text-lg leading-tight">145+</p>
-                <p className="text-xs text-slate-500">Free Health Camps</p>
+                <p className="font-display font-extrabold text-slate-900 text-lg leading-tight">50+</p>
+                <p className="text-xs text-slate-500">Health Camps</p>
               </div>
             </div>
 
@@ -220,8 +220,8 @@ export default function Volunteer() {
                 <Sparkles size={20} />
               </div>
               <div>
-                <p className="font-display font-extrabold text-slate-900 text-lg leading-tight">65,000+</p>
-                <p className="text-xs text-slate-500">Lives Touched</p>
+                <p className="font-display font-extrabold text-slate-900 text-lg leading-tight">10K+</p>
+                <p className="text-xs text-slate-500">Lives Reached</p>
               </div>
             </div>
 
@@ -230,8 +230,8 @@ export default function Volunteer() {
                 <Award size={20} />
               </div>
               <div>
-                <p className="font-display font-extrabold text-slate-900 text-lg leading-tight">100%</p>
-                <p className="text-xs text-slate-500">Verified Recognition</p>
+                <p className="font-display font-extrabold text-slate-900 text-lg leading-tight">500+</p>
+                <p className="text-xs text-slate-500">Mothers Supported</p>
               </div>
             </div>
           </div>
