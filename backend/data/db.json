@@ -1008,6 +1008,18 @@
       },
       "entity_id": "d02573c5-4e1b-47d7-8146-12f67d02da6d",
       "timestamp": "2026-11-26T07:11:16.285Z"
+    },
+    {
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "actor_email": "adityahota777@gmail.com",
+      "action": "user_login",
+      "entity_type": "User",
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "details": {
+        "ip": "::1"
+      },
+      "id": "380ce465-868f-4233-805b-25f1dc1bda08",
+      "timestamp": "2026-11-26T10:46:02.856Z"
     }
   ],
   "userPortalData": {
