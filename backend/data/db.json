@@ -11,9 +11,9 @@
       "createdAt": "2026-11-20T05:56:16.253Z",
       "emailVerified": true,
       "firstName": "Trupti",
-      "phone": "7377348406",
+      "phone": "+91 9437012345",
       "email": "truptisoniya7@gmail.com",
-      "updatedAt": "2026-11-20T05:56:16.253Z"
+      "updatedAt": "2026-11-26T10:03:56.641Z"
     },
     {
       "id": "c49e3f02-3924-40be-a595-5177457ed3f3",
@@ -40,8 +40,8 @@
       "systemRole": "superadmin",
       "email": "adityahota777@gmail.com",
       "status": "active",
-      "salt": "4a71a1eef1a22a4f23152da8dbe7abc2",
-      "passwordHash": "68039000da1d883089f2a5777fe543a21f8c4118591a7258505ac981bcb0a6b0a99ae8fef8b02d0f64e4a361f0b20c961b6bdd64de68104abd2a48d19bd09959"
+      "salt": "9f79e51d312e68302f7ff81bd58d3c28",
+      "passwordHash": "5fe5f8d29e0f9520a3d496f7e709642cb07fb5e4079d5fc4eaa0a3b352389abbae6dc4777ab4791d5b7023b8b7b84026c16934e7f68d619bb302dbcfb60fa08a"
     }
   ],
   "adminProfiles": [
@@ -390,6 +390,31 @@
       },
       "entity_id": "c49e3f02-3924-40be-a595-5177457ed3f3",
       "timestamp": "2026-11-16T08:33:53.849Z"
+    },
+    {
+      "id": "0c35c4f8-9e38-4ec4-a73a-74b18fd574d1",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "timestamp": "2026-11-26T07:30:34.294Z"
+    },
+    {
+      "id": "10de88dc-2b96-4c39-a3a8-43776f9124ed",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "9e65a0ca-423b-4de2-b8cb-36a19e918aa2",
+        "ip": "::1"
+      },
+      "entity_id": "9e65a0ca-423b-4de2-b8cb-36a19e918aa2",
+      "timestamp": "2026-11-26T07:30:03.530Z"
     },
     {
       "id": "1c660f49-db8f-4a15-81e6-0800457f3169",
@@ -797,6 +822,19 @@
       "timestamp": "2026-11-23T14:33:03.880Z"
     },
     {
+      "id": "ea4fe262-844e-4706-b583-94ec72a3c1c0",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "70d00d6d-e9b0-4d9c-881a-644e8bd56ee7",
+        "ip": "::1"
+      },
+      "entity_id": "70d00d6d-e9b0-4d9c-881a-644e8bd56ee7",
+      "timestamp": "2026-11-26T07:29:01.701Z"
+    },
+    {
       "id": "f30b4ac4-2b38-4dab-be80-ad139ca262e5",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -833,6 +871,68 @@
       },
       "entity_id": "d02573c5-4e1b-47d7-8146-12f67d02da6d",
       "timestamp": "2026-11-26T07:11:16.285Z"
+    },
+    {
+      "actor_user_id": "anonymous",
+      "actor_email": "truptisoniya7@gmail.com",
+      "action": "login_start_otp_requested",
+      "entity_type": "Auth",
+      "entity_id": "97214cf4-0054-47f0-b8db-c1ac76098a9c",
+      "details": {
+        "ip": "::1",
+        "loginId": "97214cf4-0054-47f0-b8db-c1ac76098a9c"
+      },
+      "id": "7feb9615-63e7-4e6a-a3d5-6622f54c054f",
+      "timestamp": "2026-11-26T10:03:41.679Z"
+    },
+    {
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "actor_email": "truptisoniya7@gmail.com",
+      "action": "passwordless_login_verified",
+      "entity_type": "User",
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "details": {
+        "ip": "::1"
+      },
+      "id": "e7b390ab-1dbd-402e-948b-b7a504ce17e9",
+      "timestamp": "2026-11-26T10:03:41.729Z"
+    },
+    {
+      "actor_user_id": "anonymous",
+      "actor_email": "truptisoniya7@gmail.com",
+      "action": "login_start_otp_requested",
+      "entity_type": "Auth",
+      "entity_id": "9aacd1c1-2f21-4dd5-b778-52c551ebba82",
+      "details": {
+        "ip": "::1",
+        "loginId": "9aacd1c1-2f21-4dd5-b778-52c551ebba82"
+      },
+      "id": "14fc7759-36f3-468a-8e56-f2f78255000f",
+      "timestamp": "2026-11-26T10:03:56.608Z"
+    },
+    {
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "actor_email": "truptisoniya7@gmail.com",
+      "action": "passwordless_login_verified",
+      "entity_type": "User",
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "details": {
+        "ip": "::1"
+      },
+      "id": "82f9dbb7-7ae5-4600-9dcc-c70672334447",
+      "timestamp": "2026-11-26T10:03:56.632Z"
+    },
+    {
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "actor_email": "truptisoniya7@gmail.com",
+      "action": "volunteer_joined_event",
+      "entity_type": "Event",
+      "entity_id": "e1111111-1111-1111-1111-111111111111",
+      "details": {
+        "eventTitle": "Mega Health & Eye Checkup Camp"
+      },
+      "id": "9070a9b0-abba-4fa1-be7b-04587ba1c28a",
+      "timestamp": "2026-11-26T10:03:56.636Z"
     }
   ],
   "userPortalData": {

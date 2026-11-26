@@ -185,19 +185,19 @@ router.get(
 
 // User Portal Routes (Protected)
 router.get(
-  ['/portal/dashboard', '/portal/dashboard/', '/auth/portal/dashboard', '/auth/portal/dashboard/'],
+  ['/portal/dashboard', '/portal/dashboard/', '/dashboard', '/dashboard/', '/auth/portal/dashboard', '/auth/portal/dashboard/'],
   authenticate,
   accountsController.getPortalDashboard
 );
 
 router.post(
-  ['/portal/events/:id/join', '/portal/events/:id/join/', '/auth/portal/events/:id/join'],
+  ['/portal/events/:id/join', '/portal/events/:id/join/', '/events/:id/join', '/events/:id/join/', '/auth/portal/events/:id/join'],
   authenticate,
   accountsController.joinPortalEvent
 );
 
 router.put(
-  ['/portal/profile', '/portal/profile/', '/auth/portal/profile'],
+  ['/portal/profile', '/portal/profile/', '/profile', '/profile/', '/auth/portal/profile'],
   authenticate,
   accountsController.updatePortalProfile
 );

@@ -8,6 +8,8 @@ import { apiLimiter } from './middleware/rateLimiter';
 import { sendError } from './utils/response';
 import { swaggerRouter } from './config/swagger';
 import accountsRouter from './modules/accounts/accounts.routes';
+import { accountsController } from './modules/accounts/accounts.controller';
+import { authenticate } from './middleware/auth';
 import programsRouter, { adminProgramsRouter } from './modules/programs/programs.routes';
 import impactRouter, { adminImpactRouter } from './modules/impact/impact.routes';
 import galleryRouter, { adminGalleryRouter } from './modules/gallery/gallery.routes';
@@ -137,6 +139,10 @@ export const createApp = () => {
   apiV1.use('/docs', swaggerRouter);
 
   // Public & Domain routes
+  apiV1.get(['/portal/dashboard', '/portal/dashboard/'], authenticate, accountsController.getPortalDashboard);
+  apiV1.post(['/portal/events/:id/join', '/portal/events/:id/join/'], authenticate, accountsController.joinPortalEvent);
+  apiV1.put(['/portal/profile', '/portal/profile/'], authenticate, accountsController.updatePortalProfile);
+
   apiV1.use('/portal', accountsRouter);
   apiV1.use('/accounts', accountsRouter);
   apiV1.use('/auth', accountsRouter);

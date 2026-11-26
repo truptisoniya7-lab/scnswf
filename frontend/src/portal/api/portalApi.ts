@@ -49,8 +49,20 @@ export interface PortalDashboardData {
 
 export const portalApi = {
   getDashboard: async (): Promise<PortalDashboardData> => {
-    const res = await apiClient.get<any>('/portal/dashboard')
-    return res.data?.data ?? res.data
+    try {
+      const res = await apiClient.get<any>('/portal/dashboard')
+      return res.data?.data ?? res.data
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        try {
+          const fallback = await apiClient.get<any>('/auth/portal/dashboard')
+          return fallback.data?.data ?? fallback.data
+        } catch {
+          // continue to throw original error
+        }
+      }
+      throw err
+    }
   },
 
   joinEvent: async (
@@ -61,12 +73,36 @@ export const portalApi = {
     joinedEventIds: string[]
     recentActivities: PortalActivity[]
   }> => {
-    const res = await apiClient.post<any>(`/portal/events/${eventId}/join`)
-    return res.data?.data ?? res.data
+    try {
+      const res = await apiClient.post<any>(`/portal/events/${eventId}/join`)
+      return res.data?.data ?? res.data
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        try {
+          const fallback = await apiClient.post<any>(`/auth/portal/events/${eventId}/join`)
+          return fallback.data?.data ?? fallback.data
+        } catch {
+          // continue
+        }
+      }
+      throw err
+    }
   },
 
   updateProfile: async (payload: { name?: string; phone?: string }): Promise<{ message: string; user: PortalUser }> => {
-    const res = await apiClient.put<any>('/portal/profile', payload)
-    return res.data?.data ?? res.data
+    try {
+      const res = await apiClient.put<any>('/portal/profile', payload)
+      return res.data?.data ?? res.data
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        try {
+          const fallback = await apiClient.put<any>(`/auth/portal/profile`, payload)
+          return fallback.data?.data ?? fallback.data
+        } catch {
+          // continue
+        }
+      }
+      throw err
+    }
   },
 }

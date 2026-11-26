@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { usersRepo, auditRepo, applicationsRepo } from '../../db';
+import { usersRepo, auditRepo, applicationsRepo, dbStore } from '../../db';
 import {
   hashPassword,
   verifyPassword,
@@ -640,10 +640,39 @@ export const accountsController = {
     }
 
     const userId = req.user.userId;
-    const user = usersRepo.findById(userId) || usersRepo.findByEmail(req.user.email);
+    let user: any = usersRepo.findById(userId) || (req.user.email ? usersRepo.findByEmail(req.user.email) : null);
+    if (!user && req.user.email) {
+      const vol = otpService.findApprovedVolunteer(req.user.email);
+      if (vol) {
+        user = {
+          id: vol.id,
+          name: vol.name,
+          firstName: vol.name.split(' ')[0] || 'Volunteer',
+          lastName: vol.name.split(' ').slice(1).join(' ') || '',
+          email: vol.email,
+          role: 'volunteer',
+          isActive: true,
+          status: 'active',
+          phone: (vol as any).phone || '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
+    }
     if (!user) {
-      sendError(res, 404, 'not_found', 'User account not found.');
-      return;
+      user = {
+        id: userId,
+        name: req.user.name || 'Member',
+        firstName: (req.user.name || 'Member').split(' ')[0],
+        lastName: (req.user.name || '').split(' ').slice(1).join(' '),
+        email: req.user.email,
+        role: req.user.role || 'volunteer',
+        isActive: true,
+        status: 'active',
+        phone: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
     }
 
     const state = dbStore.getState();
@@ -678,11 +707,11 @@ export const accountsController = {
           },
         ],
       };
-      dbStore.update(() => {});
+      dbStore.update(() => { });
     }
 
     const portalData = state.userPortalData[user.id];
-    const upcomingEvents = (state.events || []).filter((e) => e.status === 'published');
+    const upcomingEvents = (state.events || []).filter((e: any) => e.status === 'published');
     const computedSystemRole =
       user.systemRole || (user.role === 'super_admin' ? 'superadmin' : user.role === 'admin' || user.isStaff ? 'staff' : 'user');
 
@@ -720,7 +749,7 @@ export const accountsController = {
     const { id } = req.params;
     const userId = req.user.userId;
     const state = dbStore.getState();
-    const event = (state.events || []).find((e) => e.id === id || e.slug === id);
+    const event = (state.events || []).find((e: any) => e.id === id || e.slug === id);
 
     if (!event) {
       sendError(res, 404, 'event_not_found', 'Event not found.');
@@ -755,7 +784,7 @@ export const accountsController = {
         },
         ...(data.activities || []),
       ];
-      dbStore.update(() => {});
+      dbStore.update(() => { });
     }
 
     auditRepo.log({
@@ -788,7 +817,7 @@ export const accountsController = {
 
     const userId = req.user.userId;
     const { name, phone } = req.body;
-    const user = usersRepo.findById(userId);
+    let user = usersRepo.findById(userId) || (req.user.email ? usersRepo.findByEmail(req.user.email) : null);
 
     if (!user) {
       sendError(res, 404, 'not_found', 'User not found.');
@@ -804,7 +833,7 @@ export const accountsController = {
       user.phone = phone;
     }
     user.updatedAt = new Date().toISOString();
-    dbStore.update(() => {});
+    dbStore.update(() => { });
 
     sendSuccess(res, {
       message: 'Profile updated successfully.',
