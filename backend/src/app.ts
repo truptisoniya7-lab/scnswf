@@ -137,6 +137,7 @@ export const createApp = () => {
   apiV1.use('/docs', swaggerRouter);
 
   // Public & Domain routes
+  apiV1.use('/portal', accountsRouter);
   apiV1.use('/accounts', accountsRouter);
   apiV1.use('/auth', accountsRouter);
   apiV1.use('/programs', programsRouter);

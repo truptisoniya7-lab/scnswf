@@ -28,7 +28,7 @@ const Disclaimer     = lazy(() => import('./pages/legal/Disclaimer'))
 const DesignSystem   = lazy(() => import('./pages/DesignSystem'))
 const LoginPage      = lazy(() => import('./pages/Login/LoginPage'))
 const RegisterPage   = lazy(() => import('./pages/Register/RegisterPage'))
-const Profile        = lazy(() => import('./pages/Profile'))
+const PortalLayout   = lazy(() => import('./portal/PortalLayout'))
 const NotFound       = lazy(() => import('./pages/NotFound'))
 
 // Admin pages — lazy loaded
@@ -63,6 +63,11 @@ export default function App() {
           <Route path="/login"    element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/signup"   element={<Navigate to="/register" replace />} />
+
+          {/* User & Volunteer Portal (Standalone layout matching reference design) */}
+          <Route path="/portal"    element={<RequireAuth><PortalLayout /></RequireAuth>} />
+          <Route path="/profile"   element={<RequireAuth><PortalLayout /></RequireAuth>} />
+          <Route path="/dashboard" element={<RequireAuth><PortalLayout /></RequireAuth>} />
 
           {/* Admin Management Portal (Protected by RequireRole with dark green theme) */}
           <Route
@@ -120,7 +125,6 @@ export default function App() {
             <Route path="/refund-policy"          element={<RefundPolicy />} />
             <Route path="/disclaimer"             element={<Disclaimer />} />
             <Route path="/design-system"          element={<DesignSystem />} />
-            <Route path="/profile"                element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="*"                       element={<NotFound />} />
           </Route>
         </Routes>

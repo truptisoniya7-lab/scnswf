@@ -111,6 +111,7 @@ export interface Event {
   location: string;
   start_datetime: string;
   end_datetime: string;
+  cover_image_url?: string | null;
   status: 'draft' | 'published' | 'cancelled';
   created_at: string;
   updated_at: string;

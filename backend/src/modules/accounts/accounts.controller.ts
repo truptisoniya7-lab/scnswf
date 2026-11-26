@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { usersRepo, auditRepo, applicationsRepo } from '../../db';
+import { usersRepo, auditRepo, applicationsRepo, dbStore } from '../../db';
 import {
   hashPassword,
   verifyPassword,
@@ -628,5 +628,195 @@ export const accountsController = {
       },
       201
     );
+  },
+
+  // ==========================================
+  // VOLUNTEER / USER PORTAL
+  // ==========================================
+  getPortalDashboard: async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+      sendError(res, 401, 'authentication_required', 'Authentication required.');
+      return;
+    }
+
+    const userId = req.user.userId;
+    const user = usersRepo.findById(userId) || usersRepo.findByEmail(req.user.email);
+    if (!user) {
+      sendError(res, 404, 'not_found', 'User account not found.');
+      return;
+    }
+
+    const state = dbStore.getState();
+    state.userPortalData = state.userPortalData || {};
+    if (!state.userPortalData[user.id]) {
+      state.userPortalData[user.id] = {
+        eventsJoined: 5,
+        volunteerHours: 48,
+        campsSupported: 2,
+        certificatesEarned: 1,
+        joinedEventIds: ['e3333333-3333-3333-3333-333333333333', 'e1111111-1111-1111-1111-111111111111'],
+        activities: [
+          {
+            id: 'act-1',
+            text: 'You joined the Free Health Check-up Camp',
+            timestamp: '2 days ago',
+          },
+          {
+            id: 'act-2',
+            text: 'You completed your volunteer hours',
+            timestamp: '5 days ago',
+          },
+          {
+            id: 'act-3',
+            text: 'Certificate for Community Health Drive awarded',
+            timestamp: '1 week ago',
+          },
+          {
+            id: 'act-4',
+            text: 'Account registered and email verified',
+            timestamp: '2 weeks ago',
+          },
+        ],
+      };
+      dbStore.update(() => {});
+    }
+
+    const portalData = state.userPortalData[user.id];
+    const upcomingEvents = (state.events || []).filter((e: any) => e.status === 'published');
+    const computedSystemRole =
+      user.systemRole || (user.role === 'super_admin' ? 'superadmin' : user.role === 'admin' || user.isStaff ? 'staff' : 'user');
+
+    sendSuccess(res, {
+      user: {
+        id: user.id,
+        name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || 'Member',
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone || '',
+        role: user.role || 'volunteer',
+        systemRole: computedSystemRole,
+        status: user.status || (user.isActive ? 'active' : 'suspended'),
+        createdAt: user.createdAt,
+      },
+      stats: {
+        eventsJoined: portalData.eventsJoined,
+        volunteerHours: portalData.volunteerHours,
+        campsSupported: portalData.campsSupported,
+        certificatesEarned: portalData.certificatesEarned,
+      },
+      joinedEventIds: portalData.joinedEventIds || [],
+      upcomingEvents,
+      recentActivities: portalData.activities || [],
+    });
+  },
+
+  joinPortalEvent: async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+      sendError(res, 401, 'authentication_required', 'Authentication required.');
+      return;
+    }
+
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const state = dbStore.getState();
+    const event = (state.events || []).find((e: any) => e.id === id || e.slug === id);
+
+    if (!event) {
+      sendError(res, 404, 'event_not_found', 'Event not found.');
+      return;
+    }
+
+    state.userPortalData = state.userPortalData || {};
+    if (!state.userPortalData[userId]) {
+      state.userPortalData[userId] = {
+        eventsJoined: 0,
+        volunteerHours: 0,
+        campsSupported: 0,
+        certificatesEarned: 0,
+        joinedEventIds: [],
+        activities: [],
+      };
+    }
+
+    const data = state.userPortalData[userId];
+    data.joinedEventIds = data.joinedEventIds || [];
+    if (!data.joinedEventIds.includes(event.id)) {
+      data.joinedEventIds.push(event.id);
+      data.eventsJoined = (data.eventsJoined || 0) + 1;
+      if (event.title.toLowerCase().includes('camp')) {
+        data.campsSupported = (data.campsSupported || 0) + 1;
+      }
+      data.activities = [
+        {
+          id: `act-${Date.now()}`,
+          text: `You joined the ${event.title}`,
+          timestamp: 'Just now',
+        },
+        ...(data.activities || []),
+      ];
+      dbStore.update(() => {});
+    }
+
+    auditRepo.log({
+      actor_user_id: userId,
+      actor_email: req.user.email,
+      action: 'volunteer_joined_event',
+      entity_type: 'Event',
+      entity_id: event.id,
+      details: { eventTitle: event.title },
+    });
+
+    sendSuccess(res, {
+      message: `Successfully registered for ${event.title}!`,
+      stats: {
+        eventsJoined: data.eventsJoined,
+        volunteerHours: data.volunteerHours,
+        campsSupported: data.campsSupported,
+        certificatesEarned: data.certificatesEarned,
+      },
+      joinedEventIds: data.joinedEventIds,
+      recentActivities: data.activities,
+    });
+  },
+
+  updatePortalProfile: async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+      sendError(res, 401, 'authentication_required', 'Authentication required.');
+      return;
+    }
+
+    const userId = req.user.userId;
+    const { name, phone } = req.body;
+    const user = usersRepo.findById(userId);
+
+    if (!user) {
+      sendError(res, 404, 'not_found', 'User not found.');
+      return;
+    }
+
+    if (name) {
+      const parts = name.trim().split(/\s+/);
+      user.firstName = parts[0] || user.firstName;
+      user.lastName = parts.slice(1).join(' ') || user.lastName;
+    }
+    if (phone) {
+      user.phone = phone;
+    }
+    user.updatedAt = new Date().toISOString();
+    dbStore.update(() => {});
+
+    sendSuccess(res, {
+      message: 'Profile updated successfully.',
+      user: {
+        id: user.id,
+        name: `${user.firstName} ${user.lastName}`.trim(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone || '',
+        role: user.role,
+      },
+    });
   },
 };

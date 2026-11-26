@@ -44,6 +44,7 @@ export interface DatabaseState {
   annualReports: AnnualReport[];
   newsletterSubscribers: NewsletterSubscriber[];
   auditLogs: AuditLog[];
+  userPortalData?: Record<string, any>;
 }
 
 export const getInitialSeedData = (): DatabaseState => {
@@ -276,9 +277,23 @@ export const getInitialSeedData = (): DatabaseState => {
       location: 'Community Hall, Sector 7, Bhubaneswar',
       start_datetime: '2026-11-15T09:00:00Z',
       end_datetime: '2026-11-15T17:00:00Z',
+      cover_image_url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80',
       status: 'published',
       created_at: new Date('2026-02-15T00:00:00Z').toISOString(),
       updated_at: new Date('2026-02-15T00:00:00Z').toISOString(),
+    },
+    {
+      id: 'e3333333-3333-3333-3333-333333333333',
+      slug: 'free-health-checkup-camp',
+      title: 'Free Health Check-up Camp',
+      description: 'Free comprehensive diagnostic tests, vitals assessment, pediatric examinations, and free general medicines for rural families.',
+      location: 'Bhubaneswar, Odisha',
+      start_datetime: '2026-11-25T09:00:00Z',
+      end_datetime: '2026-11-25T16:00:00Z',
+      cover_image_url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80',
+      status: 'published',
+      created_at: new Date('2026-03-01T00:00:00Z').toISOString(),
+      updated_at: new Date('2026-03-01T00:00:00Z').toISOString(),
     },
     {
       id: 'e2222222-2222-2222-2222-222222222222',
