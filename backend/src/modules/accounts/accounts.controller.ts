@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { usersRepo, auditRepo, applicationsRepo, dbStore } from '../../db';
+import { usersRepo, auditRepo, applicationsRepo } from '../../db';
 import {
   hashPassword,
   verifyPassword,
@@ -682,7 +682,7 @@ export const accountsController = {
     }
 
     const portalData = state.userPortalData[user.id];
-    const upcomingEvents = (state.events || []).filter((e: any) => e.status === 'published');
+    const upcomingEvents = (state.events || []).filter((e) => e.status === 'published');
     const computedSystemRole =
       user.systemRole || (user.role === 'super_admin' ? 'superadmin' : user.role === 'admin' || user.isStaff ? 'staff' : 'user');
 
@@ -720,7 +720,7 @@ export const accountsController = {
     const { id } = req.params;
     const userId = req.user.userId;
     const state = dbStore.getState();
-    const event = (state.events || []).find((e: any) => e.id === id || e.slug === id);
+    const event = (state.events || []).find((e) => e.id === id || e.slug === id);
 
     if (!event) {
       sendError(res, 404, 'event_not_found', 'Event not found.');

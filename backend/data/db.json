@@ -11,9 +11,9 @@
       "createdAt": "2026-11-20T05:56:16.253Z",
       "emailVerified": true,
       "firstName": "Trupti",
-      "phone": "+91 9876543210",
+      "phone": "7377348406",
       "email": "truptisoniya7@gmail.com",
-      "updatedAt": "2026-11-26T07:11:16.335Z"
+      "updatedAt": "2026-11-20T05:56:16.253Z"
     },
     {
       "id": "c49e3f02-3924-40be-a595-5177457ed3f3",
@@ -40,8 +40,8 @@
       "systemRole": "superadmin",
       "email": "adityahota777@gmail.com",
       "status": "active",
-      "salt": "85ef9e01697d1e0817ff427b12e475d1",
-      "passwordHash": "9e47f05053838fda08a479eea3f46a2e5c8908507afc6fa65c7656fd3eea2727136efa9b5a5ffd27ed9131d7ef836bf4ea14f5779296307a845babd0ee8eeffa"
+      "salt": "4a71a1eef1a22a4f23152da8dbe7abc2",
+      "passwordHash": "68039000da1d883089f2a5777fe543a21f8c4118591a7258505ac981bcb0a6b0a99ae8fef8b02d0f64e4a361f0b20c961b6bdd64de68104abd2a48d19bd09959"
     }
   ],
   "adminProfiles": [
@@ -442,6 +442,19 @@
       "timestamp": "2026-11-20T05:07:20.828Z"
     },
     {
+      "id": "40721cc9-e839-4a06-aeed-36044d4f2846",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "ebece100-7202-463d-b753-c1b3e01c20bc",
+        "ip": "::1"
+      },
+      "entity_id": "ebece100-7202-463d-b753-c1b3e01c20bc",
+      "timestamp": "2026-11-26T07:09:43.237Z"
+    },
+    {
       "id": "431af8d1-0e2d-4a29-8b4b-744787d39f58",
       "actor_user_id": "anonymous",
       "entity_type": "Auth",
@@ -533,6 +546,18 @@
       "timestamp": "2026-11-20T05:08:07.036Z"
     },
     {
+      "id": "78392eeb-955f-43e5-b19a-f5212567c624",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "timestamp": "2026-11-26T07:11:16.312Z"
+    },
+    {
       "id": "7b2d2757-7d4b-4f88-a2e6-4b7b6d559892",
       "actor_user_id": "anonymous",
       "entity_type": "Registration",
@@ -544,6 +569,18 @@
       },
       "entity_id": "dccd305c-1c39-424e-84ea-efb3c23fb381",
       "timestamp": "2026-11-20T05:41:28.311Z"
+    },
+    {
+      "id": "7ecb5b50-141b-4640-8223-57dc0df655d2",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "timestamp": "2026-11-26T07:09:43.269Z"
     },
     {
       "id": "8c3da965-0538-43f4-a917-fafeccaa4ded",
@@ -632,6 +669,18 @@
       },
       "entity_id": "029fbbb5-5f05-4da7-a3ab-70baa5d6cc74",
       "timestamp": "2026-11-20T05:55:10.672Z"
+    },
+    {
+      "id": "b36d80d9-c051-4d78-a81b-0fe78afda053",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "Event",
+      "action": "volunteer_joined_event",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "eventTitle": "Mega Health & Eye Checkup Camp"
+      },
+      "entity_id": "e1111111-1111-1111-1111-111111111111",
+      "timestamp": "2026-11-26T07:11:16.324Z"
     },
     {
       "id": "b4b52979-8689-4b5e-91fc-2acd79e77f7a",
@@ -773,66 +822,17 @@
       "timestamp": "2026-11-20T05:52:44.506Z"
     },
     {
-      "actor_user_id": "anonymous",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "login_start_otp_requested",
-      "entity_type": "Auth",
-      "entity_id": "ebece100-7202-463d-b753-c1b3e01c20bc",
-      "details": {
-        "ip": "::1",
-        "loginId": "ebece100-7202-463d-b753-c1b3e01c20bc"
-      },
-      "id": "40721cc9-e839-4a06-aeed-36044d4f2846",
-      "timestamp": "2026-11-26T07:09:43.237Z"
-    },
-    {
-      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "passwordless_login_verified",
-      "entity_type": "User",
-      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
-      "details": {
-        "ip": "::1"
-      },
-      "id": "7ecb5b50-141b-4640-8223-57dc0df655d2",
-      "timestamp": "2026-11-26T07:09:43.269Z"
-    },
-    {
-      "actor_user_id": "anonymous",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "login_start_otp_requested",
-      "entity_type": "Auth",
-      "entity_id": "d02573c5-4e1b-47d7-8146-12f67d02da6d",
-      "details": {
-        "ip": "::1",
-        "loginId": "d02573c5-4e1b-47d7-8146-12f67d02da6d"
-      },
       "id": "fe18330a-3096-4241-8324-8ea0ea25b385",
-      "timestamp": "2026-11-26T07:11:16.285Z"
-    },
-    {
-      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
       "actor_email": "truptisoniya7@gmail.com",
-      "action": "passwordless_login_verified",
-      "entity_type": "User",
-      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
       "details": {
+        "loginId": "d02573c5-4e1b-47d7-8146-12f67d02da6d",
         "ip": "::1"
       },
-      "id": "78392eeb-955f-43e5-b19a-f5212567c624",
-      "timestamp": "2026-11-26T07:11:16.312Z"
-    },
-    {
-      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "volunteer_joined_event",
-      "entity_type": "Event",
-      "entity_id": "e1111111-1111-1111-1111-111111111111",
-      "details": {
-        "eventTitle": "Mega Health & Eye Checkup Camp"
-      },
-      "id": "b36d80d9-c051-4d78-a81b-0fe78afda053",
-      "timestamp": "2026-11-26T07:11:16.324Z"
+      "entity_id": "d02573c5-4e1b-47d7-8146-12f67d02da6d",
+      "timestamp": "2026-11-26T07:11:16.285Z"
     }
   ],
   "userPortalData": {
