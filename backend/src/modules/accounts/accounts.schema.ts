@@ -63,7 +63,15 @@ export const loginResendSchema = z.object({
   loginId: z.string().min(1, 'Login ID is required.'),
 });
 
-// Passwordless Register Schemas (Spec: register.md)
+export const setupPasswordSchema = z.object({
+  email: z.string().email('Please enter a valid email address.').transform((v) => v.toLowerCase().trim()),
+  password: z.string().min(6, 'Password must be at least 6 characters.').optional().or(z.literal('')),
+  name: z.string().optional(),
+  phone: z.string().optional(),
+  role: z.enum(['volunteer', 'donor', 'internship']).optional(),
+  bio: z.string().optional(),
+});
+
 export const registerStartSchema = z.object({
   name: z
     .string()

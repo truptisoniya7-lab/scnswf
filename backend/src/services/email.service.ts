@@ -24,16 +24,29 @@ class EmailService {
           secure: env.SMTP_SECURE, // true for 465, false for 587
           auth: {
             user: env.SMTP_USER,
-            pass: env.SMTP_PASSWORD,
+            // Strip any whitespace from app password (Google app passwords sometimes have spaces)
+            pass: env.SMTP_PASSWORD.replace(/\s+/g, ''),
+          },
+          tls: {
+            rejectUnauthorized: false,
           },
         });
-        console.log(`📧 Email service initialized via Zoho/SMTP (${env.SMTP_HOST}:${env.SMTP_PORT})`);
+        console.log(`📧 Email service initialized via SMTP (${env.SMTP_HOST}:${env.SMTP_PORT})`);
+        // Verify connection immediately so startup logs reveal problems early
+        this.transporter.verify((err, success) => {
+          if (err) {
+            console.error('❌ SMTP connection verification FAILED:', err.message);
+            console.error('   → Check SMTP_USER, SMTP_PASSWORD, and Gmail App Password settings.');
+          } else {
+            console.log('✅ SMTP connection verified successfully:', success);
+          }
+        });
       } catch (err) {
         console.warn('⚠️ Failed to initialize SMTP transporter:', err);
         this.transporter = null;
       }
     } else {
-      console.log('ℹ️ SMTP credentials not configured. OTP will be processed in secure dev/simulation mode.');
+      console.log('ℹ️ SMTP credentials not configured. OTP will be logged to console (dev mode).');
     }
   }
 

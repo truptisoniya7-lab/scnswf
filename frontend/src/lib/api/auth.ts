@@ -20,7 +20,23 @@ export type LoginStartReq = { email: string }
 export type LoginStartRes = { loginId: string; otpExpiresInSec: number; resendAfterSec: number }
 
 export type LoginVerifyReq = { loginId: string; otp: string }
-export type LoginVerifyRes = { user: User; accessToken: string }
+export type LoginVerifyRes = {
+  user?: User
+  accessToken?: string
+  isNewUser?: boolean
+  email?: string
+  message?: string
+}
+
+export type SetupPasswordReq = {
+  email: string
+  password?: string
+  name?: string
+  phone?: string
+  role?: 'volunteer' | 'donor' | 'internship'
+  bio?: string
+}
+export type SetupPasswordRes = { user: User; accessToken: string }
 
 export type LoginResendReq = { loginId: string }
 export type LoginResendRes = { otpExpiresInSec: number; resendAfterSec: number }
@@ -47,7 +63,18 @@ export const passwordlessAuthApi = {
   loginVerify: async (data: LoginVerifyReq): Promise<LoginVerifyRes> => {
     const res = await apiClient.post<{ data: LoginVerifyRes }>('/auth/login/verify', data)
     const result = res.data.data ?? (res.data as unknown as LoginVerifyRes)
-    if (result.accessToken) {
+    if (result.accessToken && result.user) {
+      localStorage.setItem('access_token', result.accessToken)
+      localStorage.setItem('auth_user', JSON.stringify(result.user))
+      window.dispatchEvent(new Event('authChange'))
+    }
+    return result
+  },
+
+  setupPassword: async (data: SetupPasswordReq): Promise<SetupPasswordRes> => {
+    const res = await apiClient.post<{ data: SetupPasswordRes }>('/auth/setup-password', data)
+    const result = res.data.data ?? (res.data as unknown as SetupPasswordRes)
+    if (result.accessToken && result.user) {
       localStorage.setItem('access_token', result.accessToken)
       localStorage.setItem('auth_user', JSON.stringify(result.user))
       window.dispatchEvent(new Event('authChange'))

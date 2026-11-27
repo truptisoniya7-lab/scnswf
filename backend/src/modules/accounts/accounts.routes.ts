@@ -18,6 +18,7 @@ import {
   registerVerifySchema,
   registerResendSchema,
   registerCompleteSchema,
+  setupPasswordSchema,
 } from './accounts.schema';
 import { authenticate } from '../../middleware/auth';
 import { authLimiter } from '../../middleware/rateLimiter';
@@ -47,6 +48,13 @@ router.post(
   authLimiter,
   validateRequest({ body: loginResendSchema }),
   accountsController.loginResend
+);
+
+router.post(
+  ['/auth/setup-password', '/auth/setup-password/', '/auth/login/set-password'],
+  authLimiter,
+  validateRequest({ body: setupPasswordSchema }),
+  accountsController.setupPassword
 );
 
 // ==========================================

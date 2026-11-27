@@ -447,7 +447,19 @@ export const accountsController = {
 
   loginStart: async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
-    const result = await otpService.startPasswordlessLogin(email);
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      sendError(res, 400, 'INVALID_INPUT', 'A valid email address is required.');
+      return;
+    }
+
+    let result: any;
+    try {
+      result = await otpService.startPasswordlessLogin(email);
+    } catch (err: any) {
+      console.error('[loginStart] OTP send failed:', err.message);
+      sendError(res, 500, 'OTP_SEND_FAILED', err.message || 'Failed to send verification code. Please try again.');
+      return;
+    }
 
     auditRepo.log({
       actor_user_id: 'anonymous',
@@ -463,15 +475,35 @@ export const accountsController = {
 
   loginVerify: async (req: Request, res: Response): Promise<void> => {
     const { loginId, otp } = req.body;
+    if (!loginId || !otp) {
+      sendError(res, 400, 'INVALID_INPUT', 'loginId and otp are required.');
+      return;
+    }
+
     const result = otpService.verifyPasswordlessLogin(loginId, otp);
 
-    if (!result.success || !result.user) {
-      const status = result.errorType === 'OTP_EXPIRED' ? 400 : 400;
-      sendError(res, status, result.errorType || 'OTP_INVALID', result.message);
+    if (!result.success) {
+      sendError(res, 400, result.errorType || 'OTP_INVALID', result.message);
       return;
     }
 
     const user = result.user;
+
+    // New user: OTP verified but no account yet — tell frontend to show set-password screen
+    if (user?.isNewUser) {
+      sendSuccess(res, {
+        isNewUser: true,
+        email: user.email,
+        message: result.message,
+      });
+      return;
+    }
+
+    if (!user) {
+      sendError(res, 400, 'OTP_INVALID', 'Verification failed. Please try again.');
+      return;
+    }
+
     const fullName = user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Supporter';
     const computedSystemRole = user.systemRole || (user.role === 'super_admin' ? 'superadmin' : user.role === 'admin' || user.isStaff ? 'staff' : 'user');
     const payload = {
@@ -525,6 +557,92 @@ export const accountsController = {
     sendSuccess(res, {
       otpExpiresInSec: result.otpExpiresInSec,
       resendAfterSec: result.resendAfterSec,
+    });
+  },
+
+  setupPassword: async (req: Request, res: Response): Promise<void> => {
+    const { email, password, name, phone, role } = req.body;
+    const normalized = email.toLowerCase().trim();
+    let user = usersRepo.findByEmail(normalized);
+
+    let passwordHash = '';
+    let passwordSalt = '';
+    if (password && password.length >= 6) {
+      const hashed = hashPassword(password);
+      passwordHash = hashed.hash;
+      passwordSalt = hashed.salt;
+    }
+
+    if (!user) {
+      const parts = (name || 'Supporter').trim().split(/\s+/);
+      const firstName = parts[0] || 'Supporter';
+      const lastName = parts.slice(1).join(' ') || '';
+
+      user = usersRepo.create({
+        email: normalized,
+        passwordHash,
+        salt: passwordSalt,
+        firstName,
+        lastName,
+        phone: phone || '',
+        isStaff: false,
+        isActive: true,
+        role: (role as any) || 'volunteer',
+      });
+    } else {
+      if (passwordHash) {
+        usersRepo.updatePassword(user.id, passwordHash, passwordSalt);
+      }
+      if (name) {
+        const parts = name.trim().split(/\s+/);
+        user.firstName = parts[0] || user.firstName;
+        user.lastName = parts.slice(1).join(' ') || user.lastName;
+      }
+      if (phone) {
+        user.phone = phone;
+      }
+      if (role) {
+        user.role = role as any;
+      }
+    }
+
+    const fullName = user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Supporter';
+    const computedSystemRole = user.systemRole || (user.role === 'super_admin' ? 'superadmin' : user.role === 'admin' || user.isStaff ? 'staff' : 'user');
+    const payload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      systemRole: computedSystemRole,
+      name: fullName,
+    };
+    const access = generateAccessToken(payload);
+    const refresh = generateRefreshToken(payload);
+
+    auditRepo.log({
+      actor_user_id: user.id,
+      actor_email: user.email,
+      action: 'user_setup_password_completed',
+      entity_type: 'User',
+      entity_id: user.id,
+      details: { ip: req.ip },
+    });
+
+    sendSuccess(res, {
+      accessToken: access,
+      access,
+      refresh,
+      user: {
+        id: user.id,
+        name: fullName,
+        phone: user.phone || '',
+        email: user.email,
+        emailVerified: true,
+        role: user.role,
+        systemRole: computedSystemRole,
+        registrationRole: user.registrationRole || (['internship', 'donor', 'volunteer'].includes(user.role) ? user.role : 'volunteer'),
+        status: user.status || (user.isActive ? 'active' : 'suspended'),
+        createdAt: user.createdAt || new Date().toISOString(),
+      },
     });
   },
 

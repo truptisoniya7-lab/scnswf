@@ -481,6 +481,7 @@ class OtpService {
     loginId: string;
     otpExpiresInSec: number;
     resendAfterSec: number;
+    isNewUser: boolean;
   }> {
     const normalized = email.toLowerCase().trim();
     const loginId = crypto.randomUUID();
@@ -508,32 +509,33 @@ class OtpService {
       user: user || volunteer,
     });
 
-    // Anti-enumeration: only dispatch email if user actually exists
-    if (isRegistered) {
-      const recipientName = user
-        ? `${user.firstName} ${user.lastName}`.trim()
-        : volunteer?.name || 'Supporter';
+    // Always send OTP email (anti-enumeration: same behaviour for registered & unregistered)
+    // For unregistered emails we still send so the user can complete registration
+    const recipientName = user
+      ? `${user.firstName} ${user.lastName}`.trim()
+      : volunteer?.name || 'Supporter';
 
-      if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-        console.log(`🔑 [DEV OTP] Login OTP for ${normalized}: ${rawOtp}`);
-      }
+    if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+      console.log(`🔑 [DEV OTP] Login OTP for ${normalized}: ${rawOtp}`);
+    }
 
-      await emailService.sendLoginOtp({
-        toEmail: normalized,
-        userName: recipientName,
-        otp: rawOtp,
-        expiresInMinutes: 5,
-      });
-    } else {
-      if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-        console.log(`[Anti-Enumeration DEV] Login requested for unregistered email: ${normalized}. Code: ${rawOtp} (not emailed).`);
-      }
+    const emailResult = await emailService.sendLoginOtp({
+      toEmail: normalized,
+      userName: recipientName,
+      otp: rawOtp,
+      expiresInMinutes: 5,
+    });
+
+    if (!emailResult.success && !emailResult.simulated) {
+      // Email dispatch failed — surface the error to the caller
+      throw new Error(emailResult.error || 'Failed to send verification code. Please try again.');
     }
 
     return {
       loginId,
       otpExpiresInSec: 300,
       resendAfterSec: 30,
+      isNewUser: !isRegistered,
     };
   }
 
@@ -574,7 +576,8 @@ class OtpService {
       (candidateBuf.length === storedBuf.length &&
       crypto.timingSafeEqual(candidateBuf, storedBuf));
 
-    if (!isMatch || !session.isRegistered) {
+    // Handle OTP mismatch first
+    if (!isMatch) {
       session.attempts += 1;
       if (session.attempts >= this.MAX_ATTEMPTS) {
         this.loginSessions.delete(loginId);
@@ -584,10 +587,22 @@ class OtpService {
           message: 'Maximum attempts exceeded. Please request a new code.',
         };
       }
+      const remaining = this.MAX_ATTEMPTS - session.attempts;
       return {
         success: false,
         errorType: 'OTP_INVALID',
-        message: "That code isn't right",
+        message: `That code isn't right. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`,
+      };
+    }
+
+    // OTP is correct — now check if user is registered
+    if (!session.isRegistered) {
+      // New user: OTP verified — let them proceed to set a password
+      this.loginSessions.delete(loginId);
+      return {
+        success: true,
+        message: 'Email verified. Please set your password to complete registration.',
+        user: { email: session.email, isNewUser: true },
       };
     }
 
