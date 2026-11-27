@@ -31,53 +31,55 @@ export function EmailStep({
     defaultValues: { email: initialEmail },
   })
 
+  const inputBorderClass = errors.email
+    ? 'border-red-400 shadow-[0_0_0_3px_rgba(248,113,113,0.12)]'
+    : isFocused
+    ? 'border-[#1a5c3c] shadow-[0_0_0_3px_rgba(26,92,60,0.1)]'
+    : 'border-[#c8e6d8] hover:border-[#2d7a56]/50'
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-          {/* Heading */}
-          <div className="text-center mb-5">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#1a2e1e] tracking-tight">
-              Welcome Back
-            </h2>
-              <p className="text-xs sm:text-sm text-[#5a7a6a] mt-1.5">
-                Sign in to continue to SCNSWF
-              </p>
-          </div>
+      {/* Heading */}
+      <div className="text-center mb-5">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#1a2e1e] tracking-tight">
+          Welcome Back
+        </h2>
+        <p className="text-xs sm:text-sm text-[#5a7a6a] mt-1.5">
+          Sign in to continue to SCNSWF
+        </p>
+      </div>
 
-          {/* Server error */}
-          {serverError && (
-            <div
-              role="alert"
-              aria-live="polite"
-              className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5"
-            >
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span className="flex-1 leading-snug">{serverError}</span>
-              <button
-                type="button"
-                onClick={onClearServerError}
-                className="text-red-400 hover:text-red-600 text-xs px-1 cursor-pointer"
-                aria-label="Dismiss error"
-              >
-                ✕
-              </button>
-            </div>
-          )}
+      {/* Server error */}
+      {serverError && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5"
+        >
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span className="flex-1 leading-snug">{serverError}</span>
+          <button
+            type="button"
+            onClick={onClearServerError}
+            className="text-red-400 hover:text-red-600 text-xs px-1 cursor-pointer"
+            aria-label="Dismiss error"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
-          {/* Email Input */}
-          <div className="relative">
-            <div
-                      ? 'border-red-400 shadow-[0_0_0_3px_rgba(248,113,113,0.12)]'
-                      : isFocused
-                          ? 'border-[#1a5c3c] shadow-[0_0_0_3px_rgba(26,92,60,0.1)]'
-                          : 'border-[#c8e6d8] hover:border-[#2d7a56]/50'
-          }`}
+      {/* Email Input */}
+      <div className="relative">
+        <div
+          className={`relative rounded-xl border transition-all h-12 flex items-center px-3.5 bg-[#f8fbf9] ${inputBorderClass}`}
         >
           <Mail className="w-4 h-4 text-[#2d7a56] shrink-0 mr-2.5" />
           <input
             id="login-email"
             type="email"
             autoComplete="email"
-            spellCheck="false"
+            spellCheck={false}
             disabled={isLoading}
             {...register('email')}
             onFocus={() => {
@@ -93,13 +95,13 @@ export function EmailStep({
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'login-email-error' : undefined}
           />
-      </div>
-      {errors.email && (
+        </div>
+        {errors.email && (
           <p id="login-email-error" role="alert" className="text-[11px] text-red-500 mt-1 ml-1 font-medium">
             {errors.email.message}
           </p>
         )}
-        </div>
+      </div>
 
       {/* Submit Button */}
       <button
@@ -118,7 +120,7 @@ export function EmailStep({
         )}
       </button>
 
-      {/* Divider + Social */}
+      {/* Divider */}
       <div className="relative my-1">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-[#ddeee6]" />
@@ -128,6 +130,7 @@ export function EmailStep({
         </div>
       </div>
 
+      {/* Social Buttons */}
       <div className="flex gap-3">
         {/* Google */}
         <button
@@ -142,6 +145,7 @@ export function EmailStep({
           </svg>
           Continue with Google
         </button>
+
         {/* Facebook */}
         <button
           type="button"
