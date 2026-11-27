@@ -24,7 +24,6 @@ class EmailService {
           secure: env.SMTP_SECURE, // true for 465, false for 587
           auth: {
             user: env.SMTP_USER,
-            // Strip any whitespace from app password (Google app passwords sometimes have spaces)
             pass: env.SMTP_PASSWORD.replace(/\s+/g, ''),
           },
           tls: {
@@ -32,11 +31,9 @@ class EmailService {
           },
         });
         console.log(`📧 Email service initialized via SMTP (${env.SMTP_HOST}:${env.SMTP_PORT})`);
-        // Verify connection immediately so startup logs reveal problems early
         this.transporter.verify((err, success) => {
           if (err) {
-            console.error('❌ SMTP connection verification FAILED:', err.message);
-            console.error('   → Check SMTP_USER, SMTP_PASSWORD, and Gmail App Password settings.');
+            console.warn('⚠️ SMTP connection verification failed (common on cloud free-tiers blocking port 465):', err.message);
           } else {
             console.log('✅ SMTP connection verified successfully:', success);
           }
@@ -46,8 +43,123 @@ class EmailService {
         this.transporter = null;
       }
     } else {
-      console.log('ℹ️ SMTP credentials not configured. OTP will be logged to console (dev mode).');
+      console.log('ℹ️ SMTP credentials not configured. Will check for HTTPS email APIs.');
     }
+  }
+
+  /**
+   * Unified dispatcher:
+   * 1. Resend HTTPS REST API (Port 443 - works everywhere including Render Free Tier)
+   * 2. Brevo HTTPS REST API (Port 443 - works on Render Free Tier)
+   * 3. Nodemailer SMTP (Port 465 / 587 - works locally and on paid cloud instances)
+   * 4. Dev simulation mode (when running in test/dev without credentials)
+   */
+  private async dispatchEmail({
+    toEmail,
+    subject,
+    text,
+    html,
+  }: {
+    toEmail: string;
+    subject: string;
+    text: string;
+    html: string;
+  }): Promise<{ success: boolean; simulated?: boolean; error?: string }> {
+    // 1. Resend HTTPS REST API (Bypasses Render SMTP port blocking)
+    if (env.RESEND_API_KEY) {
+      try {
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: env.SMTP_FROM?.includes('<') ? env.SMTP_FROM : `SCNSWF <${env.SMTP_FROM || 'onboarding@resend.dev'}>`,
+            to: [toEmail],
+            subject,
+            text,
+            html,
+          }),
+        });
+
+        if (res.ok) {
+          console.log(`✅ [EmailService:Resend] Email delivered via HTTPS to ${toEmail}`);
+          return { success: true };
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          console.error(`❌ [EmailService:Resend] Error:`, errData);
+        }
+      } catch (err: any) {
+        console.error('❌ [EmailService:Resend] Exception:', err.message);
+      }
+    }
+
+    // 2. Brevo HTTPS REST API (Port 443)
+    if (env.BREVO_API_KEY) {
+      try {
+        const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'api-key': env.BREVO_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sender: { email: env.SMTP_FROM || 'info@scnswf.org', name: 'SCNSWF' },
+            to: [{ email: toEmail }],
+            subject,
+            textContent: text,
+            htmlContent: html,
+          }),
+        });
+
+        if (res.ok) {
+          console.log(`✅ [EmailService:Brevo] Email delivered via HTTPS to ${toEmail}`);
+          return { success: true };
+        } else {
+          const errData = await res.text().catch(() => '');
+          console.error(`❌ [EmailService:Brevo] Error:`, errData);
+        }
+      } catch (err: any) {
+        console.error('❌ [EmailService:Brevo] Exception:', err.message);
+      }
+    }
+
+    // 3. Nodemailer SMTP (Port 465 / 587)
+    if (this.transporter) {
+      try {
+        await this.transporter.sendMail({
+          from: env.SMTP_FROM,
+          to: toEmail,
+          subject,
+          text,
+          html,
+        });
+        console.log(`✅ [EmailService:SMTP] Email sent via SMTP to ${toEmail}`);
+        return { success: true };
+      } catch (err: any) {
+        console.error('❌ [EmailService:SMTP] SMTP error:', err.message || err);
+        return {
+          success: false,
+          error:
+            'Failed to dispatch email via SMTP. Note: Render Free Tier blocks outbound SMTP ports 465/587. Please add RESEND_API_KEY or upgrade Render instance.',
+        };
+      }
+    }
+
+    // 4. Dev simulation mode
+    if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+      console.log(`\n======================================================`);
+      console.log(`[DEV OTP SIMULATION] To: ${toEmail}`);
+      console.log(`[DEV OTP SIMULATION] Subject: ${subject}`);
+      console.log(`======================================================\n`);
+      return { success: true, simulated: true };
+    }
+
+    return {
+      success: false,
+      error: 'No email service configured. Please provide SMTP credentials or RESEND_API_KEY in server environment.',
+    };
   }
 
   public async sendVolunteerOtp({
@@ -108,36 +220,12 @@ class EmailService {
 </html>
 `;
 
-    // If transporter is available and configured
-    if (this.transporter) {
-      try {
-        await this.transporter.sendMail({
-          from: env.SMTP_FROM,
-          to: toEmail,
-          subject: `${otp} is your SCNSWF Volunteer Login Code`,
-          text: `Your SCNSWF verification code is: ${otp}. It expires in ${expiresInMinutes} minutes.`,
-          html: htmlContent,
-        });
-        return { success: true };
-      } catch (err: any) {
-        console.error('❌ Failed to send OTP email via SMTP:', err.message || err);
-        // Fallback or report error
-        return { success: false, error: 'Failed to dispatch email. Please verify SMTP configuration.' };
-      }
-    }
-
-    // Dev/simulation mode when SMTP credentials are not yet entered in environment
-    if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-      console.log(`\n======================================================`);
-      console.log(`[DEV OTP SIMULATION] Volunteer: ${volunteerName} <${toEmail}>`);
-      console.log(`[DEV OTP SIMULATION] Verification Code: ${otp}`);
-      console.log(`[DEV OTP SIMULATION] Valid for ${expiresInMinutes} minutes`);
-      console.log(`======================================================\n`);
-    } else {
-      console.log(`[EmailService] OTP generated for volunteer ${toEmail} (SMTP not configured on server)`);
-    }
-
-    return { success: true, simulated: true };
+    return this.dispatchEmail({
+      toEmail,
+      subject: `${otp} is your SCNSWF Volunteer Login Code`,
+      text: `Your SCNSWF verification code is: ${otp}. It expires in ${expiresInMinutes} minutes.`,
+      html: htmlContent,
+    });
   }
 
   public async sendPasswordResetOtp({
@@ -203,33 +291,12 @@ class EmailService {
 </html>
 `;
 
-    if (this.transporter) {
-      try {
-        await this.transporter.sendMail({
-          from: env.SMTP_FROM,
-          to: toEmail,
-          subject: `${otp} is your SCNSWF Password Reset Code`,
-          text: `Your SCNSWF password reset code is: ${otp}. It expires in ${expiresInMinutes} minutes.`,
-          html: htmlContent,
-        });
-        return { success: true };
-      } catch (err: any) {
-        console.error('❌ Failed to send password reset OTP via SMTP:', err.message || err);
-        return { success: false, error: 'Failed to dispatch email. Please verify SMTP configuration.' };
-      }
-    }
-
-    if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-      console.log(`\n======================================================`);
-      console.log(`[DEV PASSWORD RESET OTP] User: ${userName} <${toEmail}>`);
-      console.log(`[DEV PASSWORD RESET OTP] Verification Code: ${otp}`);
-      console.log(`[DEV PASSWORD RESET OTP] Valid for ${expiresInMinutes} minutes`);
-      console.log(`======================================================\n`);
-    } else {
-      console.log(`[EmailService] Password reset OTP generated for ${toEmail}`);
-    }
-
-    return { success: true, simulated: true };
+    return this.dispatchEmail({
+      toEmail,
+      subject: `${otp} is your SCNSWF Password Reset Code`,
+      text: `Your SCNSWF password reset code is: ${otp}. It expires in ${expiresInMinutes} minutes.`,
+      html: htmlContent,
+    });
   }
 
   public async sendLoginOtp({
@@ -295,40 +362,12 @@ class EmailService {
 </html>
 `;
 
-    if (this.transporter) {
-      try {
-        await this.transporter.sendMail({
-          from: env.SMTP_FROM,
-          to: toEmail,
-          subject: `${otp} is your SCNSWF Login Code`,
-          text: `Your SCNSWF login code is: ${otp}. It expires in ${expiresInMinutes} minutes.`,
-          html: htmlContent,
-        });
-        return { success: true };
-      } catch (err: any) {
-        console.error('❌ Failed to send login OTP via SMTP:', err.message || err);
-        if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-          console.log(`\n======================================================`);
-          console.log(`[DEV FALLBACK LOGIN OTP] Recipient: ${userName} <${toEmail}>`);
-          console.log(`[DEV FALLBACK LOGIN OTP] Verification Code: ${otp}`);
-          console.log(`[DEV FALLBACK LOGIN OTP] Reason: SMTP failed (${err.message})`);
-          console.log(`======================================================\n`);
-        }
-        return { success: false, error: 'Failed to dispatch email. Please verify SMTP configuration.' };
-      }
-    }
-
-    if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-      console.log(`\n======================================================`);
-      console.log(`[DEV LOGIN OTP] User: ${userName} <${toEmail}>`);
-      console.log(`[DEV LOGIN OTP] Verification Code: ${otp}`);
-      console.log(`[DEV LOGIN OTP] Valid for ${expiresInMinutes} minutes`);
-      console.log(`======================================================\n`);
-    } else {
-      console.log(`[EmailService] Login OTP generated for ${toEmail}`);
-    }
-
-    return { success: true, simulated: true };
+    return this.dispatchEmail({
+      toEmail,
+      subject: `${otp} is your SCNSWF Login Code`,
+      text: `Your SCNSWF login code is: ${otp}. It expires in ${expiresInMinutes} minutes.`,
+      html: htmlContent,
+    });
   }
 
   public async sendRegisterOtp({
@@ -394,40 +433,12 @@ class EmailService {
 </html>
 `;
 
-    if (this.transporter) {
-      try {
-        await this.transporter.sendMail({
-          from: env.SMTP_FROM,
-          to: toEmail,
-          subject: `${otp} is your SCNSWF Email Verification Code`,
-          text: `Your SCNSWF email verification code is: ${otp}. It expires in ${expiresInMinutes} minutes.`,
-          html: htmlContent,
-        });
-        return { success: true };
-      } catch (err: any) {
-        console.error('❌ Failed to send registration OTP via SMTP:', err.message || err);
-        if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-          console.log(`\n======================================================`);
-          console.log(`[DEV FALLBACK REGISTRATION OTP] Recipient: ${userName} <${toEmail}>`);
-          console.log(`[DEV FALLBACK REGISTRATION OTP] Verification Code: ${otp}`);
-          console.log(`[DEV FALLBACK REGISTRATION OTP] Reason: SMTP failed (${err.message})`);
-          console.log(`======================================================\n`);
-        }
-        return { success: false, error: 'Failed to dispatch email. Please verify SMTP configuration.' };
-      }
-    }
-
-    if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-      console.log(`\n======================================================`);
-      console.log(`[DEV REGISTRATION OTP] User: ${userName} <${toEmail}>`);
-      console.log(`[DEV REGISTRATION OTP] Verification Code: ${otp}`);
-      console.log(`[DEV REGISTRATION OTP] Valid for ${expiresInMinutes} minutes`);
-      console.log(`======================================================\n`);
-    } else {
-      console.log(`[EmailService] Registration OTP generated for ${toEmail}`);
-    }
-
-    return { success: true, simulated: true };
+    return this.dispatchEmail({
+      toEmail,
+      subject: `${otp} is your SCNSWF Email Verification Code`,
+      text: `Your SCNSWF email verification code is: ${otp}. It expires in ${expiresInMinutes} minutes.`,
+      html: htmlContent,
+    });
   }
 
   public async sendGenericEmail({
@@ -441,23 +452,12 @@ class EmailService {
     bodyText: string;
     html?: string;
   }): Promise<{ success: boolean; error?: string }> {
-    if (this.transporter) {
-      try {
-        await this.transporter.sendMail({
-          from: env.SMTP_FROM,
-          to: toEmail,
-          subject,
-          text: bodyText,
-          html: html || `<p>${bodyText.replace(/\n/g, '<br/>')}</p>`,
-        });
-        return { success: true };
-      } catch (err: any) {
-        console.warn(`[EmailService] Failed to send email to ${toEmail}:`, err.message);
-        return { success: false, error: err.message };
-      }
-    }
-    console.log(`[EmailService DEV] To: ${toEmail} | Subject: ${subject}\n${bodyText}`);
-    return { success: true };
+    return this.dispatchEmail({
+      toEmail,
+      subject,
+      text: bodyText,
+      html: html || `<p>${bodyText.replace(/\n/g, '<br/>')}</p>`,
+    });
   }
 }
 

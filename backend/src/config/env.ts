@@ -28,6 +28,9 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
   SMTP_FROM: z.string().default('adityahota03@gmail.com'),
+  // HTTPS-based Email API (bypasses Render/cloud free tier SMTP port 465/587 blocks)
+  RESEND_API_KEY: z.string().optional(),
+  BREVO_API_KEY: z.string().optional(),
 });
 
 const parseEnv = () => {

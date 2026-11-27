@@ -18,6 +18,19 @@
       "status": "active"
     },
     {
+      "id": "70de7a6b-9eff-4397-95b8-a075c1a523b0",
+      "createdAt": "2026-11-27T07:25:54.368Z",
+      "firstName": "Priyanka",
+      "lastName": "Senapati",
+      "role": "volunteer",
+      "salt": "a2142cfeb6462c755eb494fb45de5df3",
+      "isStaff": false,
+      "isActive": true,
+      "email": "volunteer_1795764354230@example.com",
+      "passwordHash": "999a597f56601f5411e959a9c87188c47b637bf07ffc5b94eefc1dd204016750800ea7b820bf5e58b623eaeddc17cf86f45af983048f22bbaf06211056a5a128",
+      "updatedAt": "2026-11-27T07:25:54.368Z"
+    },
+    {
       "id": "9cd00fa8-d89f-43b7-93a7-080fe325c454",
       "createdAt": "2026-11-27T07:08:02.511Z",
       "firstName": "Priyanka",
@@ -55,8 +68,8 @@
       "systemRole": "superadmin",
       "email": "adityahota777@gmail.com",
       "status": "active",
-      "salt": "52a185b841caa844aa854e6bfb078075",
-      "passwordHash": "cd11af30df72297acfba56d0143faa552380459164fed82253bf7132cba1370f2b11ac8481fa5b5406150ad6b71aa24ea4c38fe9c23a017e476654567f2949ce"
+      "salt": "b42ab0bd0fbdc947dc9ca8320f1e9f71",
+      "passwordHash": "0bd307d5fc1835f68e988c966f93be259d10adc7c24bc78ba1679cefa82c6f21bb2baa53229a3e6ef4dda381d3e727f2429dcb2fd676d0b9a6965674e3cf87e0"
     }
   ],
   "adminProfiles": [
@@ -357,6 +370,21 @@
   ],
   "volunteerApplications": [
     {
+      "id": "96b9008d-87e1-4972-80aa-46b3b1d3084d",
+      "created_at": "2026-11-27T07:25:54.049Z",
+      "availability": "Weekends",
+      "experience": "2 years volunteering with Red Cross",
+      "message": "Eager to support mobile clinics.",
+      "skills": "First Aid, Community Organizing",
+      "is_deleted": false,
+      "updated_at": "2026-11-27T07:25:54.049Z",
+      "phone": "+919876501234",
+      "name": "Rahul Mishra",
+      "location": "Cuttack, Odisha",
+      "email": "rahul.mishra@example.com",
+      "status": "new"
+    },
+    {
       "id": "e6078b39-744b-41c0-87df-5a466bd77173",
       "created_at": "2026-11-27T07:08:02.207Z",
       "availability": "Weekends",
@@ -388,9 +416,38 @@
       "first_name": "Anita",
       "email": "anita@example.com",
       "status": "new"
+    },
+    {
+      "id": "c2f5ee4d-eb5a-4677-864e-2bfc14ec13c5",
+      "is_deleted": false,
+      "updated_at": "2026-11-27T07:25:52.506Z",
+      "phone": "+919876543210",
+      "subject": "Inquiry regarding medical camp",
+      "created_at": "2026-11-27T07:25:52.506Z",
+      "last_name": "Sahoo",
+      "newsletter_subscription": true,
+      "message": "I would like to volunteer or coordinate for the upcoming health camp.",
+      "first_name": "Anita",
+      "email": "anita@example.com",
+      "status": "new"
     }
   ],
   "donations": [
+    {
+      "id": "0dcc1b1c-7366-4ed9-8253-3c82db0951a7",
+      "amount": 1500,
+      "donor_name": "Anita Sahoo",
+      "donor_phone": null,
+      "program_id": null,
+      "created_at": "2026-11-27T07:25:54.069Z",
+      "is_deleted": false,
+      "receipt_number": "SCNSWF-REC-354069",
+      "is_anonymous": false,
+      "currency": "INR",
+      "donor_email": "anita@example.com",
+      "updated_at": "2026-11-27T07:25:54.090Z",
+      "status": "succeeded"
+    },
     {
       "id": "87e18348-f5df-427b-b3eb-cf158a600f9b",
       "amount": 1500,
@@ -408,6 +465,18 @@
     }
   ],
   "donationTransactions": [
+    {
+      "id": "01323cc8-afa6-42ba-b860-6b1120923a2e",
+      "raw_payload": {},
+      "updated_at": "2026-11-27T07:25:54.070Z",
+      "provider": "razorpay",
+      "provider_order_id": "order_d6c8ab7124584a73",
+      "provider_payment_id": null,
+      "provider_signature": null,
+      "created_at": "2026-11-27T07:25:54.070Z",
+      "donation_id": "0dcc1b1c-7366-4ed9-8253-3c82db0951a7",
+      "status": "created"
+    },
     {
       "id": "1bcc7fea-6db0-42b5-997f-54401092b01c",
       "raw_payload": {},
@@ -465,9 +534,9 @@
       "id": "73064bc1-5a01-4e9b-a5ca-cc6754fcab3e",
       "is_active": true,
       "subscribed_at": "2026-11-27T07:08:02.218Z",
-      "updated_at": "2026-11-27T07:08:02.218Z",
       "created_at": "2026-11-27T07:08:02.218Z",
-      "email": "donor@example.com"
+      "email": "donor@example.com",
+      "updated_at": "2026-11-27T07:25:54.059Z"
     }
   ],
   "auditLogs": [
@@ -482,6 +551,18 @@
       },
       "entity_id": "9cd00fa8-d89f-43b7-93a7-080fe325c454",
       "timestamp": "2026-11-27T07:08:02.515Z"
+    },
+    {
+      "id": "060dcff5-fd14-4175-b417-347feed7ff19",
+      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "entity_type": "User",
+      "action": "passwordless_login_verified",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "ip": "::1"
+      },
+      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
+      "timestamp": "2026-11-27T07:19:03.167Z"
     },
     {
       "id": "0863d375-695b-4af5-a090-e250c7eb1362",
@@ -684,6 +765,18 @@
       "timestamp": "2026-11-26T07:09:43.237Z"
     },
     {
+      "id": "41e02c1b-d4bf-4170-b8cc-de77108ee500",
+      "actor_user_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "adityahota777@gmail.com",
+      "details": {
+        "ip": "127.0.0.1"
+      },
+      "entity_id": "d8f4c4c2-75d1-4682-843a-7ef08c2a11b1",
+      "timestamp": "2026-11-27T07:25:54.206Z"
+    },
+    {
       "id": "431af8d1-0e2d-4a29-8b4b-744787d39f58",
       "actor_user_id": "anonymous",
       "entity_type": "Auth",
@@ -825,6 +918,19 @@
       "timestamp": "2026-11-26T12:14:16.499Z"
     },
     {
+      "id": "6bc5445c-f7ff-4436-bc88-a2572f8fb4f6",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "36b261b3-683d-4dfd-80c2-1e43d0e0a863",
+        "ip": "::1"
+      },
+      "entity_id": "36b261b3-683d-4dfd-80c2-1e43d0e0a863",
+      "timestamp": "2026-11-27T07:17:47.521Z"
+    },
+    {
       "id": "6f843858-b1aa-43ae-a0db-5e7e76e25f61",
       "actor_user_id": "anonymous",
       "entity_type": "Auth",
@@ -940,6 +1046,19 @@
       "timestamp": "2026-11-26T10:03:41.679Z"
     },
     {
+      "id": "829d11d5-da74-4ba5-94cc-6729354e1277",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "4963cb5f-cc2b-4c46-8359-a54740fd48e2",
+        "ip": "::1"
+      },
+      "entity_id": "4963cb5f-cc2b-4c46-8359-a54740fd48e2",
+      "timestamp": "2026-11-27T07:15:47.692Z"
+    },
+    {
       "id": "82f9dbb7-7ae5-4600-9dcc-c70672334447",
       "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
       "entity_type": "User",
@@ -950,6 +1069,18 @@
       },
       "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
       "timestamp": "2026-11-26T10:03:56.632Z"
+    },
+    {
+      "id": "86336c78-d1d9-4bfe-84b7-305dc982ff7e",
+      "actor_user_id": "70de7a6b-9eff-4397-95b8-a075c1a523b0",
+      "entity_type": "User",
+      "action": "user_register",
+      "actor_email": "volunteer_1795764354230@example.com",
+      "details": {
+        "ip": "127.0.0.1"
+      },
+      "entity_id": "70de7a6b-9eff-4397-95b8-a075c1a523b0",
+      "timestamp": "2026-11-27T07:25:54.376Z"
     },
     {
       "id": "8c3da965-0538-43f4-a917-fafeccaa4ded",
@@ -1013,6 +1144,18 @@
       },
       "entity_id": "4a5c0059-3d06-48a4-be0b-3473013502b1",
       "timestamp": "2026-11-27T06:50:55.420Z"
+    },
+    {
+      "id": "9c585ecf-af1e-46b0-b026-820587d3bb0a",
+      "actor_user_id": "70de7a6b-9eff-4397-95b8-a075c1a523b0",
+      "entity_type": "User",
+      "action": "user_login",
+      "actor_email": "volunteer_1795764354230@example.com",
+      "details": {
+        "ip": "127.0.0.1"
+      },
+      "entity_id": "70de7a6b-9eff-4397-95b8-a075c1a523b0",
+      "timestamp": "2026-11-27T07:25:54.503Z"
     },
     {
       "id": "a9140403-a1a2-4551-8040-feda6dd05ecd",
@@ -1165,6 +1308,19 @@
       "timestamp": "2026-11-23T13:48:37.635Z"
     },
     {
+      "id": "d7bb31df-6a26-4a06-8ac8-8c9c773a6ee4",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "f10cd905-3d2b-4987-b71e-7e519494a72b",
+        "ip": "::1"
+      },
+      "entity_id": "f10cd905-3d2b-4987-b71e-7e519494a72b",
+      "timestamp": "2026-11-27T07:14:46.967Z"
+    },
+    {
       "id": "dc2fc9e2-a7d7-4efc-abcd-fbcecf2c8f16",
       "actor_user_id": "anonymous",
       "entity_type": "Auth",
@@ -1201,6 +1357,19 @@
       },
       "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
       "timestamp": "2026-11-26T10:03:41.729Z"
+    },
+    {
+      "id": "e7f10143-ce3e-4c45-a29e-d68453aeb72a",
+      "actor_user_id": "anonymous",
+      "entity_type": "Auth",
+      "action": "login_start_otp_requested",
+      "actor_email": "truptisoniya7@gmail.com",
+      "details": {
+        "loginId": "7738358e-610d-47c8-86eb-639a45c6b9a2",
+        "ip": "::1"
+      },
+      "entity_id": "7738358e-610d-47c8-86eb-639a45c6b9a2",
+      "timestamp": "2026-11-27T07:18:47.250Z"
     },
     {
       "id": "ea4fe262-844e-4706-b583-94ec72a3c1c0",
@@ -1289,70 +1458,6 @@
       },
       "entity_id": "d02573c5-4e1b-47d7-8146-12f67d02da6d",
       "timestamp": "2026-11-26T07:11:16.285Z"
-    },
-    {
-      "actor_user_id": "anonymous",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "login_start_otp_requested",
-      "entity_type": "Auth",
-      "entity_id": "f10cd905-3d2b-4987-b71e-7e519494a72b",
-      "details": {
-        "ip": "::1",
-        "loginId": "f10cd905-3d2b-4987-b71e-7e519494a72b"
-      },
-      "id": "d7bb31df-6a26-4a06-8ac8-8c9c773a6ee4",
-      "timestamp": "2026-11-27T07:14:46.967Z"
-    },
-    {
-      "actor_user_id": "anonymous",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "login_start_otp_requested",
-      "entity_type": "Auth",
-      "entity_id": "4963cb5f-cc2b-4c46-8359-a54740fd48e2",
-      "details": {
-        "ip": "::1",
-        "loginId": "4963cb5f-cc2b-4c46-8359-a54740fd48e2"
-      },
-      "id": "829d11d5-da74-4ba5-94cc-6729354e1277",
-      "timestamp": "2026-11-27T07:15:47.692Z"
-    },
-    {
-      "actor_user_id": "anonymous",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "login_start_otp_requested",
-      "entity_type": "Auth",
-      "entity_id": "36b261b3-683d-4dfd-80c2-1e43d0e0a863",
-      "details": {
-        "ip": "::1",
-        "loginId": "36b261b3-683d-4dfd-80c2-1e43d0e0a863"
-      },
-      "id": "6bc5445c-f7ff-4436-bc88-a2572f8fb4f6",
-      "timestamp": "2026-11-27T07:17:47.521Z"
-    },
-    {
-      "actor_user_id": "anonymous",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "login_start_otp_requested",
-      "entity_type": "Auth",
-      "entity_id": "7738358e-610d-47c8-86eb-639a45c6b9a2",
-      "details": {
-        "ip": "::1",
-        "loginId": "7738358e-610d-47c8-86eb-639a45c6b9a2"
-      },
-      "id": "e7f10143-ce3e-4c45-a29e-d68453aeb72a",
-      "timestamp": "2026-11-27T07:18:47.250Z"
-    },
-    {
-      "actor_user_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
-      "actor_email": "truptisoniya7@gmail.com",
-      "action": "passwordless_login_verified",
-      "entity_type": "User",
-      "entity_id": "0dbfdf9b-e6e1-4daa-ad43-09ad61814170",
-      "details": {
-        "ip": "::1"
-      },
-      "id": "060dcff5-fd14-4175-b417-347feed7ff19",
-      "timestamp": "2026-11-27T07:19:03.167Z"
     }
   ],
   "userPortalData": {
